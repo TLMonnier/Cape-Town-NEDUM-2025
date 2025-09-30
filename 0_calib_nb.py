@@ -129,8 +129,8 @@ options["fuel_price_scenario"] = 2
 # (used for result validation)
 options["convert_sal_data"] = 0
 # Dummy for computing expected income net of commuting costs on the basis
-# of calibrated wages
-options["compute_net_income"] = 0
+# of calibrated wages (DYNAMIC)
+options["compute_net_income"] = 1
 
 # TAKES TIME
 options["location_based_calib"] = 1
@@ -488,6 +488,8 @@ import calibration.calib_main_func as calmain
         spline_population_income_distribution, spline_income_distribution,
         path_data, path_precalc_inp, path_precalc_transp, options)
     )
+     
+# NB: we just use cal_avg_income for validation wrt average_income
 
 # region
 # We update the parameter vector
@@ -1128,5 +1130,10 @@ print(np.nanmean(param["backyard_pockets"]))
 print(np.nanmax(param["backyard_pockets"]))
 
 # NB: we ensure interior solution
+
+# param["init_util_levels"] = initial_state_utility
+
+# np.save(path_precalc_inp + 'init_util_levels.npy',
+#         param["init_util_levels"])
 
 

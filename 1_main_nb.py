@@ -93,7 +93,7 @@ param = inpprm.import_param(
 # #### We first set options regarding structural assumptions used in the model
 
 # Dummy for taking floods into account in agents' choices
-options["agents_anticipate_floods"] = 1
+options["agents_anticipate_floods"] = 0
 # Dummy for preventing new informal settlement development
 options["informal_land_constrained"] = 0
 
@@ -142,7 +142,7 @@ options["compute_net_income"] = 0
 
 # #### Finally, we decide whether or not we want to run dynamic simulations (on top of initial state equilibrium)
 
-options["dyn_simul"] = 1
+options["dyn_simul"] = 0
 
 # ## Give name to simulation to export the results
 
@@ -587,6 +587,12 @@ income_net_of_commuting_costs = np.load(
 
 # ## Compute initial state equilibrium
 
+# NB: can increase number of iterations but may not be computationally interesting
+
+# LINK WITH CALIBRATION RESULTS? USELESS
+# param["init_util_levels"] = np.load(
+#     path_precalc_inp + 'init_util_levels.npy')
+
 # We run the algorithm
 import equilibrium.compute_equilibrium as eqcmp
 (initial_state_utility,
@@ -622,6 +628,10 @@ import equilibrium.compute_equilibrium as eqcmp
      minimum_housing_supply,
      param["coeff_A"],
      income_baseline)
+     
+# Why does households_per_income_class change?
+     
+# AS EXPECTED, THE ERROR IS LARGEST (BUT ACCEPTABLE) FOR POOREST INCOME GROUP GIVEN RDP MANIPULATION
 
 # Reminder: income groups are ranked from poorer to richer, and housing types
 # follow the following order: formal-backyard-informal-RDP
@@ -667,7 +677,17 @@ import equilibrium.compute_equilibrium as eqcmp
 # initial_state_limit_city = indicator dummy for having strictly more
 #   than one household per housing type and income group in each pixel
 
-print(initial_state_simulated_jobs)
+#print(initial_state_simulated_jobs)
+
+print(np.nansum(initial_state_simulated_jobs,1))
+
+print(np.nansum(initial_state_simulated_jobs,0))
+
+#print(np.nansum(initial_state_simulated_jobs)+total_RDP)
+
+# Changed in place
+#print(np.nansum(households_per_income_class))
+
 
 # We observe that the poorest income group is crowded out of the formal private sector, and is the only one living in informal settlements and informal backyards.
 
@@ -704,6 +724,8 @@ np.save(path_outputs + name + '/initial_state_average_income.npy',
         initial_state_average_income)
 np.save(path_outputs + name + '/initial_state_limit_city.npy',
         initial_state_limit_city)
+
+# DO NOT SHOW EVERYTHING? CROSS-CHECK WITH FLOOD AND INITIAL PAPER
 
 # ### Let us visualize key equilibrium outputs
 

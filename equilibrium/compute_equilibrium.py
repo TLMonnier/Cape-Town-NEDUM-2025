@@ -140,25 +140,27 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     # Adjust the population to include unemployed people, then take out RDP
     # by considering that they all belong to poorest income group
 
+    # IRRELEVANT AS THIS WILL ONLY AFFECT SIZE OF THE ERROR
+    
     # General reweighting using SAL data (no formal backyards)
-    if options["unempl_reweight"] == 0:
-        ratio = population / sum(households_per_income_class)
-        households_per_income_class = households_per_income_class * ratio
+    # if options["unempl_reweight"] == 0:
+    #     ratio = population / sum(households_per_income_class)
+    #     households_per_income_class = households_per_income_class * ratio
 
     # Alternative strategy: we attribute the unemployed population in
     # proportion with calibrated unemployment rates, without applying them
     # directly (as they are too noisy)
-    if options["unempl_reweight"] == 1:
-        ratio = [2 / size for size in param["household_size"]]
-        households_tot = households_per_income_class * ratio
-        households_unempl = households_tot - households_per_income_class
-        weights = households_unempl / sum(households_unempl)
-        unempl_pop = income_baseline.Households_nb[0]
-        unempl_attrib = [unempl_pop * w for w in weights]
-        households_per_income_class = (
-            households_per_income_class + unempl_attrib)
-        ratio = population / sum(households_per_income_class)
-        households_per_income_class = households_per_income_class * ratio
+    # if options["unempl_reweight"] == 1:
+    #     ratio = [2 / size for size in param["household_size"]]
+    #     households_tot = households_per_income_class * ratio
+    #     households_unempl = households_tot - households_per_income_class
+    #     weights = households_unempl / sum(households_unempl)
+    #     unempl_pop = income_baseline.Households_nb[0]
+    #     unempl_attrib = [unempl_pop * w for w in weights]
+    #     households_per_income_class = (
+    #         households_per_income_class + unempl_attrib)
+    #     ratio = population / sum(households_per_income_class)
+    #     households_per_income_class = households_per_income_class * ratio
         # implicit_empl_rate = ((households_per_income_class - unempl_attrib)
         #                       / households_per_income_class)
         # 0.74/0.99/0.98/0.99
@@ -217,8 +219,14 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     utility = np.zeros((param["max_iter"], param["nb_of_income_classes"]))
     #  We take arbitrary utility levels, not too far from what we would expect,
     #  to make computation quicker
+
+    # For the initial guess, we abstract from (dis)amenities and housing type and commuting costs
+    # Then, we refine to ease computing given strong sorting
+    
+    # utility[0, :] = average_income**param["alpha"]*50**param["beta"]
     utility[0, :] = np.array([1200, 4800, 16000, 77000])
     # utility[0, :] = np.array([400, 900, 5400, 26000])
+    
     index_iteration = 0
     #  We need to apply some convergence factor to our error terms to make them
     #  converge in our optimization: the formula comes from trial and error,
@@ -425,7 +433,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
             # Variables to display
             error[index_iteration, :] = (
                 total_simulated_jobs[index_iteration, :]
-                / households_per_income_class - 1) * 100
+                / households_per_income_class - 1) #* 100
             error_max_abs[index_iteration] = np.max(np.abs(
                 total_simulated_jobs[index_iteration,
                                      households_per_income_class != 0]
@@ -444,6 +452,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
                 / households_per_income_class - 1) > param["precision"])
             pbar.set_postfix({'error_max_abs': error_max_abs[index_iteration]})
             pbar.update()
+
+    
+    # NOT CLEAR?
 
     # We plug back RDP houses in the output : let us define useful variables
     # first
@@ -472,8 +483,10 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     # Outputs of the solver
 
     initial_state_error = error[index_iteration, :]
+    
+    #print(error_mean[index_iteration, :])
 
-    #  Note that this does not contain RDP
+    #  Note that this does not contain RDP!!!
     initial_state_simulated_jobs = simulated_jobs[index_iteration, :, :]
 
     #  We sum across income groups (axis=1)
