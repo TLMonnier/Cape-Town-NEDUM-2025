@@ -416,7 +416,10 @@ def EstimateIncome(param, timeOutput, distanceOutput, monetaryCost, costTime,
 
             # Numeric parameters come from trial and error and do not change
             # results a priori: they just help convergence
+            
             maxIter = 1000
+            # TEST for crude scanning
+            #maxIter = 100
             tolerance = 0.01
             if j == 0:
                 factorConvergenge = (

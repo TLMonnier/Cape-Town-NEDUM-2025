@@ -29,7 +29,7 @@ def import_options():
     options = {"adjust_housing_supply": 1}
     # Dummy for agents taking floods into account in their choices (to compare
     # the no-insurance vs. perfect risk-based insurance scenarios)
-    options["agents_anticipate_floods"] = 1
+    options["agents_anticipate_floods"] = 0
 
     # LAND USE ASSUMPTIONS
     # Dummy for coding green belt (for urban edge scenarios)
@@ -85,6 +85,7 @@ def import_options():
     # Dummy for fitting informal housing disamenity parameter to grid level
     # NB: doing so is a matter of choice. It yields more accurate results on
     # spatial sorting, but also increases the risk of overfitting the model.
+    # TAKES TIME
     options["location_based_calib"] = 1
 
     # TECHNICAL CALIBRATION OPTIONS
