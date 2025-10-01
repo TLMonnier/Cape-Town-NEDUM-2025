@@ -43,7 +43,7 @@ param = inpprm.import_param(
 
 # Set custom options for this simulation
 #  Dummy for taking floods into account in the utility function
-options["agents_anticipate_floods"] = 1
+options["agents_anticipate_floods"] = 0
 #  Dummy for preventing new informal settlement development
 options["informal_land_constrained"] = 0
 
@@ -72,6 +72,10 @@ options["fuel_price_scenario"] = 2
 
 # Processing options for this simulation
 options["convert_sp_data"] = 0
+
+# TODO: Rewrite scenarios for paper without floods
+
+options["urban_edge"] = 0
 
 
 # GIVE NAME TO SIMULATION TO EXPORT THE RESULTS

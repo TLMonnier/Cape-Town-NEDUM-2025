@@ -144,6 +144,10 @@ options["compute_net_income"] = 0
 
 options["dyn_simul"] = 0
 
+# TODO: Rewrite scenarios for paper without floods
+
+options["urban_edge"] = 0
+
 # ## Give name to simulation to export the results
 
 # NB: this changes according to custom parameters of interest

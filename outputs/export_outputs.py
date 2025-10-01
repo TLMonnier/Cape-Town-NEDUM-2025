@@ -4,6 +4,7 @@ import numpy as np
 # import os
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 # import geopandas as gpd
 import inspect
 from scipy.interpolate import griddata
@@ -114,6 +115,85 @@ def export_map(value, grid, geo_grid, path_plots, export_name, title,
     plt.colorbar(Map)
     plt.axis('off')
     plt.clim(lbnd, ubnd)
+    plt.title(title)
+    plt.savefig(path_plots + export_name)
+    plt.close()
+
+    if isinstance(value, np.ndarray):
+        np.savetxt(path_tables + export_name + '.csv', value, delimiter=",")
+
+    else:
+        # value.to_csv(path_tables + str(value))
+        value.to_csv(path_tables + export_name + '.csv')
+        # gdf = from_df_to_gdf(value, geo_grid)
+        # str_value = retrieve_name(value, depth=0)
+        # gdf.to_file(path_tables + str_value + '.shp')
+        # gdf.to_file(path_tables + export_name + '.shp')
+
+    gdf = value
+    print(export_name + ' done')
+
+    return gdf
+
+
+def discrete_map(value, grid, geo_grid, path_plots, export_name, title,
+                 path_tables):
+    """
+    Generate 2D heat maps of any spatial input.
+
+    Parameters
+    ----------
+    value : ndarray
+        Any one-dimensional array with values given at grid level
+    grid : DataFrame
+        Table yielding, for each grid cell (24,014), its x and y
+        (centroid) coordinates, and its distance (in km) to the city centre
+    geo_grid : GeoDataFrames
+        Data frame with geometry for the analysis grid (24,014 points)
+    path_plots : str
+        Path for saving output plots
+    export_name : str
+        Name given to saved output file
+    title : str
+        Title given tou output plot
+    path_tables : str
+        Path for saving output plots
+    ubnd : float64
+        Upper bound for plotted values
+    lbnd : float64, optional
+        Lower bound for plotted values. The default is 0.
+    cmap : str, optional
+        Type of choropleth map to be plotted (see pyplot options). The default
+        is 'Reds'.
+
+    Returns
+    -------
+    gdf : GeoDataFrame
+        Data frame with geolocalized observations from input array
+
+    """
+    colors = np.zeros(len(value))
+    colors[(value > 0) & (value <= 10)] = 1
+    colors[(value > 10) & (value <= 20)] = 2
+    colors[(value > 20) & (value <= 50)] = 3
+    colors[(value > 50) & (value <= 100)] = 4
+    colors[(value > 100) & (value <= 200)] = 5
+    colors[value > 200] = 6
+
+    cmap = cm.get_cmap('viridis_r').copy()
+    cmap.set_under('grey')
+
+    plt.figure(figsize=(10, 7))
+    Map = plt.scatter(grid.x,
+                      grid.y,
+                      s=None,
+                      c=colors,
+                      cmap=cmap,
+                      vmin=1,
+                      marker='.')
+    #plt.colorbar(Map)
+    plt.axis('off')
+    #plt.clim(1,6)
     plt.title(title)
     plt.savefig(path_plots + export_name)
     plt.close()
