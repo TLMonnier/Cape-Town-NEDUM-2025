@@ -572,8 +572,9 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
         )
 
     # We capture the output of the function to be used later on
-    #  Start of the actual construction programme
-    year_begin_RDP = 2015
+    # Start of the actual construction programme
+    # TEST
+    year_begin_RDP = 2011
     #  We "center" scenarios around baseline year until end of programme
     year_RDP = np.arange(year_begin_RDP, 2040) - param["baseline_year"]
     #  We take the spline output for this timeline
@@ -789,26 +790,48 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
 
     # Regression spline (with or without urban edge)
 
+    # if options["urban_edge"] == 0:
+    #     year_constraints = np.array(
+    #         [1990, param["year_urban_edge"] - 1, param["year_urban_edge"],
+    #          2040]
+    #         ) - param["baseline_year"]
+    #     spline_land_constraints = interp1d(
+    #         year_constraints,
+    #         np.transpose(
+    #             np.array(
+    #                 [coeff_land_urban_edge, coeff_land_urban_edge,
+    #                  coeff_land_no_urban_edge, coeff_land_no_urban_edge]
+    #                 )
+    #             ), 'linear'
+    #         )
+    # else:
+    #     year_constraints = np.array([1990, 2040]) - param["baseline_year"]
+    #     spline_land_constraints = interp1d(
+    #         year_constraints,
+    #         np.transpose(
+    #             np.array([coeff_land_urban_edge, coeff_land_urban_edge])
+    #             )
+    #         )
+
+    year_constraints = np.array(
+        [1990, param["year_urban_edge"], 2040]) - param["baseline_year"]
+
     if options["urban_edge"] == 0:
-        year_constraints = np.array(
-            [1990, param["year_urban_edge"] - 1, param["year_urban_edge"],
-             2040]
-            ) - param["baseline_year"]
         spline_land_constraints = interp1d(
             year_constraints,
             np.transpose(
                 np.array(
-                    [coeff_land_urban_edge, coeff_land_urban_edge,
-                     coeff_land_no_urban_edge, coeff_land_no_urban_edge]
+                    [coeff_land_no_urban_edge, coeff_land_no_urban_edge,
+                     coeff_land_no_urban_edge]
                     )
                 ), 'linear'
             )
-    else:
-        year_constraints = np.array([1990, 2040]) - param["baseline_year"]
+    elif options["urban_edge"] == 1:
         spline_land_constraints = interp1d(
             year_constraints,
             np.transpose(
-                np.array([coeff_land_urban_edge, coeff_land_urban_edge])
+                np.array([coeff_land_urban_edge, coeff_land_urban_edge,
+                          coeff_land_urban_edge])
                 )
             )
 

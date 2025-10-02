@@ -33,10 +33,10 @@ def import_options():
 
     # LAND USE ASSUMPTIONS
     # Dummy for coding green belt (for urban edge scenarios)
-    options["urban_edge"] = 0
+    options["urban_edge"] = 1
     # Dummy for forbidding new informal housing construction (for eviction
     # scenarios)
-    options["informal_land_constrained"] = 0
+    options["informal_land_constrained"] = 1
 
     # FLOOD DATA OPTIONS
     # Dummy for considering pluvial floods on top of fluvial floods
@@ -423,7 +423,7 @@ def import_param(path_precalc_inp, options):
     param["agricultural_price_retrospect"] = 70.7
 
     # Year urban edge constraint kicks in (when option is used)
-    param["year_urban_edge"] = 2015
+    param["year_urban_edge"] = 2011
 
     # Labor parameters
     #  Number of income classes set to 4 as in Pfeiffer et al. (see table A1)

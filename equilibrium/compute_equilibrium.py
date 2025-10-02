@@ -8,7 +8,7 @@ import equilibrium.sub.compute_outputs as eqout
 
 
 def compute_equilibrium(fraction_capital_destroyed, amenities, param,
-                        housing_limit, population, households_per_income_class,
+                        housing_limit, population_growth_rate, households_per_income_class,
                         total_RDP, coeff_land, income_net_of_commuting_costs,
                         grid, options, agricultural_rent, interest_rate,
                         number_properties_RDP, average_income, mean_income,
@@ -164,6 +164,10 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
         # implicit_empl_rate = ((households_per_income_class - unempl_attrib)
         #                       / households_per_income_class)
         # 0.74/0.99/0.98/0.99
+
+    # TEST
+    households_per_income_class = (
+        households_per_income_class*population_growth_rate)
 
     #  Considering that all RDP belong to the poorest, we remove them from here
     households_per_income_class[0] = np.max(

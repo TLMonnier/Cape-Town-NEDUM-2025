@@ -136,7 +136,7 @@ def export_map(value, grid, geo_grid, path_plots, export_name, title,
     return gdf
 
 
-def discrete_map(value, grid, geo_grid, path_plots, export_name, title,
+def discrete_map(colors, grid, geo_grid, path_plots, export_name, title,
                  path_tables):
     """
     Generate 2D heat maps of any spatial input.
@@ -172,13 +172,6 @@ def discrete_map(value, grid, geo_grid, path_plots, export_name, title,
         Data frame with geolocalized observations from input array
 
     """
-    colors = np.zeros(len(value))
-    colors[(value > 0) & (value <= 10)] = 1
-    colors[(value > 10) & (value <= 20)] = 2
-    colors[(value > 20) & (value <= 50)] = 3
-    colors[(value > 50) & (value <= 100)] = 4
-    colors[(value > 100) & (value <= 200)] = 5
-    colors[value > 200] = 6
 
     cmap = cm.get_cmap('viridis_r').copy()
     cmap.set_under('grey')
@@ -198,18 +191,18 @@ def discrete_map(value, grid, geo_grid, path_plots, export_name, title,
     plt.savefig(path_plots + export_name)
     plt.close()
 
-    if isinstance(value, np.ndarray):
-        np.savetxt(path_tables + export_name + '.csv', value, delimiter=",")
+    if isinstance(colors, np.ndarray):
+        np.savetxt(path_tables + export_name + '.csv', colors, delimiter=",")
 
     else:
         # value.to_csv(path_tables + str(value))
-        value.to_csv(path_tables + export_name + '.csv')
+        colors.to_csv(path_tables + export_name + '.csv')
         # gdf = from_df_to_gdf(value, geo_grid)
         # str_value = retrieve_name(value, depth=0)
         # gdf.to_file(path_tables + str_value + '.shp')
         # gdf.to_file(path_tables + export_name + '.shp')
 
-    gdf = value
+    gdf = colors
     print(export_name + ' done')
 
     return gdf
