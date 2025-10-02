@@ -901,6 +901,18 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
                 ),
             'linear'
             )
+    # elif options["informal_land_constrained"] == 1:
+    #     spline_land_informal = interp1d(
+    #         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 19, 29],
+    #         np.transpose(
+    #             [informal_baseline, informal_baseline, informal_baseline,
+    #              informal_baseline, informal_baseline, informal_baseline,
+    #              informal_baseline, informal_baseline, informal_baseline,
+    #              informal_nearfuture, informal_nearfuture, informal_nearfuture,
+    #              informal_nearfuture, informal_nearfuture]
+    #             ),
+    #         'linear'
+    #         )
     elif options["informal_land_constrained"] == 1:
         spline_land_informal = interp1d(
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 14, 19, 29],
@@ -908,8 +920,8 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
                 [informal_baseline, informal_baseline, informal_baseline,
                  informal_baseline, informal_baseline, informal_baseline,
                  informal_baseline, informal_baseline, informal_baseline,
-                 informal_nearfuture, informal_nearfuture, informal_nearfuture,
-                 informal_nearfuture, informal_nearfuture]
+                 informal_baseline, informal_baseline, informal_baseline,
+                 informal_baseline, informal_baseline]
                 ),
             'linear'
             )

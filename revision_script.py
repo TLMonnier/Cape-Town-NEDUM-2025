@@ -20,7 +20,7 @@ import inputs.parameters_and_options as inpprm
 import equilibrium.compute_equilibrium as eqcmp
 import outputs.export_outputs as outexp
 # import equilibrium.run_simulations as eqsim
-import equilibrium.functions_dynamic as eqdyn
+# import equilibrium.functions_dynamic as eqdyn
 
 
 # # Preamble
@@ -46,12 +46,14 @@ param = inpprm.import_param(
     path_precalc_inp, options)
 
 # ## Custom
-options["urban_edge"] = 1
+options["urban_edge"] = 0
 # param["year_urban_edge"] = param["baseline_year"]
+options["new_RDP_housing"] = 1
 # year_begin_RDP?
 
 # ## Output name
-name = ('simul_UE' + str(options["urban_edge"]))
+name = ('simul_UE' + str(options["urban_edge"])
+        + '_new_RDP' + str(options["new_RDP_housing"]))
 
 path_simul = path_outputs + 'revision_output'
 path_output_plots = path_simul + '/plots/'
@@ -102,9 +104,18 @@ housing_types[np.isnan(housing_types)] = 0
                            housing_type_data, path_data, path_folder)
      )
 
-coeff_land = inpdt.import_coeff_land(
-    spline_land_constraints, spline_land_backyard, spline_land_informal,
-    spline_land_RDP, param, 0)
+if options["new_RDP_housing"] == 0:
+    coeff_land = inpdt.import_coeff_land(
+        spline_land_constraints, spline_land_backyard, spline_land_informal,
+        spline_land_RDP, param, 0)
+    total_RDP = spline_RDP(0)
+    number_properties_RDP = spline_estimate_RDP(0)
+elif options["new_RDP_housing"] == 1:
+    coeff_land = inpdt.import_coeff_land(
+        spline_land_constraints, spline_land_backyard, spline_land_informal,
+        spline_land_RDP, param, 29)
+    number_properties_RDP = spline_estimate_RDP(29)
+    total_RDP = spline_RDP(29)
 
 housing_limit = inpdt.import_housing_limit(grid, param)
 
@@ -135,13 +146,12 @@ fraction_capital_destroyed["structure_informal_backyards"
 fraction_capital_destroyed["structure_informal_settlements"
                            ] = np.zeros(24014)
 
-(spline_agricultural_price, spline_interest_rate,
- spline_population_income_distribution, spline_inflation,
- spline_income_distribution, spline_population,
- spline_income, spline_minimum_housing_supply, spline_fuel
- ) = eqdyn.import_scenarios(income_baseline, param, grid, path_scenarios,
-                            options)
-
+# (spline_agricultural_price, spline_interest_rate,
+#  spline_population_income_distribution, spline_inflation,
+#  spline_income_distribution, spline_population,
+#  spline_income, spline_minimum_housing_supply, spline_fuel
+#  ) = eqdyn.import_scenarios(income_baseline, param, grid, path_scenarios,
+#                             options)
 
 # ##Equilibrium function
 (initial_state_utility,
@@ -346,6 +356,34 @@ simul_UE1_average_income = np.load(
 simul_UE1_limit_city = np.load(
     path_simul + '/initial_state_limit_city_simul_UE1.npy')
 
+simul_UE0_new_RDP1_utility = np.load(
+    path_simul + '/initial_state_utility_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_error = np.load(
+    path_simul + '/initial_state_error_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_simulated_jobs = np.load(
+    path_simul + '/initial_state_simulated_jobs_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_households_housing_types = np.load(
+    path_simul
+    + '/initial_state_households_housing_types_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_household_centers = np.load(
+    path_simul + '/initial_state_household_centers_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_households = np.load(
+    path_simul + '/initial_state_households_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_dwelling_size = np.load(
+    path_simul + '/initial_state_dwelling_size_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_housing_supply = np.load(
+    path_simul + '/initial_state_housing_supply_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_rent = np.load(
+    path_simul + '/initial_state_rent_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_rent_matrix = np.load(
+    path_simul + '/initial_state_rent_matrix_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_capital_land = np.load(
+    path_simul + '/initial_state_capital_land_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_average_income = np.load(
+    path_simul + '/initial_state_average_income_simul_UE0_new_RDP1.npy')
+simul_UE0_new_RDP1_limit_city = np.load(
+    path_simul + '/initial_state_limit_city_simul_UE0_new_RDP1.npy')
+
 # dyn_simul_UE0_households_center = np.load(
 #     path_simul + '/simulation_households_center_simul_UE0.npy')
 # dyn_simul_UE0_households_housing_type = np.load(
@@ -395,10 +433,13 @@ simul_UE1_limit_city = np.load(
 # ##Household density
 simul_UE0_nb_households_tot = np.nansum(simul_UE0_households_housing_types, 0)
 simul_UE1_nb_households_tot = np.nansum(simul_UE1_households_housing_types, 0)
+simul_UE0_new_RDP1_nb_households_tot = np.nansum(
+    simul_UE0_new_RDP1_households_housing_types, 0)
 
 # Grid cell = 500x500m = 25 Ha
 simul_UE0_HHdens_HA = simul_UE0_nb_households_tot/25
 simul_UE1_HHdens_HA = simul_UE1_nb_households_tot/25
+simul_UE0_new_RDP1_HHdens_HA = simul_UE0_new_RDP1_nb_households_tot/25
 
 simul_UE0_HHdens_HA_discrete = np.zeros(len(simul_UE0_HHdens_HA))
 simul_UE0_HHdens_HA_discrete[(simul_UE0_HHdens_HA > 0)
@@ -426,6 +467,25 @@ simul_UE1_HHdens_HA_discrete[(simul_UE1_HHdens_HA > 100)
                              & (simul_UE1_HHdens_HA <= 200)] = 5
 simul_UE1_HHdens_HA_discrete[simul_UE1_HHdens_HA > 200] = 6
 
+simul_UE0_new_RDP1_HHdens_HA_discrete = np.zeros(
+    len(simul_UE0_new_RDP1_HHdens_HA))
+simul_UE0_new_RDP1_HHdens_HA_discrete[
+    (simul_UE0_new_RDP1_HHdens_HA > 0)
+    & (simul_UE0_new_RDP1_HHdens_HA <= 10)] = 1
+simul_UE0_new_RDP1_HHdens_HA_discrete[
+    (simul_UE0_new_RDP1_HHdens_HA > 10)
+    & (simul_UE0_new_RDP1_HHdens_HA <= 20)] = 2
+simul_UE0_new_RDP1_HHdens_HA_discrete[
+    (simul_UE0_new_RDP1_HHdens_HA > 20)
+    & (simul_UE0_new_RDP1_HHdens_HA <= 50)] = 3
+simul_UE0_new_RDP1_HHdens_HA_discrete[
+    (simul_UE0_new_RDP1_HHdens_HA > 50)
+    & (simul_UE0_new_RDP1_HHdens_HA <= 100)] = 4
+simul_UE0_new_RDP1_HHdens_HA_discrete[
+    (simul_UE0_new_RDP1_HHdens_HA > 100)
+    & (simul_UE0_new_RDP1_HHdens_HA <= 200)] = 5
+simul_UE0_new_RDP1_HHdens_HA_discrete[simul_UE0_new_RDP1_HHdens_HA > 200] = 6
+
 simul_UE0_HHdens_HA_discrete_map = outexp.discrete_map(
     simul_UE0_HHdens_HA_discrete, grid, geo_grid, path_output_plots,
     'simul_UE0_HHdens_HA_discrete_map',
@@ -434,6 +494,11 @@ simul_UE0_HHdens_HA_discrete_map = outexp.discrete_map(
 simul_UE1_HHdens_HA_discrete_map = outexp.discrete_map(
     simul_UE1_HHdens_HA_discrete, grid, geo_grid, path_output_plots,
     'simul_UE1_HHdens_HA_discrete_map',
+    "Nb of HHs per Ha (WP scale)", path_output_tables)
+
+simul_UE0_new_RDP1_HHdens_HA_discrete_map = outexp.discrete_map(
+    simul_UE0_new_RDP1_HHdens_HA_discrete, grid, geo_grid, path_output_plots,
+    'simul_UE0_new_RDP1_HHdens_HA_discrete_map',
     "Nb of HHs per Ha (WP scale)", path_output_tables)
 
 
@@ -462,6 +527,16 @@ landprice_formal_simul_UE1 = (
     / interest_rate
     )
 
+landprice_formal_simul_UE0_new_RDP1 = (
+    (simul_UE0_new_RDP1_rent[0, :] * param["coeff_A"])
+    ** (1 / param["coeff_a"])
+    * param["coeff_a"]
+    * (param["coeff_b"] / (interest_rate + param["depreciation_rate"]))
+    ** (param["coeff_b"] / param["coeff_a"])
+    / interest_rate
+    )
+
+
 # rent_formal_simul_UE0 = simul_UE0_rent[0, :]
 # rent_formal_simul_UE1 = simul_UE1_rent[0, :]
 
@@ -472,6 +547,11 @@ landprice_formal_simul_UE0[simul_UE0_nb_households_formal == 0] = 0
 simul_UE1_nb_households_formal = simul_UE1_households_housing_types[0, :]
 landprice_formal_simul_UE1[simul_UE1_nb_households_formal == 0] = 0
 # rent_formal_simul_UE1[simul_UE1_nb_households_formal == 0] = 0
+
+simul_UE0_new_RDP1_nb_households_formal = (
+    simul_UE0_new_RDP1_households_housing_types[0, :])
+landprice_formal_simul_UE0_new_RDP1[
+    simul_UE0_new_RDP1_nb_households_formal == 0] = 0
 
 simul_UE0_formal_landprice_discrete = np.zeros(len(landprice_formal_simul_UE0))
 simul_UE0_formal_landprice_discrete[(landprice_formal_simul_UE0 > 0)
@@ -510,6 +590,35 @@ simul_UE1_formal_landprice_discrete[(landprice_formal_simul_UE1 > 4000)
 simul_UE1_formal_landprice_discrete[(landprice_formal_simul_UE1 > 5000)
                                     & (landprice_formal_simul_UE1 <= 6000)] = 8
 simul_UE1_formal_landprice_discrete[landprice_formal_simul_UE1 > 6000] = 9
+
+simul_UE0_new_RDP1_formal_landprice_discrete = np.zeros(
+    len(landprice_formal_simul_UE0_new_RDP1))
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 0)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 500)] = 1
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 500)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 1000)] = 2
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 1000)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 1500)] = 3
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 1500)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 2000)] = 4
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 2000)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 3000)] = 5
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 3000)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 4000)] = 6
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 4000)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 5000)] = 7
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    (landprice_formal_simul_UE0_new_RDP1 > 5000)
+    & (landprice_formal_simul_UE0_new_RDP1 <= 6000)] = 8
+simul_UE0_new_RDP1_formal_landprice_discrete[
+    landprice_formal_simul_UE0_new_RDP1 > 6000] = 9
 
 # simul_UE0_formal_rent_discrete = np.zeros(len(rent_formal_simul_UE0))
 # simul_UE0_formal_rent_discrete[(rent_formal_simul_UE0 > 0)
@@ -559,6 +668,12 @@ simul_UE1_formal_landprice_discrete_map = outexp.discrete_map(
     'simul_UE1_formal_landprice_discrete_map',
     "Formal land price per m² (WP scale)", path_output_tables)
 
+simul_UE0_new_RDP1_formal_landprice_discrete_map = outexp.discrete_map(
+    simul_UE0_new_RDP1_formal_landprice_discrete, grid, geo_grid,
+    path_output_plots,
+    'simul_UE0_new_RDP1_formal_landprice_discrete_map',
+    "Formal land price per m² (WP scale)", path_output_tables)
+
 # simul_UE0_formal_rent_discrete_map = outexp.discrete_map(
 #     simul_UE0_formal_rent_discrete, grid, geo_grid, path_output_plots,
 #     'simul_UE0_formal_rent_discrete_map',
@@ -574,6 +689,8 @@ simul_UE1_formal_landprice_discrete_map = outexp.discrete_map(
 
 simul_UE0_agg_HH_per_htype = np.nansum(simul_UE0_households_housing_types, 1)
 simul_UE1_agg_HH_per_htype = np.nansum(simul_UE1_households_housing_types, 1)
+simul_UE0_new_RDP1_agg_HH_per_htype = np.nansum(
+    simul_UE0_new_RDP1_households_housing_types, 1)
 
 data_compar_UE_agg_HH_per_htype = {
     'Category': ['Formal', 'Formal', 'Backyard', 'Backyard',
@@ -591,18 +708,43 @@ sns.barplot(x='Category', y='Value', hue='Group',
 plt.title('Nb of HHs by housing type and scenario')
 plt.savefig(path_output_plots + 'compar_UE_agg_HH_per_htype')
 
-# Population growth drives new sorting across housing markets!
-# Of course, public housing supply (etc.) may also play a role
+# NB: at baseline, we underestimate informal and overestimate formal!
+
+# Larger initial population drives new sorting across housing markets!
+# Of course, public housing supply (etc.) should also play a role (not here)
+# Need to check how backyarding adjusts with land availability
+# Utility evolution also makes sense!
+
+data_compar_new_RDP_agg_HH_per_htype = {
+    'Category': ['Formal', 'Formal', 'Backyard', 'Backyard',
+                 'Informal', 'Informal', 'Public', 'Public'],
+    'Group': ['new_RDP1', 'new_RDP0', 'new_RDP1', 'new_RDP0',
+              'new_RDP1', 'new_RDP0', 'new_RDP1', 'new_RDP0'],
+    'Value': [simul_UE0_new_RDP1_agg_HH_per_htype[0],
+              simul_UE0_agg_HH_per_htype[0],
+              simul_UE0_new_RDP1_agg_HH_per_htype[1],
+              simul_UE0_agg_HH_per_htype[1],
+              simul_UE0_new_RDP1_agg_HH_per_htype[2],
+              simul_UE0_agg_HH_per_htype[2],
+              simul_UE0_new_RDP1_agg_HH_per_htype[3],
+              simul_UE0_agg_HH_per_htype[3]]
+}
+df_compar_new_RDP_agg_HH_per_htype = pd.DataFrame(
+    data_compar_new_RDP_agg_HH_per_htype)
+
+sns.barplot(x='Category', y='Value', hue='Group',
+            data=df_compar_new_RDP_agg_HH_per_htype)
+plt.title('Nb of HHs by housing type and scenario')
+plt.savefig(path_output_plots + 'compar_new_RDP_agg_HH_per_htype')
+
+# W/o population growth, we just have a switch from informal to formal:
+# backyarding even decreases slightly!
+# W/ population growth (from same baseline), we observe more backyarding
+# Utility evolution still makes sense
+
 
 print('Running done')
 
-
-
-
-
-
-
-##########################################
 
 # NB: only try to debug unsatisfactory results
 
