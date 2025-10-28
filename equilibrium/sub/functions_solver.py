@@ -231,9 +231,9 @@ def compute_housing_supply_formal(
     return housing_supply
 
 
-def compute_housing_supply_backyard(R, param, income_net_of_commuting_costs,
+def compute_housing_supply_backyard(R, R_nodisam, param, income_net_of_commuting_costs,
                                     fraction_capital_destroyed, grid,
-                                    income_class_by_housing_type):
+                                    income_class_by_housing_type, options, interest_rate):
     """
     Return optimal housing supply for informal backyards.
 
@@ -284,21 +284,61 @@ def compute_housing_supply_backyard(R, param, income_net_of_commuting_costs,
                       ] = fraction_capital_destroyed.structure_subsidized_1[
                           dwelling_size <= param["threshold"]]
 
-    # See technical documentation for math formulas
-    housing_supply = (
-        (param["alpha"] *
+    # New computation due to structure costs!
+               
+    Z_IB = ((param["depreciation_rate"] + interest_rate)
+            * (param["informal_structure_value"]/param["shack_size"]))
+            
+    mu = ((param["alpha"] *
          (param["RDP_size"] + param["backyard_size"] - param["q0"])
          / (param["backyard_size"]))
         - (param["beta"]
            * (income_net_of_commuting_costs[0, :]
-              - (capital_destroyed * param["subsidized_structure_value"]))
-           / (param["backyard_size"] * R))
-    )
-
-    # NB: we convert units to m² per km² of available land
-    housing_supply[R == 0] = 0
+              - (capital_destroyed * param["subsidized_structure_value"])
+              - (param["depreciation_rate"] * param["subsidized_structure_value"]))
+           / (param["backyard_size"] * (R-Z_IB)))
+        )
+    
+    housing_supply = mu
+    
     housing_supply = np.minimum(housing_supply, 1)
     housing_supply = np.maximum(housing_supply, 0)
+    
+    if options["incremental_housing"]==1:
+    
+        Z_IH = ((param["depreciation_rate"] + interest_rate)
+                * (param["subsidized_structure_value"]/param["RDP_size"]))
+        
+        z_IB = (income_net_of_commuting_costs[0, :]
+                - (param["depreciation_rate"] * param["subsidized_structure_value"])
+                + (mu * param["backyard_size"] * (R-Z_IB)))
+        z_IH = (income_net_of_commuting_costs[0, :]
+                - (param["depreciation_rate"] * param["subsidized_structure_value"])
+                + (2 * param["backyard_size"] * (R_nodisam-Z_IH)))
+        
+        U_IB = (z_IB**param["alpha"]
+                * (param["RDP_size"] + (1-mu)*param["backyard_size"] - param["q0"])**param["beta"])
+        U_IH = (z_IH**param["alpha"]
+                * (param["RDP_size"] - param["q0"])**param["beta"])
+        
+        housing_supply = np.minimum(housing_supply, 1)
+        housing_supply = np.maximum(housing_supply, 0)
+        
+        housing_supply[U_IH>U_IB] = 2
+        R[U_IH>U_IB] = R_nodisam[U_IH>U_IB]
+    
+    # See technical documentation for math formulas
+    # housing_supply = (
+    #     (param["alpha"] *
+    #      (param["RDP_size"] + param["backyard_size"] - param["q0"])
+    #      / (param["backyard_size"]))
+    #     - (param["beta"]
+    #        * (income_net_of_commuting_costs[0, :]
+    #           - (capital_destroyed * param["subsidized_structure_value"]))
+    #        / (param["backyard_size"] * R))
+    # )
+
+    housing_supply[R == 0] = 0
     housing_supply = 1000000 * housing_supply
 
-    return housing_supply
+    return (housing_supply, R)

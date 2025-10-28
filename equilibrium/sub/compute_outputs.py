@@ -174,11 +174,31 @@ def compute_outputs(housing_type,
                               * ((dwelling_size - param["q0"])
                                  ** param["beta"])))
                           ** (1 / param["alpha"])))
-                   - (param["informal_structure_value"]
-                      * (interest_rate + param["depreciation_rate"]))
-                   - (np.array(
-                       fraction_capital_destroyed.structure_backyards
-                       )[None, :] * param["informal_structure_value"]))
+                   # - (param["informal_structure_value"]
+                   #    * (interest_rate + param["depreciation_rate"]))
+                   # - (np.array(
+                   #     fraction_capital_destroyed.structure_backyards
+                   #     )[None, :] * param["informal_structure_value"])
+                   )
+                )
+            R_mat_nodisam = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs
+                   - ((1 + np.array(
+                       fraction_capital_destroyed.contents_backyard)[None, :]
+                       * param["fraction_z_dwellings"])
+                       * ((utility[:, None]
+                           / (amenities[None, :]
+                              # * param_backyards_pockets[None, :]
+                              * ((dwelling_size - param["q0"])
+                                 ** param["beta"])))
+                          ** (1 / param["alpha"])))
+                   # - (param["informal_structure_value"]
+                   #    * (interest_rate + param["depreciation_rate"]))
+                   # - (np.array(
+                   #     fraction_capital_destroyed.structure_backyards
+                   #     )[None, :] * param["informal_structure_value"])
+                   )
                 )
 
         elif options["actual_backyards"] == 0:
@@ -194,14 +214,64 @@ def compute_outputs(housing_type,
                                * ((dwelling_size - param["q0"])
                                   ** param["beta"])))
                            ** (1 / param["alpha"])))
-                    - (param["informal_structure_value"]
-                       * (interest_rate + param["depreciation_rate"]))
-                    - (np.array(
-                        fraction_capital_destroyed.structure_informal_backyards
-                        )[None, :] * param["informal_structure_value"]))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     fraction_capital_destroyed.structure_informal_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
+                )
+            R_mat_nodisam = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs
+                    - ((1 + np.array(
+                        fraction_capital_destroyed.contents_backyard)[None, :]
+                        * param["fraction_z_dwellings"])
+                        * ((utility[:, None]
+                            / (amenities[None, :]
+                               # * param_backyards_pockets[None, :]
+                               * ((dwelling_size - param["q0"])
+                                  ** param["beta"])))
+                           ** (1 / param["alpha"])))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     fraction_capital_destroyed.structure_informal_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
                 )
 
         R_mat[income_class_by_housing_type.backyard == 0, :] = 0
+        R_mat_nodisam[income_class_by_housing_type.backyard == 0, :] = 0
+        
+        # We clean the results just in case
+        R_mat_nodisam[R_mat_nodisam < 0] = 0
+        R_mat_nodisam[np.isnan(R_mat_nodisam)] = 0
+    
+        # We select highest bidder (income group) in each location
+        proba_nodisam = (R_mat_nodisam == np.nanmax(R_mat_nodisam, 0))
+        # We correct the matrix if binding budget constraint
+        # (and other precautions)
+        limit_nodisam = ((income_net_of_commuting_costs > 0)
+                 & (proba_nodisam > 0)
+                 & (~np.isnan(income_net_of_commuting_costs))
+                 & (R_mat_nodisam > 0))
+        proba_nodisam = proba_nodisam * limit_nodisam
+    
+        # Yields directly the selected income group for each location
+        which_group_nodisam = np.nanargmax(R_mat_nodisam, 0)
+    
+        # Then we recover rent and dwelling size associated with the selected
+        # income group in each location
+        R_nodisam = np.empty(len(which_group_nodisam))
+        R_nodisam[:] = np.nan
+        # dwelling_size_temp_nodisam = np.empty(len(which_group_nodisam))
+        # dwelling_size_temp_nodisam[:] = np.nan
+        for i in range(0, len(which_group_nodisam)):
+            R_nodisam[i] = R_mat_nodisam[int(which_group_nodisam[i]), i]
+        #     dwelling_size_temp_nodisam[i] = dwelling_size[int(which_group_nodisam[i]), i]
+    
+        # dwelling_size_nodisam = dwelling_size_temp_nodisam
 
     elif housing_type == 'informal':
 
@@ -264,10 +334,24 @@ def compute_outputs(housing_type,
             construction_param, housing_in, dwelling_size)
         housing_supply[R == 0] = 0
     elif housing_type == 'backyard':
-        housing_supply = eqsol.compute_housing_supply_backyard(
-            R, param, income_net_of_commuting_costs,
-            fraction_capital_destroyed, grid, income_class_by_housing_type)
+        (housing_supply, R) = eqsol.compute_housing_supply_backyard(
+            R, R_nodisam, param, income_net_of_commuting_costs,
+            fraction_capital_destroyed, grid, income_class_by_housing_type,
+            options, interest_rate)
         housing_supply[R == 0] = 0
+
+        # DOUBLE CHECK (not sure if needed)
+        R_mat[:, housing_supply == 2000000] = R_mat_nodisam[:, housing_supply == 2000000]
+        # We select highest bidder (income group) in each location
+        proba = (R_mat == np.nanmax(R_mat, 0))
+        # We correct the matrix if binding budget constraint
+        # (and other precautions)
+        limit = ((income_net_of_commuting_costs > 0)
+                 & (proba > 0)
+                 & (~np.isnan(income_net_of_commuting_costs))
+                 & (R_mat > 0))
+        proba = proba * limit
+
     elif housing_type == 'informal':
         # We simply take a supply equal to the available constructible land,
         # hence ones when considering supply per land unit (informal
@@ -284,6 +368,7 @@ def compute_outputs(housing_type,
     # (0.5*0.5 km) and coeff_land reduces it to inhabitable area
     people_init_land = people_init * coeff_land * 0.25
 
+    # UPDATE PROBA?
     # We associate people in each selected pixel to the highest bidding income
     # group
     people_center = np.array(people_init_land)[None, :] * proba
