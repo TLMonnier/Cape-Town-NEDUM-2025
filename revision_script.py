@@ -46,9 +46,9 @@ param = inpprm.import_param(
     path_precalc_inp, options)
 
 # ## Custom
-options["urban_edge"] = 0
+options["urban_edge"] = 1
 # param["year_urban_edge"] = param["baseline_year"]
-options["new_RDP_housing"] = 1
+options["new_RDP_housing"] = 0
 # year_begin_RDP?
 
 # ## Output name
@@ -171,7 +171,7 @@ fraction_capital_destroyed["structure_informal_settlements"
      amenities,
      param,
      housing_limit,
-     1.7,
+     1,
      households_per_income_class,
      total_RDP,
      coeff_land,
@@ -684,6 +684,60 @@ simul_UE0_new_RDP1_formal_landprice_discrete_map = outexp.discrete_map(
 #     'simul_UE1_formal_rent_discrete_map',
 #     "Formal annual per m² (WP scale)", path_output_tables)
 
+
+# ## Potential gains from formalizing informal land (no added costs)
+# ## NB: positive gains only?
+
+formalization_gain_UE0 = (landprice_formal_simul_UE0 * interest_rate
+                          - simul_UE0_rent[2, :])
+# simul_UE0_formalization_gain_discrete_map = outexp.discrete_map(
+#     formalization_gain_UE0, grid, geo_grid, path_output_plots,
+#     'simul_UE0_formalization_gain_discrete_map',
+#     "Static formalization gain per m², no added costs (WP scale)",
+#     path_output_tables)
+simul_UE0_formalization_gain_map = outexp.export_map(
+    formalization_gain_UE0, grid, geo_grid, path_output_plots,
+    'simul_UE0_formalization_gain_discrete_map',
+    "Static formalization gain per m², no added costs (WP scale)",
+    path_output_tables,ubnd=100, lbnd=-100, cmap='coolwarm')
+
+# Take care
+#landprice_formal_simul_UE1[landprice_formal_simul_UE1==0] = np.nan
+#simul_UE1_rent[2, :][simul_UE1_rent[2, :]==0] = np.nan
+
+formalization_gain_UE1 = (landprice_formal_simul_UE1 * interest_rate
+                          - simul_UE1_rent[2, :])
+#formalization_gain_UE1[simul_UE1_households_housing_types[2,:]==0] = np.nan
+formalization_gain_UE1[coeff_land[2,:]==0] = np.nan
+formalization_gain_UE1[coeff_land[2,:]==0] = np.nan
+np.nanmean(formalization_gain_UE1[formalization_gain_UE1>0])
+
+# simul_UE1_formalization_gain_discrete_map = outexp.discrete_map(
+#     formalization_gain_UE1, grid, geo_grid, path_output_plots,
+#     'simul_UE1_formalization_gain_discrete_map',
+#     "Static formalization gain per m², no added costs (WP scale)",
+#     path_output_tables)
+# Refine center of color scale
+simul_UE1_formalization_gain_map = outexp.export_map(
+    formalization_gain_UE1, grid, geo_grid, path_output_plots,
+    'simul_UE1_formalization_gain_discrete_map',
+    "Static formalization gain per m², no added costs (WP scale)",
+    path_output_tables,ubnd=100, lbnd=-100, cmap='coolwarm')
+# On average, gain is lower to cost in Henderson et al.!!
+
+formalization_gain_UE0_new_RDP1 = (landprice_formal_simul_UE0_new_RDP1
+                                   * interest_rate
+                                   - simul_UE0_new_RDP1_rent[2, :])
+# simul_UE0_new_RDP1_formalization_gain_discrete_map = outexp.discrete_map(
+#     formalization_gain_UE0_new_RDP1, grid, geo_grid, path_output_plots,
+#     'simul_UE0_new_RDP1_formalization_gain_discrete_map',
+#     "Static formalization gain per m², no added costs (WP scale)",
+#     path_output_tables)
+simul_UE0_new_RDP1_formalization_gain_map = outexp.export_map(
+    formalization_gain_UE0_new_RDP1, grid, geo_grid, path_output_plots,
+    'simul_UE0_new_RDP1_formalization_gain_discrete_map',
+    "Static formalization gain per m², no added costs (WP scale)",
+    path_output_tables,ubnd=100, lbnd=-100, cmap='coolwarm')
 
 # ## Nb of HHs per housing type
 
