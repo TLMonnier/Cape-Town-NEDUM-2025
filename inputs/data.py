@@ -375,7 +375,10 @@ def import_macro_data(param, path_scenarios, path_folder):
         + "housing_types_sal_analysis.xlsx",
         sheet_name='Analysis', header=None, names=None, usecols="A:B",
         skiprows=18, nrows=6)
-    total_RDP = int(rdp_data.iloc[5, 1])
+    total_RDP = int(rdp_data.iloc[5, 1])*2 #We do not have simple households here
+    
+    # SIMPLER
+    total_RDP = 194258
 
     # Note that the underlying data inference process used to count formal
     # subsidized housing units probably takes (older) council housing units
@@ -390,19 +393,33 @@ def import_macro_data(param, path_scenarios, path_folder):
 
     # Here, we substract RDP from formal (no need to correct again in
     # validation exercises)
-    total_formal = sal_data["formal"].sum() - total_RDP
+    #total_formal = sal_data["formal"].sum() - total_RDP
+    total_formal = 821028 - total_RDP
 
-    total_informal = sal_data["informal"].sum()
+    #total_informal = sal_data["informal"].sum()
+    total_informal = 143765
 
     # Note that we only include informal backyards (non-concrete structures,
     # similar to informal "shacks") by assumption in the model
-    total_backyard = sal_data["backyard_informal"].sum()
+
+    # total_backyard = sal_data["backyard_informal"].sum()
+    #total_backyard = np.nansum(sal_data["backyard_informal"]) + np.nansum(sal_data["backyard_formal"])
+    total_backyard = 91132
+    
+    # total_backyard_formal = sal_data["backyard_formal"].sum()
+    # total_backyard_informal = sal_data["backyard_informal"].sum()
+    
+    total_backyard_formal = 16216
+    total_backyard_informal = 74916
+    
+    # NB: no "other" category
 
     housing_type_data = np.array([total_formal, total_backyard, total_informal,
                                   total_RDP])
+    backyard_data = np.array([total_backyard_formal, total_backyard_informal])
     population = sum(housing_type_data)
 
-    return interest_rate, population, housing_type_data, total_RDP
+    return interest_rate, population, housing_type_data, total_RDP, backyard_data
 
 
 def import_land_use(grid, options, param, data_rdp, housing_types,

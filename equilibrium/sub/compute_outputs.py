@@ -21,7 +21,8 @@ def compute_outputs(housing_type,
                     construction_param,
                     housing_in,
                     param_pockets,
-                    param_backyards_pockets):
+                    param_backyards_pockets,
+                    param_incremental_pockets):
     """
     Compute equilibrium outputs from theoretical formulas.
 
@@ -189,7 +190,8 @@ def compute_outputs(housing_type,
                        * param["fraction_z_dwellings"])
                        * ((utility[:, None]
                            / (amenities[None, :]
-                              # * param_backyards_pockets[None, :]
+                              # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                              * param_incremental_pockets[None, :]
                               * ((dwelling_size - param["q0"])
                                  ** param["beta"])))
                           ** (1 / param["alpha"])))
@@ -229,7 +231,8 @@ def compute_outputs(housing_type,
                         * param["fraction_z_dwellings"])
                         * ((utility[:, None]
                             / (amenities[None, :]
-                               # * param_backyards_pockets[None, :]
+                               # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                               * param_incremental_pockets[None, :]
                                * ((dwelling_size - param["q0"])
                                   ** param["beta"])))
                            ** (1 / param["alpha"])))

@@ -8,7 +8,7 @@ import equilibrium.sub.compute_outputs as eqout
 
 
 def compute_equilibrium(fraction_capital_destroyed, amenities, param,
-                        housing_limit, population_growth_rate, households_per_income_class,
+                        housing_limit, population, households_per_income_class,
                         total_RDP, coeff_land, income_net_of_commuting_costs,
                         grid, options, agricultural_rent, interest_rate,
                         number_properties_RDP, average_income, mean_income,
@@ -144,8 +144,10 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     
     # General reweighting using SAL data (no formal backyards)
     # if options["unempl_reweight"] == 0:
-    #     ratio = population / sum(households_per_income_class)
-    #     households_per_income_class = households_per_income_class * ratio
+        
+    # NB: not used in income calibration, is it a problem?
+    ratio = population / sum(households_per_income_class)
+    households_per_income_class = households_per_income_class * ratio
 
     # Alternative strategy: we attribute the unemployed population in
     # proportion with calibrated unemployment rates, without applying them
@@ -166,8 +168,8 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
         # 0.74/0.99/0.98/0.99
 
     # TEST
-    households_per_income_class = (
-        households_per_income_class*population_growth_rate)
+    # households_per_income_class = (
+    #     households_per_income_class*population_growth_rate)
 
     #  Considering that all RDP belong to the poorest, we remove them from here
     households_per_income_class[0] = np.max(
@@ -195,6 +197,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
         selected_pixels, :]
     param_pockets = param["informal_pockets"][selected_pixels]
     param_backyards_pockets = param["backyard_pockets"][selected_pixels]
+    param_incremental_pockets = param["incremental_pockets"][selected_pixels]
 
     # Useful variables for the solver
     # (we only consider 3 types of housing in the solver)
@@ -253,7 +256,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[0, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets
+         param_backyards_pockets, param_incremental_pockets
          )
     #  Backyard housing
     (simulated_jobs[index_iteration, 1, :], rent_matrix[index_iteration, 1, :],
@@ -265,7 +268,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[1, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets
+         param_backyards_pockets, param_incremental_pockets
          )
     #  Informal housing
     (simulated_jobs[index_iteration, 2, :], rent_matrix[index_iteration, 2, :],
@@ -277,7 +280,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[2, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets
+         param_backyards_pockets, param_incremental_pockets
          )
 
     # Compute error and adjust utility
@@ -383,7 +386,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[0, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets
                  )
 
             #  Backyard housing
@@ -399,7 +402,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[1, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets
                  )
 
             #  Informal housing
@@ -415,7 +418,7 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[2, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets
                  )
 
             # Compute error and adjust utility

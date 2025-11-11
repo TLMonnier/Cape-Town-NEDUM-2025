@@ -62,7 +62,7 @@ def import_options():
     # NB: Deltares provides flood risk values under the IPCC AR5 assessment for
     # the RCP 8.5 climate change scenario, taken at year 2050 (pessimistic
     # projections). Dummy scenarios are used for other flood risks.
-    options["climate_change"] = 1
+    options["climate_change"] = 0
     # Growth rate in flood risk probability for dummy climate change scenarios
     options["risk_increase"] = 2
 
@@ -147,14 +147,14 @@ def import_options():
     #  Code corresponds to low/medium/high
     options["inc_ineq_scenario"] = 2
     #  Code corresponds to low/medium/high/high_corrected
-    options["pop_growth_scenario"] = 4
+    options["pop_growth_scenario"] = 3
     #  NB: we do not add and option for interest rate: expected future value
     #  can just be plugged direcly into the scenario table.
     #  Same goes for inflation.
     #  However, price of fuel should be defined independently to be of interest
     #  We define dummy scenarios for the time being.
     #  Code corresponds to low/medium/high
-    options["fuel_price_scenario"] = 1
+    options["fuel_price_scenario"] = 2
 
     return options
 
@@ -279,12 +279,18 @@ def import_param(path_precalc_inp, options):
             path_precalc_inp + 'param_amenity_backyard.npy')
         param["backyard_pockets"] = np.matlib.repmat(
             param_amenity_backyard, 24014, 1).squeeze()
+        param_amenity_incremental = np.load(
+            path_precalc_inp + 'param_amenity_incremental.npy')
+        param["incremental_pockets"] = np.matlib.repmat(
+            param_amenity_incremental, 24014, 1).squeeze()
 
     elif options["location_based_calib"] == 1:
         param["informal_pockets"] = np.load(
             path_precalc_inp + 'param_pockets.npy')
         param["backyard_pockets"] = np.load(
             path_precalc_inp + 'param_backyards.npy')
+        param["incremental_pockets"] = np.load(
+            path_precalc_inp + 'param_incremental.npy')
 
     # Housing production function parameters, as calibrated in Pfeiffer et al.
     # (table C7)

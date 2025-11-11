@@ -87,7 +87,7 @@ param = inpprm.import_param(
 # Dummy for taking floods into account in agents' choices
 options["agents_anticipate_floods"] = 0
 # Dummy for preventing new informal settlement development
-options["informal_land_constrained"] = 0
+options["informal_land_constrained"] = 1
 
 # #### Then we set options regarding flood data used
 
@@ -150,7 +150,7 @@ geo_TAZ = gpd.read_file(path_data + "TAZ_ampp_prod_attr_2013_2032.shp")
 # ### Macro data
 
 import inputs.data as inpdt
-(interest_rate, population, housing_type_data, total_RDP
+(interest_rate, population, housing_type_data, total_RDP, backyard_data
  ) = inpdt.import_macro_data(param, path_scenarios, path_folder)
 
 
@@ -755,6 +755,9 @@ param["q0"] = calibratedUtility_q0
 print("beta = " + str(param["beta"]))
 print("q0 = " + str(param["q0"]))
 
+# ARE AMENITIES GOOD ENOUGH?
+# Just check with formal fit? Informal fit will be dealt with disamenities
+
 # We save them
 # NB : alpha = 1 - beta
 np.save(path_precalc_inp + 'calibratedUtility_beta.npy',
@@ -766,6 +769,15 @@ np.save(path_precalc_inp + 'calibratedAmenities.npy',
 # endregion
 
 # TAKES TIME WHEN LOCAL!
+
+# REVIEW FINAL OUTPUTS IN EQUILIBRIUM FUNCTION?
+
+# DOUBLE CHECK SINCE WE CHANGED COST STRUCTURES
+options["incremental_housing"] = 1
+# param["disam_reduc_fact"] = 1
+
+# Interestingly, baseline model is not so good when introducing formal backayards in the target
+
 # ## Calibrate disamenity index for informal backyards + settlements
 
 # region
@@ -819,14 +831,30 @@ Image(path_input_plots + "amenity_map.png")
 # TEST: a bit long?
 # list_amenity_backyard = np.arange(0.1, 0.9, 0.1)
 # list_amenity_settlement = np.arange(0.1, 0.9, 0.1)
-list_amenity_backyard = np.arange(0.5, 0.9, 0.1)
-list_amenity_settlement = np.arange(0.5, 0.9, 0.1)
+
+# ROUGH: GIVES 0.7
+# list_amenity_settlement = np.arange(0.5, 1.01, 0.1)
+# list_amenity_backyard = np.arange(0.5, 1.01, 0.1)
+# list_amenity_incremental = np.arange(0.5, 1.01, 0.1)
+# FINE (a bit long): gives 0.76, 0.78, and 0.8...
+list_amenity_settlement = np.arange(0.61, 0.8, 0.01)
+list_amenity_backyard = np.arange(0.61, 0.8, 0.01)
+list_amenity_incremental = np.arange(0.61, 0.8, 0.01)
 
 # list_amenity_backyard = [1]
 # list_amenity_settlement = [1]
+# housing_type_total = pd.DataFrame(np.array(np.meshgrid(
+#     list_amenity_backyard, list_amenity_settlement)).T.reshape(-1, 2))
+# housing_type_total.columns = ["param_backyard", "param_settlement"]
+
 housing_type_total = pd.DataFrame(np.array(np.meshgrid(
-    list_amenity_backyard, list_amenity_settlement)).T.reshape(-1, 2))
-housing_type_total.columns = ["param_backyard", "param_settlement"]
+    list_amenity_backyard, list_amenity_settlement, list_amenity_incremental)).T.reshape(-1, 3))
+
+housing_type_total.columns = ["param_backyard", "param_settlement", "param_incremental"]
+
+housing_type_total = housing_type_total[
+   (housing_type_total["param_settlement"]<=housing_type_total["param_backyard"])
+   & (housing_type_total["param_backyard"]<=housing_type_total["param_incremental"])]
 
 # We initialize output vector
 housing_type_total["formal"] = np.zeros(
@@ -840,9 +868,11 @@ housing_type_total["subsidized"] = np.zeros(
 
 # We print the number of total iterations (to have an intuition of how long
 # the process will take)
-number_total_iterations = (
-    len(list_amenity_backyard) * len(list_amenity_settlement))
-print(f"** Calibration: {number_total_iterations} iterations **")
+# number_total_iterations = (
+#     len(list_amenity_backyard) * len(list_amenity_settlement))
+# number_total_iterations = (
+#     len(list_amenity_backyard) * len(list_amenity_settlement) * len(list_amenity_incremental))
+# print(f"** Calibration: {number_total_iterations} iterations **")
 
 # We are going to compute the initial state equilibrium for each pair of
 # parameters, and retain the one that best fits the observed number of
@@ -853,71 +883,88 @@ print(f"** Calibration: {number_total_iterations} iterations **")
 # ALLOWS TO SAVE TIME
 param["precision"] = 0.01
 
+options["incremental_housing"] = 1
+
+# iteration_number = 0
+
 import equilibrium.compute_equilibrium as eqcmp
-for i in range(0, len(list_amenity_backyard)):
-    for j in range(0, len(list_amenity_settlement)):
+for i in range(0, len(housing_type_total)):
+# for i in range(0, len(list_amenity_backyard)):
+#     for j in range(0, len(list_amenity_settlement)):
+#         for k in range(0, len(list_amenity_incremental)):
 
-        # We set input values
-        param["amenity_backyard"] = list_amenity_backyard[i]
-        param["amenity_settlement"] = list_amenity_settlement[j]
-        param["informal_pockets"] = np.ones(24014) * param["amenity_settlement"]
-        param["backyard_pockets"] = (np.ones(24014)
-                                     * param["amenity_backyard"])
+    # We set input values
+    # param["amenity_backyard"] = list_amenity_backyard[i]
+    # param["amenity_settlement"] = list_amenity_settlement[j]
+    # param["amenity_incremental"] = list_amenity_incremental[k]
+    param["amenity_backyard"] = housing_type_total["param_backyard"].iloc[i]
+    param["amenity_settlement"] = housing_type_total["param_settlement"].iloc[i]
+    param["amenity_incremental"] = housing_type_total["param_incremental"].iloc[i]
+    
+    param["informal_pockets"] = np.ones(24014) * param["amenity_settlement"]
+    param["backyard_pockets"] = np.ones(24014) * param["amenity_backyard"]
+    param["incremental_pockets"] = np.ones(24014) * param["amenity_incremental"]  
 
-        # We run the algorithm
-        (initial_state_utility,
-         initial_state_error,
-         initial_state_simulated_jobs,
-         initial_state_households_housing_types,
-         initial_state_household_centers,
-         initial_state_households,
-         initial_state_dwelling_size,
-         initial_state_housing_supply,
-         initial_state_rent,
-         initial_state_rent_matrix,
-         initial_state_capital_land,
-         initial_state_average_income,
-         initial_state_limit_city) = eqcmp.compute_equilibrium(
-             fraction_capital_destroyed,
-             amenities,
-             param,
-             housing_limit,
-             population,
-             households_per_income_class,
-             total_RDP,
-             coeff_land,
-             income_net_of_commuting_costs,
-             grid,
-             options,
-             agricultural_rent,
-             interest_rate,
-             number_properties_RDP,
-             average_income,
-             mean_income,
-             income_class_by_housing_type,
-             minimum_housing_supply,
-             param["coeff_A"],
-             income_baseline)
+    # We run the algorithm
+    (initial_state_utility,
+     initial_state_error,
+     initial_state_simulated_jobs,
+     initial_state_households_housing_types,
+     initial_state_household_centers,
+     initial_state_households,
+     initial_state_dwelling_size,
+     initial_state_housing_supply,
+     initial_state_rent,
+     initial_state_rent_matrix,
+     initial_state_capital_land,
+     initial_state_average_income,
+     initial_state_limit_city) = eqcmp.compute_equilibrium(
+         fraction_capital_destroyed,
+         amenities,
+         param,
+         housing_limit,
+         population,
+         households_per_income_class,
+         total_RDP,
+         coeff_land,
+         income_net_of_commuting_costs,
+         grid,
+         options,
+         agricultural_rent,
+         interest_rate,
+         number_properties_RDP,
+         average_income,
+         mean_income,
+         income_class_by_housing_type,
+         minimum_housing_supply,
+         param["coeff_A"],
+         income_baseline)
 
-        # We fill output matrix with the total number of HHs per housing
-        # type for given values of backyard and informal amenity parameters
-        housing_type_total.iloc[
-            (housing_type_total.param_backyard
-             == param["amenity_backyard"])
-            & (housing_type_total.param_settlement
-               == param["amenity_settlement"]),
-            2:6] = np.nansum(initial_state_households_housing_types, 1)
+    # We fill output matrix with the total number of HHs per housing
+    # type for given values of backyard and informal amenity parameters
+    housing_type_total.iloc[
+        (housing_type_total.param_backyard
+         == param["amenity_backyard"])
+        & (housing_type_total.param_settlement
+           == param["amenity_settlement"])
+        & (housing_type_total.param_incremental
+           == param["amenity_incremental"]),
+        3:7] = np.nansum(initial_state_households_housing_types, 1)
 
-        # We update the iteration count and print progress made
-        iteration_number = i * len(list_amenity_settlement) + j + 1
-        print(f"iteration {iteration_number}/{number_total_iterations}")
+    # We update the iteration count and print progress made
+    iteration_number = i + 1
+    print(f"iteration {iteration_number}")
+    print(f"iteration {iteration_number}/{len(housing_type_total)}")
 # endregion
+
+# TODO: DO WE NEED TO TARGET THE EXACT SPLIT ACROSS BACKYARD TYPES?
+# START BY JUST CHECKING EX POST
 
 # region
 # We compute the error between simulated and observed number of households
 # in each housing type (without RDP, which is exogenously set equal to data)
 distance_share = np.abs(
-    housing_type_total.iloc[:, 2:5] - housing_type_data[None, 0:3])
+    housing_type_total.iloc[:, 3:7] - housing_type_data[None, 0:4])
 
 # We define the score that we want to minimize as the sum of the errors for
 # informal backyards and informal settlements
@@ -927,7 +974,7 @@ distance_share_score = (
 # We select the arguments associated with the minimum
 which = np.argmin(distance_share_score)
 min_score = np.nanmin(distance_share_score)
-calibrated_amenities = housing_type_total.iloc[which, 0:2]
+calibrated_amenities = housing_type_total.iloc[which, 0:3]
 # endregion
 
 # region
@@ -935,25 +982,37 @@ calibrated_amenities = housing_type_total.iloc[which, 0:2]
 # bigger than param["amenity_settlement"])
 param["amenity_backyard"] = calibrated_amenities[0]
 param["amenity_settlement"] = calibrated_amenities[1]
+param["amenity_incremental"] = calibrated_amenities[2]
 
 # We print the calibrated values
 print("amenity_backyard = " + str(param["amenity_backyard"]))
 print("amenity_settlement = " + str(param["amenity_settlement"]))
+print("amenity_incremental = " + str(param["amenity_incremental"]))
 
 # We save them
 np.save(path_precalc_inp + 'param_amenity_backyard.npy',
         param["amenity_backyard"])
 np.save(path_precalc_inp + 'param_amenity_settlement.npy',
         param["amenity_settlement"])
+np.save(path_precalc_inp + 'param_amenity_incremental.npy',
+        param["amenity_incremental"])
 # endregion
 
 
 # TEST // Scanning step also matters!
 
+# PRevious working paper version
 # param["amenity_backyard"] = 0.74
 # param["amenity_settlement"] = 0.70
 
 # ### Calibrate location-specific disamenity index
+
+# MATTERS WHEN ACCOUNTING FOR STRUCTURES!
+# What is in housing_type_data?
+# NB: irrelevant in equilibrium function
+# options["actual_backyards"] = 1
+
+# Need more precision or adaptive updates?
 
 # Default is set to 1 but can be changed if we fear overfit of the model
 import equilibrium.compute_equilibrium as eqcmp
@@ -965,7 +1024,7 @@ if options["location_based_calib"] == 1:
     # We first initialize input values
 
     index = 0
-    index_max = 10
+    index_max = 100
     #index_max = 50
     metrics = np.zeros(index_max)
 
@@ -975,6 +1034,9 @@ if options["location_based_calib"] == 1:
     param["backyard_pockets"] = np.zeros(24014) + param["amenity_backyard"]
     save_param_backyards = np.zeros((index_max, 24014))
     metrics_ib = np.zeros(index_max)
+    param["incremental_pockets"] = np.zeros(24014) + param["amenity_incremental"]
+    save_param_incremental = np.zeros((index_max, 24014))
+    metrics_ih = np.zeros(index_max)
 
     # We run the algorithm
     (initial_state_utility,
@@ -1025,6 +1087,8 @@ if options["location_based_calib"] == 1:
 
     for index in range(0, index_max):
 
+        hsupply_backyarding = initial_state_housing_supply[1, :]/1000000        
+
         # INFORMAL SETTLEMENTS
 
         # We initialize output vector
@@ -1055,15 +1119,20 @@ if options["location_based_calib"] == 1:
             # ourselves to informal backyards (default) or all kinds of
             # backyards (not warranted given the standardized structure
             # assumed in the model)
-            if options["actual_backyards"] == 1:
-                diff_ib[i] = (
-                    housing_types.backyard_informal_grid[i]
-                    + housing_types.backyard_formal_grid[i]
-                    - initial_state_households_housing_types[1, :][i])
-            elif options["actual_backyards"] == 0:
-                diff_ib[i] = (
-                    housing_types.backyard_informal_grid[i]
-                    - initial_state_households_housing_types[1, :][i])
+            # if options["actual_backyards"] == 1:
+            #     diff_ib[i] = (
+            #         housing_types.backyard_informal_grid[i]
+            #         + housing_types.backyard_formal_grid[i]
+            #         - initial_state_households_housing_types[1, :][i])
+            # elif options["actual_backyards"] == 0:
+            #     diff_ib[i] = (
+            #         housing_types.backyard_informal_grid[i]
+            #         - initial_state_households_housing_types[1, :][i])
+            nb_hh_ib = initial_state_households_housing_types[1, :]
+            nb_hh_ib[hsupply_backyarding==2] = 0
+            diff_ib[i] = (
+                housing_types.backyard_informal_grid[i]
+                - nb_hh_ib[i])
             # We help convergence and update parameter
             adj = (diff_ib[i] / (np.nanmax(diff_ib) * 100))
             param["backyard_pockets"][i] = (
@@ -1073,9 +1142,42 @@ if options["location_based_calib"] == 1:
         param["backyard_pockets"][param["backyard_pockets"] < 0.01] = 0.01
         param["backyard_pockets"][param["backyard_pockets"] > 0.99] = 0.99
         save_param_backyards[index, :] = param["backyard_pockets"]
+        
+        # INCREMENTAL HOUSING: no need if no specific target!
+        diff_ih = np.zeros(24014)
+        for i in range(0, 24014):
+            # Note that we add an option depending on whether we restrict
+            # ourselves to informal backyards (default) or all kinds of
+            # backyards (not warranted given the standardized structure
+            # assumed in the model)
+            # if options["actual_backyards"] == 1:
+            #     diff_ih[i] = (
+            #         housing_types.backyard_informal_grid[i]
+            #         + housing_types.backyard_formal_grid[i]
+            #         - initial_state_households_housing_types[1, :][i])
+            # elif options["actual_backyards"] == 0:
+            #     diff_ih[i] = (
+            #         housing_types.backyard_informal_grid[i]
+            #         - initial_state_households_housing_types[1, :][i])
+            nb_hh_ih = initial_state_households_housing_types[1, :]
+            nb_hh_ih[hsupply_backyarding<2] = 0
+            diff_ih[i] = (
+                housing_types.backyard_formal_grid[i]
+                - nb_hh_ih[i])
+            # We help convergence and update parameter
+            adj = (diff_ih[i] / (np.nanmax(diff_ih) * 100))
+            param["incremental_pockets"][i] = (
+                param["incremental_pockets"][i] + adj)
+        # We store iteration output and prevent extreme sorting
+        metrics_ih[index] = sum(np.abs(diff_ih))
+        param["incremental_pockets"][param["incremental_pockets"] < 0.01] = 0.01
+        param["incremental_pockets"][param["incremental_pockets"] > 0.99] = 0.99
+        save_param_incremental[index, :] = param["incremental_pockets"]
 
         # We retain the sum of the errors as our minimization objective
-        metrics[index] = metrics_is[index] + metrics_ib[index]
+        metrics[index] = metrics_is[index] + metrics_ib[index] + metrics_ih[index]
+
+        # TODO: preserve parameter order?
 
         # We run the equilibrium again with updated values of
         # informal/backyard housing disamenity indices, then go to the next
@@ -1110,16 +1212,23 @@ index_min = np.argmin(metrics)
 print(score_min)
 print(index_min)
 
+# TODO: Enforce parameter order ex post?
+
 # We update the parameter vector
 param["informal_pockets"] = save_param_informal_settlements[index_min]
 param["backyard_pockets"] = save_param_backyards[index_min]
+param["incremental_pockets"] = save_param_incremental[index_min]
 
 # We save values
 np.save(path_precalc_inp + 'param_pockets.npy',
         param["informal_pockets"])
 np.save(path_precalc_inp + 'param_backyards.npy',
         param["backyard_pockets"])
+np.save(path_precalc_inp + 'param_incremental.npy',
+        param["incremental_pockets"])
 # endregion
+
+# Can do better!
 
 print(np.nanmin(param["informal_pockets"]))
 print(np.nanmean(param["informal_pockets"]))
@@ -1129,11 +1238,20 @@ print(np.nanmin(param["backyard_pockets"]))
 print(np.nanmean(param["backyard_pockets"]))
 print(np.nanmax(param["backyard_pockets"]))
 
+print(np.nanmin(param["incremental_pockets"]))
+print(np.nanmean(param["incremental_pockets"]))
+print(np.nanmax(param["incremental_pockets"]))
+
+
 # NB: we ensure interior solution
 
 # param["init_util_levels"] = initial_state_utility
 
 # np.save(path_precalc_inp + 'init_util_levels.npy',
 #         param["init_util_levels"])
+
+print(np.nansum(initial_state_households_housing_types,1))
+print(housing_type_data)
+
 
 

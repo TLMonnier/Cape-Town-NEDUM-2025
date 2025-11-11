@@ -50,7 +50,12 @@ options["urban_edge"] = 1
 # param["year_urban_edge"] = param["baseline_year"]
 options["new_RDP_housing"] = 0
 # year_begin_RDP?
+# BUG?
 options["incremental_housing"] = 1
+
+# First, target aggregate distribution
+# Then, make it vary across locations
+# param["disam_reduc_fact"] = 0.75
 
 # ## Output name
 name = ('simul_UE' + str(options["urban_edge"])
@@ -82,7 +87,7 @@ amenities = inpdt.import_amenities(path_precalc_inp, options)
 geo_grid = gpd.read_file(path_data + "grid_reference_500.shp")
 
 # ## Macro data
-(interest_rate, population, housing_type_data, total_RDP
+(interest_rate, population, housing_type_data, total_RDP, backyard_data
  ) = inpdt.import_macro_data(param, path_scenarios, path_folder)
 
 # ## Households and income data
@@ -90,6 +95,28 @@ income_class_by_housing_type = inpdt.import_hypothesis_housing_type()
 (mean_income, households_per_income_class, average_income, income_mult,
  income_baseline, households_per_income_and_housing
  ) = inpdt.import_income_classes_data(param, path_data)
+
+# REWEIGHT TOTAL BY POPULATION FROM INCOME DATA?
+
+# households_per_income_class = (households_per_income_class
+#                                * np.nansum(housing_type_data)
+#                                / np.nansum(households_per_income_class))
+
+# housing_type_data = (housing_type_data
+#                      * np.nansum(households_per_income_class)
+#                      / np.nansum(housing_type_data))
+                     
+# backyard_data = (backyard_data
+#                  * np.nansum(households_per_income_class)
+#                  / np.nansum(backyard_data))
+
+# Impact on RDP too...
+# housing_type_data = (housing_type_data/2
+#                       * np.nansum(households_per_income_class)
+#                       / np.nansum(housing_type_data/2))
+# backyard_data = (backyard_data/2
+#                       * np.nansum(housing_type_data[1])
+#                       / np.nansum(backyard_data/2))
 
 (data_rdp, housing_types_sp, data_sp, mitchells_plain_grid_baseline,
  grid_formal_density_HFA, threshold_income_distribution, income_distribution,
@@ -155,6 +182,8 @@ fraction_capital_destroyed["structure_informal_settlements"
 #  ) = eqdyn.import_scenarios(income_baseline, param, grid, path_scenarios,
 #                             options)
 
+# REDO CALIBRATION TO BETTER FIT HOUSING TYPES???
+
 # ##Equilibrium function
 (initial_state_utility,
  initial_state_error,
@@ -173,7 +202,7 @@ fraction_capital_destroyed["structure_informal_settlements"
      amenities,
      param,
      housing_limit,
-     1,
+     population,
      households_per_income_class,
      total_RDP,
      coeff_land,
@@ -292,3 +321,23 @@ np.save(path_simul + '/initial_state_limit_city_' + name + '.npy',
 #         simulation_capital_land)
 
 print("Preamble done")
+
+print(np.nansum(initial_state_households_housing_types,1))
+print(housing_type_data)
+
+# TAKE CARE TO MUTABLE OBJECTS!
+
+# backyard_hsupply = initial_state_housing_supply[1,:].copy()
+# backyard_hsupply = backyard_hsupply/1000000
+
+# formal_backyard_pop = initial_state_households_housing_types[1,:].copy()
+# formal_backyard_pop[backyard_hsupply<2] = 0
+
+# informal_backyard_pop = initial_state_households_housing_types[1,:].copy()
+# informal_backyard_pop[backyard_hsupply>=2] = 0
+
+# print(np.nansum(formal_backyard_pop))
+# print(np.nansum(informal_backyard_pop))
+# print(backyard_data)
+
+
