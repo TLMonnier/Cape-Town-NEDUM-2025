@@ -836,10 +836,31 @@ Image(path_input_plots + "amenity_map.png")
 # list_amenity_settlement = np.arange(0.5, 1.01, 0.1)
 # list_amenity_backyard = np.arange(0.5, 1.01, 0.1)
 # list_amenity_incremental = np.arange(0.5, 1.01, 0.1)
+
 # FINE (a bit long): gives 0.76, 0.78, and 0.8...
-list_amenity_settlement = np.arange(0.61, 0.8, 0.01)
-list_amenity_backyard = np.arange(0.61, 0.8, 0.01)
-list_amenity_incremental = np.arange(0.61, 0.8, 0.01)
+# FOR TARGETING TOTAL BACKYARDS!
+# list_amenity_settlement = np.arange(0.61, 0.8, 0.01)
+# list_amenity_backyard = np.arange(0.61, 0.8, 0.01)
+# list_amenity_incremental = np.arange(0.61, 0.8, 0.01)
+
+# Not bad!
+# Now test with higher precision and/or finer step
+# list_amenity_settlement = np.arange(0.7, 0.9, 0.025)
+# list_amenity_backyard = np.arange(0.7, 0.9, 0.025)
+# list_amenity_incremental = np.arange(0.7, 0.9, 0.025)
+# Good! We have .78, .8 and .84
+# list_amenity_settlement = np.arange(0.75, 0.9, 0.01)
+# list_amenity_backyard = np.arange(0.75, 0.9, 0.01)
+# list_amenity_incremental = np.arange(0.75, 0.9, 0.01)
+# Same!!
+list_amenity_settlement = np.arange(0.75, 0.8, 0.01)
+list_amenity_backyard = np.arange(0.77, 0.82, 0.01)
+list_amenity_incremental = np.arange(0.81, 0.86, 0.01)
+
+# NB: need to adjust incremental amenities to have enough people in formal housing
+# list_amenity_settlement = 0.7
+# list_amenity_backyard = 0.74
+# list_amenity_incremental = 1
 
 # list_amenity_backyard = [1]
 # list_amenity_settlement = [1]
@@ -866,6 +887,11 @@ housing_type_total["informal"] = np.zeros(
 housing_type_total["subsidized"] = np.zeros(
     len(housing_type_total.param_backyard))
 
+housing_type_total["backyard_formal"] = np.zeros(
+    len(housing_type_total.param_backyard))
+housing_type_total["backyard_informal"] = np.zeros(
+    len(housing_type_total.param_backyard))
+
 # We print the number of total iterations (to have an intuition of how long
 # the process will take)
 # number_total_iterations = (
@@ -881,7 +907,8 @@ housing_type_total["subsidized"] = np.zeros(
 # region
 
 # ALLOWS TO SAVE TIME
-param["precision"] = 0.01
+# param["precision"] = 0.01
+param["precision"] = 0.001
 
 options["incremental_housing"] = 1
 
@@ -900,6 +927,10 @@ for i in range(0, len(housing_type_total)):
     param["amenity_backyard"] = housing_type_total["param_backyard"].iloc[i]
     param["amenity_settlement"] = housing_type_total["param_settlement"].iloc[i]
     param["amenity_incremental"] = housing_type_total["param_incremental"].iloc[i]
+    
+    print("amenity_settlement = " + str(param["amenity_settlement"]))
+    print("amenity_backyard = " + str(param["amenity_backyard"]))
+    print("amenity_incremental = " + str(param["amenity_incremental"]))
     
     param["informal_pockets"] = np.ones(24014) * param["amenity_settlement"]
     param["backyard_pockets"] = np.ones(24014) * param["amenity_backyard"]
@@ -950,30 +981,58 @@ for i in range(0, len(housing_type_total)):
         & (housing_type_total.param_incremental
            == param["amenity_incremental"]),
         3:7] = np.nansum(initial_state_households_housing_types, 1)
-
+    
+    # Alternative score...
+    backyard_people = initial_state_households_housing_types[1]    
+    backyard_hsupply = initial_state_housing_supply[1]/1000000
+    formal_backyard_people = np.nansum(backyard_people[backyard_hsupply==2])
+    informal_backyard_people = np.nansum(backyard_people) - formal_backyard_people
+    # print("formal_backyard_people = " + str(formal_backyard_people))
+    # print("informal_backyard_people = " + str(informal_backyard_people))
+    
+    housing_type_total.iloc[
+        (housing_type_total.param_backyard
+         == param["amenity_backyard"])
+        & (housing_type_total.param_settlement
+           == param["amenity_settlement"])
+        & (housing_type_total.param_incremental
+           == param["amenity_incremental"]),
+        7:9] = [formal_backyard_people, informal_backyard_people]
+    
     # We update the iteration count and print progress made
     iteration_number = i + 1
-    print(f"iteration {iteration_number}")
+    # print(f"iteration {iteration_number}")
     print(f"iteration {iteration_number}/{len(housing_type_total)}")
 # endregion
 
-# TODO: DO WE NEED TO TARGET THE EXACT SPLIT ACROSS BACKYARD TYPES?
-# START BY JUST CHECKING EX POST
+# DO WE NEED AN ALTERNATIVE MSE SCORE?
 
 # region
 # We compute the error between simulated and observed number of households
 # in each housing type (without RDP, which is exogenously set equal to data)
-distance_share = np.abs(
-    housing_type_total.iloc[:, 3:7] - housing_type_data[None, 0:4])
+# distance_share = np.abs(
+#     housing_type_total.iloc[:, 3:7] - housing_type_data[None, 0:4])
 
 # We define the score that we want to minimize as the sum of the errors for
 # informal backyards and informal settlements
-distance_share_score = (
-    distance_share.iloc[:, 1] + distance_share.iloc[:, 2])
+# distance_share_score = (
+#     distance_share.iloc[:, 1] + distance_share.iloc[:, 2])
+
+# Alternative
+error_informal = (housing_type_total.iloc[:, 5] - housing_type_data[None, 2])**2
+error_formal_backyard = (housing_type_total.iloc[:, 7] - backyard_data[0])**2
+error_informal_backyard = (housing_type_total.iloc[:, 8] - backyard_data[1])**2
+
+# Do not include everything as formal is essentially a residual
+# Need to reweight some errors? Check aggregate numbers at the end
+distance_share_score= (
+    error_informal + error_formal_backyard + error_informal_backyard)
 
 # We select the arguments associated with the minimum
 which = np.argmin(distance_share_score)
 min_score = np.nanmin(distance_share_score)
+
+
 calibrated_amenities = housing_type_total.iloc[which, 0:3]
 # endregion
 
@@ -985,9 +1044,11 @@ param["amenity_settlement"] = calibrated_amenities[1]
 param["amenity_incremental"] = calibrated_amenities[2]
 
 # We print the calibrated values
-print("amenity_backyard = " + str(param["amenity_backyard"]))
-print("amenity_settlement = " + str(param["amenity_settlement"]))
-print("amenity_incremental = " + str(param["amenity_incremental"]))
+print(housing_type_total.iloc[which])
+print(housing_type_data)
+print(backyard_data)
+
+# CHECK BEFORE SAVING
 
 # We save them
 np.save(path_precalc_inp + 'param_amenity_backyard.npy',
@@ -998,6 +1059,20 @@ np.save(path_precalc_inp + 'param_amenity_incremental.npy',
         param["amenity_incremental"])
 # endregion
 
+# DEAL WITH PRECISION PARAMETER FIRST?
+
+
+# NB: we ensure interior solution
+
+# param["init_util_levels"] = initial_state_utility
+
+# np.save(path_precalc_inp + 'init_util_levels.npy',
+#         param["init_util_levels"])
+
+print(np.nansum(initial_state_households_housing_types,1))
+print(housing_type_data)
+
+###########################################################################
 
 # TEST // Scanning step also matters!
 
@@ -1012,7 +1087,7 @@ np.save(path_precalc_inp + 'param_amenity_incremental.npy',
 # NB: irrelevant in equilibrium function
 # options["actual_backyards"] = 1
 
-# Need more precision or adaptive updates?
+# TODO: Need more precision or adaptive updates?
 
 # Default is set to 1 but can be changed if we fear overfit of the model
 import equilibrium.compute_equilibrium as eqcmp

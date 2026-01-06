@@ -224,7 +224,7 @@ hsupply_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
     'hsupply_backyard_UE1_new_RDP0_IH0_2d_sim',
     "Total housing supply in informal backyards (in m²)",
     path_output_tables,
-    ubnd=np.nanquantile(hsupply_backyard_UE1_new_RDP0_IH0, 0.9999))
+    ubnd=2)
 
 # hsupply_backyard_UE1_new_RDP0_IH1 = hsupply_UE1_new_RDP0_IH1[1, :]/1000000
 # hsupply_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
@@ -242,7 +242,7 @@ hsupply_backyard_UE1_new_RDP0_IH1_2d_sim = outexp.export_map(
     'hsupply_backyard_UE1_new_RDP0_IH1_2d_sim',
     "Total housing supply in informal backyards (in m²)",
     path_output_tables,
-    ubnd=1)
+    ubnd=2)
 
 #
 
