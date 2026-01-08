@@ -133,7 +133,7 @@ options["convert_sal_data"] = 0
 options["compute_net_income"] = 1
 
 # TAKES TIME
-options["location_based_calib"] = 1
+options["location_based_calib"] = 0
 
 
 # ## Load data
@@ -201,7 +201,7 @@ import inputs.data as inpdt
 import inputs.data as inpdt
 coeff_land = inpdt.import_coeff_land(
     spline_land_constraints, spline_land_backyard, spline_land_informal,
-    spline_land_RDP, param, 0)
+    spline_land_RDP, param, options, 0)
 
 # We import housing heigth limits
 import inputs.data as inpdt

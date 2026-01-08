@@ -18,7 +18,7 @@ import geopandas as gpd
 import inputs.data as inpdt
 import inputs.parameters_and_options as inpprm
 import equilibrium.compute_equilibrium as eqcmp
-# import outputs.export_outputs as outexp
+import outputs.export_outputs as outexp
 # import equilibrium.run_simulations as eqsim
 # import equilibrium.functions_dynamic as eqdyn
 
@@ -42,15 +42,31 @@ path_input_tables = path_outputs + 'input_tables/'
 
 # ## Default
 options = inpprm.import_options()
-param = inpprm.import_param(
-    path_precalc_inp, options)
+
+# TODO: code loop to do everything in a row?
 
 # ## Custom
 options["urban_edge"] = 1
 # param["year_urban_edge"] = param["baseline_year"]
+options["informal_land_constrained"] = 1
 options["new_RDP_housing"] = 0
-# year_begin_RDP?
-# BUG?
+
+# In Harari and Wong, informal amenities go from 1.34 to 1.58 in the center
+# (+18%), 1.17 to 1.16 in the middle (-0%), 0.88 to 0.79 in the periphery (-10%),
+# or +3% on avg
+options["amenity_upgrading"] = 0
+options["poor_subsidies"] = 0
+
+# In Harari and Wong, formalization costs go from .88 to .86 (center: -2%),
+# .49 to .41 (middle: -8%):, and .78 to .61 (periphery: -17%), or -9% on avg
+# We approach that as a redistribution of cell share available for squatting to
+# formal development
+options["eviction"] = 0
+
+# TODO: rethink max_land_use parameters already at calibration stage?
+# Maybe also land use regulations and land rent redistribution?
+# Try to do some geographic heterogeneity in counterfactuals?
+
 options["incremental_housing"] = 1
 
 # First, target aggregate distribution
@@ -59,7 +75,11 @@ options["incremental_housing"] = 1
 
 # ## Output name
 name = ('simul_UE' + str(options["urban_edge"])
-        + '_new_RDP' + str(options["new_RDP_housing"])
+        + '_ISconstr' + str(options["informal_land_constrained"])
+        + '_RDPnew' + str(options["new_RDP_housing"])
+        + '_Aup' + str(options["amenity_upgrading"])
+        + '_Psubsid' + str(options["poor_subsidies"])
+        + '_Evict' + str(options["eviction"])
         + '_IH' + str(options["incremental_housing"]))
 
 path_simul = path_outputs + 'revision_output'
@@ -78,6 +98,10 @@ path_output_tables = path_simul + '/tables/'
 #     os.mkdir(path_output_tables)
 # except OSError as error:
 #     print(error)
+
+param = inpprm.import_param(
+    path_precalc_inp, options)
+
 
 # # Load data
 
@@ -105,7 +129,6 @@ income_class_by_housing_type = inpdt.import_hypothesis_housing_type()
 # housing_type_data = (housing_type_data
 #                      * np.nansum(households_per_income_class)
 #                      / np.nansum(housing_type_data))
-                     
 # backyard_data = (backyard_data
 #                  * np.nansum(households_per_income_class)
 #                  / np.nansum(backyard_data))
@@ -133,18 +156,19 @@ housing_types[np.isnan(housing_types)] = 0
                            housing_type_data, path_data, path_folder)
      )
 
-if options["new_RDP_housing"] == 0:
-    coeff_land = inpdt.import_coeff_land(
-        spline_land_constraints, spline_land_backyard, spline_land_informal,
-        spline_land_RDP, param, 0)
-    total_RDP = spline_RDP(0)
-    number_properties_RDP = spline_estimate_RDP(0)
-elif options["new_RDP_housing"] == 1:
-    coeff_land = inpdt.import_coeff_land(
-        spline_land_constraints, spline_land_backyard, spline_land_informal,
-        spline_land_RDP, param, 29)
-    number_properties_RDP = spline_estimate_RDP(29)
-    total_RDP = spline_RDP(29)
+
+# coeff_land = inpdt.import_coeff_land(
+#     spline_land_constraints, spline_land_backyard, spline_land_informal,
+#     spline_land_RDP, param, 0)
+# total_RDP = spline_RDP(0)
+# number_properties_RDP = spline_estimate_RDP(0)
+
+# We let all effects kick in depending on options
+coeff_land = inpdt.import_coeff_land(
+    spline_land_constraints, spline_land_backyard, spline_land_informal,
+    spline_land_RDP, param, options, 29)
+total_RDP = spline_RDP(29)
+number_properties_RDP = spline_estimate_RDP(29)
 
 housing_limit = inpdt.import_housing_limit(grid, param)
 
@@ -157,6 +181,11 @@ housing_limit = inpdt.import_housing_limit(grid, param)
 
 income_net_of_commuting_costs = np.load(
     path_precalc_transp + 'GRID_incomeNetOfCommuting_0.npy')
+
+# Refer to utility changes in Harari and Wong: avg between +15%, +1% and -8%
+# is +3%
+if options["poor_subsidies"]==1:
+    income_net_of_commuting_costs[0] = income_net_of_commuting_costs[0]*1.03
 
 # ## Empty flood data (to make function run)
 fraction_capital_destroyed = pd.DataFrame()
@@ -320,10 +349,6 @@ np.save(path_simul + '/initial_state_limit_city_' + name + '.npy',
 # np.save(path_simul + '/simulation_capital_land_' + name + '.npy',
 #         simulation_capital_land)
 
-print("Preamble done")
-
-print(np.nansum(initial_state_households_housing_types,1))
-print(housing_type_data)
 
 # TAKE CARE TO MUTABLE OBJECTS!
 
@@ -340,4 +365,97 @@ print(housing_type_data)
 # print(np.nansum(informal_backyard_pop))
 # print(backyard_data)
 
+# ##Household density
+simul_nb_households_tot = np.nansum(initial_state_households_housing_types, 0)
 
+# Grid cell = 500x500m = 25 Ha
+simul_HHdens_HA = simul_nb_households_tot/25
+
+simul_HHdens_HA_discrete = np.zeros(len(simul_HHdens_HA))
+simul_HHdens_HA_discrete[(simul_HHdens_HA > 0)
+                              & (simul_HHdens_HA <= 10)] = 1
+simul_HHdens_HA_discrete[(simul_HHdens_HA > 10)
+                              & (simul_HHdens_HA <= 20)] = 2
+simul_HHdens_HA_discrete[(simul_HHdens_HA > 20)
+                              & (simul_HHdens_HA <= 50)] = 3
+simul_HHdens_HA_discrete[(simul_HHdens_HA > 50)
+                              & (simul_HHdens_HA <= 100)] = 4
+simul_HHdens_HA_discrete[(simul_HHdens_HA > 100)
+                              & (simul_HHdens_HA <= 200)] = 5
+simul_HHdens_HA_discrete[simul_HHdens_HA > 200] = 6
+
+simul_HHdens_HA_discrete_map = outexp.discrete_map(
+    simul_HHdens_HA_discrete, grid, geo_grid, path_output_plots,
+    'simul_HHdens_HA_discrete_map',
+    "Nb of HHs per Ha (WP scale)", path_output_tables)
+
+
+# ## (Perpetual) land price (/m² of available land) in formal sector
+
+# NB: do not worry about housing price per se
+
+# Note that several housing types may co-exist within one cell (but there is
+# one dominant income group for each housing type)
+
+landprice_formal_simul = (
+    (initial_state_rent[0, :] * param["coeff_A"])
+    ** (1 / param["coeff_a"])
+    * param["coeff_a"]
+    * (param["coeff_b"] / (interest_rate + param["depreciation_rate"]))
+    ** (param["coeff_b"] / param["coeff_a"])
+    / interest_rate
+    )
+
+rent_formal_simul = initial_state_rent[0, :]
+
+simul_nb_households_formal = initial_state_households_housing_types[0, :]
+landprice_formal_simul[simul_nb_households_formal == 0] = 0
+rent_formal_simul[simul_nb_households_formal == 0] = 0
+
+simul_formal_landprice_discrete = np.zeros(len(landprice_formal_simul))
+simul_formal_landprice_discrete[(landprice_formal_simul > 0)
+                                    & (landprice_formal_simul <= 500)] = 1
+simul_formal_landprice_discrete[(landprice_formal_simul > 500)
+                                    & (landprice_formal_simul <= 1000)] = 2
+simul_formal_landprice_discrete[(landprice_formal_simul > 1000)
+                                    & (landprice_formal_simul <= 1500)] = 3
+simul_formal_landprice_discrete[(landprice_formal_simul > 1500)
+                                    & (landprice_formal_simul <= 2000)] = 4
+simul_formal_landprice_discrete[(landprice_formal_simul > 2000)
+                                    & (landprice_formal_simul <= 3000)] = 5
+simul_formal_landprice_discrete[(landprice_formal_simul > 3000)
+                                    & (landprice_formal_simul <= 4000)] = 6
+simul_formal_landprice_discrete[(landprice_formal_simul > 4000)
+                                    & (landprice_formal_simul <= 5000)] = 7
+simul_formal_landprice_discrete[(landprice_formal_simul > 5000)
+                                    & (landprice_formal_simul <= 6000)] = 8
+simul_formal_landprice_discrete[landprice_formal_simul > 6000] = 9
+
+# simul_formal_rent_discrete = np.zeros(len(rent_formal_simul))
+# simul_formal_rent_discrete[(rent_formal_simul > 0)
+#                                     & (rent_formal_simul <= 500)] = 1
+# simul_formal_rent_discrete[(rent_formal_simul > 500)
+#                                     & (rent_formal_simul <= 1000)] = 2
+# simul_formal_rent_discrete[(rent_formal_simul > 1000)
+#                                     & (rent_formal_simul <= 1500)] = 3
+# simul_formal_rent_discrete[(rent_formal_simul > 1500)
+#                                     & (rent_formal_simul <= 2000)] = 4
+# simul_formal_rent_discrete[(rent_formal_simul > 2000)
+#                                     & (rent_formal_simul <= 3000)] = 5
+# simul_formal_rent_discrete[(rent_formal_simul > 3000)
+#                                     & (rent_formal_simul <= 4000)] = 6
+# simul_formal_rent_discrete[(rent_formal_simul > 4000)
+#                                     & (rent_formal_simul <= 5000)] = 7
+# simul_formal_rent_discrete[(rent_formal_simul > 5000)
+#                                     & (rent_formal_simul <= 6000)] = 8
+# simul_formal_rent_discrete[rent_formal_simul > 6000] = 9
+
+simul_formal_landprice_discrete_map = outexp.discrete_map(
+    simul_formal_landprice_discrete, grid, geo_grid, path_output_plots,
+    'simul_formal_landprice_discrete_map',
+    "Formal land price per m² (WP scale)", path_output_tables)
+
+# simul_formal_rent_discrete_map = outexp.discrete_map(
+#     simul_formal_rent_discrete, grid, geo_grid, path_output_plots,
+#     'simul_formal_rent_discrete_map',
+#     "Formal annual rent per m² (WP scale)", path_output_tables)

@@ -49,7 +49,7 @@ param = inpprm.import_param(
     path_precalc_inp, options)
 
 # ## Custom
-options["urban_edge"] = 1
+options["urban_edge"] = 0
 # param["year_urban_edge"] = param["baseline_year"]
 options["new_RDP_housing"] = 0
 # year_begin_RDP?
@@ -194,19 +194,19 @@ simul_UE1_new_RDP0_IH1_limit_city = np.load(
 
 #######
 
-sim_nb_households_backyard_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_households_housing_types[1, :]
-backyard_sim_UE1_new_RDP0_IH0 = outexp.export_map(
-    sim_nb_households_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,  'backyard_sim_UE1_new_RDP0_IH0',
-    "Number of households in informal backyards, up to 99.99% quantile",
-    path_output_tables,
-    ubnd=np.nanquantile(sim_nb_households_backyard_UE1_new_RDP0_IH0, 0.9999))
+# sim_nb_households_backyard_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_households_housing_types[1, :]
+# backyard_sim_UE1_new_RDP0_IH0 = outexp.export_map(
+#     sim_nb_households_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,  'backyard_sim_UE1_new_RDP0_IH0',
+#     "Number of households in informal backyards, up to 99.99% quantile",
+#     path_output_tables,
+#     ubnd=np.nanquantile(sim_nb_households_backyard_UE1_new_RDP0_IH0, 0.9999))
 
-sim_nb_households_backyard_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_households_housing_types[1, :]
-backyard_sim_UE1_new_RDP0_IH1 = outexp.export_map(
-    sim_nb_households_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,  'backyard_sim_UE1_new_RDP0_IH1',
-    "Number of households in informal backyards, up to 99.99% quantile",
-    path_output_tables,
-    ubnd=np.nanquantile(sim_nb_households_backyard_UE1_new_RDP0_IH1, 0.9999))
+# sim_nb_households_backyard_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_households_housing_types[1, :]
+# backyard_sim_UE1_new_RDP0_IH1 = outexp.export_map(
+#     sim_nb_households_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,  'backyard_sim_UE1_new_RDP0_IH1',
+#     "Number of households in informal backyards, up to 99.99% quantile",
+#     path_output_tables,
+#     ubnd=np.nanquantile(sim_nb_households_backyard_UE1_new_RDP0_IH1, 0.9999))
 
 #
 
@@ -214,17 +214,17 @@ backyard_sim_UE1_new_RDP0_IH1 = outexp.export_map(
 # NB: plotting the housing supply per unit of available land would be hard to
 # interpret since we do not know the exact area that is available within each
 # pixel, hence grid cells would not be comparable between each other
-hsupply_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_housing_supply # * coeff_land * 0.25
-hsupply_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_housing_supply # * coeff_land * 0.25
+# hsupply_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_housing_supply # * coeff_land * 0.25
+# hsupply_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_housing_supply # * coeff_land * 0.25
 
-hsupply_backyard_UE1_new_RDP0_IH0 = hsupply_UE1_new_RDP0_IH0[1, :]/1000000
-hsupply_backyard_UE1_new_RDP0_IH0[simul_UE1_new_RDP0_IH0_households_housing_types[1, :]==0] = 0
-hsupply_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
-    hsupply_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,
-    'hsupply_backyard_UE1_new_RDP0_IH0_2d_sim',
-    "Total housing supply in informal backyards (in m²)",
-    path_output_tables,
-    ubnd=2)
+# hsupply_backyard_UE1_new_RDP0_IH0 = hsupply_UE1_new_RDP0_IH0[1, :]/1000000
+# hsupply_backyard_UE1_new_RDP0_IH0[simul_UE1_new_RDP0_IH0_households_housing_types[1, :]==0] = 0
+# hsupply_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
+#     hsupply_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,
+#     'hsupply_backyard_UE1_new_RDP0_IH0_2d_sim',
+#     "Total housing supply in informal backyards (in m²)",
+#     path_output_tables,
+#     ubnd=2)
 
 # hsupply_backyard_UE1_new_RDP0_IH1 = hsupply_UE1_new_RDP0_IH1[1, :]/1000000
 # hsupply_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
@@ -235,34 +235,34 @@ hsupply_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
 #     path_output_tables,
 #     ubnd=np.nanquantile(hsupply_backyard_UE1_new_RDP0_IH1, 0.9999))
 
-hsupply_backyard_UE1_new_RDP0_IH1 = hsupply_UE1_new_RDP0_IH1[1, :]/1000000
-hsupply_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
-hsupply_backyard_UE1_new_RDP0_IH1_2d_sim = outexp.export_map(
-    hsupply_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,
-    'hsupply_backyard_UE1_new_RDP0_IH1_2d_sim',
-    "Total housing supply in informal backyards (in m²)",
-    path_output_tables,
-    ubnd=2)
+# hsupply_backyard_UE1_new_RDP0_IH1 = hsupply_UE1_new_RDP0_IH1[1, :]/1000000
+# hsupply_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
+# hsupply_backyard_UE1_new_RDP0_IH1_2d_sim = outexp.export_map(
+#     hsupply_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,
+#     'hsupply_backyard_UE1_new_RDP0_IH1_2d_sim',
+#     "Total housing supply in informal backyards (in m²)",
+#     path_output_tables,
+#     ubnd=2)
 
 #
 
-rent_backyard_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_rent[1, :]
-rent_backyard_UE1_new_RDP0_IH0[simul_UE1_new_RDP0_IH0_households_housing_types[1, :]==0] = 0
-rent_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
-    rent_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,
-    'rent_backyard_UE1_new_RDP0_IH0_2d_sim',
-    "Annual rent in informal backyards (per m²)",
-    path_output_tables,
-    ubnd=np.nanquantile(rent_backyard_UE1_new_RDP0_IH0, 0.9999))
+# rent_backyard_UE1_new_RDP0_IH0 = simul_UE1_new_RDP0_IH0_rent[1, :]
+# rent_backyard_UE1_new_RDP0_IH0[simul_UE1_new_RDP0_IH0_households_housing_types[1, :]==0] = 0
+# rent_backyard_UE1_new_RDP0_IH0_2d_sim = outexp.export_map(
+#     rent_backyard_UE1_new_RDP0_IH0, grid, geo_grid, path_output_plots,
+#     'rent_backyard_UE1_new_RDP0_IH0_2d_sim',
+#     "Annual rent in informal backyards (per m²)",
+#     path_output_tables,
+#     ubnd=np.nanquantile(rent_backyard_UE1_new_RDP0_IH0, 0.9999))
 
-rent_backyard_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_rent[1, :]
-rent_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
-rent_backyard_UE1_new_RDP0_IH1_2d_sim = outexp.export_map(
-    rent_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,
-    'rent_backyard_UE1_new_RDP0_IH1_2d_sim',
-    "Annual rent in informal backyards (per m²)",
-    path_output_tables,
-    ubnd=np.nanquantile(rent_backyard_UE1_new_RDP0_IH1, 0.9999))
+# rent_backyard_UE1_new_RDP0_IH1 = simul_UE1_new_RDP0_IH1_rent[1, :]
+# rent_backyard_UE1_new_RDP0_IH1[simul_UE1_new_RDP0_IH1_households_housing_types[1, :]==0] = 0
+# rent_backyard_UE1_new_RDP0_IH1_2d_sim = outexp.export_map(
+#     rent_backyard_UE1_new_RDP0_IH1, grid, geo_grid, path_output_plots,
+#     'rent_backyard_UE1_new_RDP0_IH1_2d_sim',
+#     "Annual rent in informal backyards (per m²)",
+#     path_output_tables,
+#     ubnd=np.nanquantile(rent_backyard_UE1_new_RDP0_IH1, 0.9999))
 
 # Better plots?
 

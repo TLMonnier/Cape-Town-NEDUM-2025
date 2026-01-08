@@ -86,7 +86,7 @@ def import_options():
     # NB: doing so is a matter of choice. It yields more accurate results on
     # spatial sorting, but also increases the risk of overfitting the model.
     # TAKES TIME
-    options["location_based_calib"] = 1
+    options["location_based_calib"] = 0
 
     # TECHNICAL CALIBRATION OPTIONS
     # Dummy for defining dominant income group based on number of people
@@ -155,6 +155,13 @@ def import_options():
     #  We define dummy scenarios for the time being.
     #  Code corresponds to low/medium/high
     options["fuel_price_scenario"] = 2
+
+    options["new_RDP_housing"] = 0
+    options["amenity_upgrading"] = 0
+    options["poor_subsidies"] = 0
+    options["eviction"] = 0
+
+    options["incremental_housing"] = 1
 
     return options
 
@@ -291,6 +298,12 @@ def import_param(path_precalc_inp, options):
             path_precalc_inp + 'param_backyards.npy')
         param["incremental_pockets"] = np.load(
             path_precalc_inp + 'param_incremental.npy')
+
+    # NB: cannot really stimulate private investment through non-eviction guarantee
+    if options["amenity_upgrading"]==1:
+        param["informal_pockets"] = param["informal_pockets"]*1.03
+        param["backyard_pockets"] = param["backyard_pockets"]*1.03
+        param["incremental_pockets"] = param["incremental_pockets"]*1.03
 
     # Housing production function parameters, as calibrated in Pfeiffer et al.
     # (table C7)

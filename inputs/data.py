@@ -688,12 +688,20 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
 
     # Regression spline
 
-    spline_land_RDP = interp1d(
-        year_data_informal,
-        np.transpose(
-            [area_RDP, area_RDP, area_RDP_short_term, area_RDP_long_term]
-            ),
-        'linear')
+    if options["new_RDP_housing"] == 1:
+        spline_land_RDP = interp1d(
+            year_data_informal,
+            np.transpose(
+                [area_RDP, area_RDP, area_RDP_short_term, area_RDP_long_term]
+                ),
+            'linear')
+    elif options["new_RDP_housing"] == 0:
+        spline_land_RDP = interp1d(
+            year_data_informal,
+            np.transpose(
+                [area_RDP, area_RDP, area_RDP, area_RDP]
+                ),
+            'linear')
 
 
 # 4. Backyarding pixel share
@@ -785,15 +793,26 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
 
     # Regression spline
 
-    spline_land_backyard = interp1d(
-        year_data_informal,
-        np.transpose(
-            [np.fmax(area_backyard, actual_backyards),
-             np.fmax(area_backyard, actual_backyards),
-             np.fmax(area_backyard_short_term, actual_backyards),
-             np.fmax(area_backyard_long_term, actual_backyards)]
-            ),
-        'linear')
+    if options["new_RDP_housing"] == 1:
+        spline_land_backyard = interp1d(
+            year_data_informal,
+            np.transpose(
+                [np.fmax(area_backyard, actual_backyards),
+                 np.fmax(area_backyard, actual_backyards),
+                 np.fmax(area_backyard_short_term, actual_backyards),
+                 np.fmax(area_backyard_long_term, actual_backyards)]
+                ),
+            'linear')
+    elif options["new_RDP_housing"] == 0:
+        spline_land_backyard = interp1d(
+            year_data_informal,
+            np.transpose(
+                [np.fmax(area_backyard, actual_backyards),
+                 np.fmax(area_backyard, actual_backyards),
+                 np.fmax(area_backyard, actual_backyards),
+                 np.fmax(area_backyard, actual_backyards)]
+                ),
+            'linear')
 
 
 # 5. Unconstrained land pixel share
@@ -952,7 +971,7 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
 
 
 def import_coeff_land(spline_land_constraints, spline_land_backyard,
-                      spline_land_informal, spline_land_RDP, param, t):
+                      spline_land_informal, spline_land_RDP, param, options, t):
     """
     Update land availability ratios for a given year.
 
@@ -993,17 +1012,31 @@ def import_coeff_land(spline_land_constraints, spline_land_backyard,
 
     # Available private land is just defined as total available land minus
     # land dedicated to other housing types
-    coeff_land_private = (spline_land_constraints(t)
-                          - spline_land_backyard(t)
-                          - spline_land_informal(t)
-                          - spline_land_RDP(t)) * param["max_land_use"]
+    if options["eviction"]==0:
+        coeff_land_private = (spline_land_constraints(t)
+                              - spline_land_backyard(t)
+                              - spline_land_informal(t)
+                              - spline_land_RDP(t)) * param["max_land_use"]
+    elif options["eviction"]==1:
+        coeff_land_private = (spline_land_constraints(t)
+                              - spline_land_backyard(t)
+                              - spline_land_informal(t)*(1-0.09)
+                              - spline_land_RDP(t)) * param["max_land_use"]
+    
     coeff_land_private[coeff_land_private < 0] = 0
 
     coeff_land_backyard = (spline_land_backyard(t)
                            * param["max_land_use_backyard"])
     coeff_land_RDP = spline_land_RDP(t) * param["max_land_use"]
-    coeff_land_settlement = (spline_land_informal(t)
-                             * param["max_land_use_settlement"])
+    
+    if options["eviction"]==0:
+        coeff_land_settlement = (spline_land_informal(t)
+                                 * param["max_land_use_settlement"])
+    elif options["eviction"]==1:
+        coeff_land_settlement = (spline_land_informal(t)*(1-0.09)
+                                 * param["max_land_use_settlement"])
+        
+        
     coeff_land = np.array([coeff_land_private, coeff_land_backyard,
                            coeff_land_settlement, coeff_land_RDP])
 
