@@ -1017,10 +1017,24 @@ def import_coeff_land(spline_land_constraints, spline_land_backyard,
                               - spline_land_backyard(t)
                               - spline_land_informal(t)
                               - spline_land_RDP(t)) * param["max_land_use"]
+        # coeff_land_private = (spline_land_constraints(t)
+        #                       - spline_land_backyard(t)
+        #                       - spline_land_informal(t)*(1-0.09)
+        #                       - spline_land_RDP(t)) * param["max_land_use"]
     elif options["eviction"]==1:
         coeff_land_private = (spline_land_constraints(t)
                               - spline_land_backyard(t)
-                              - spline_land_informal(t)*(1-0.09)
+                              - spline_land_informal(t)*(1-0.1)
+                              - spline_land_RDP(t)) * param["max_land_use"]
+    elif options["eviction"]==2:
+        coeff_land_private = (spline_land_constraints(t)
+                              - spline_land_backyard(t)
+                              - spline_land_informal(t)*(1-0.5)
+                              - spline_land_RDP(t)) * param["max_land_use"]
+    elif options["eviction"]==3:
+        coeff_land_private = (spline_land_constraints(t)
+                              - spline_land_backyard(t)
+                              - spline_land_informal(t)*(1-1)
                               - spline_land_RDP(t)) * param["max_land_use"]
     
     coeff_land_private[coeff_land_private < 0] = 0
@@ -1032,8 +1046,16 @@ def import_coeff_land(spline_land_constraints, spline_land_backyard,
     if options["eviction"]==0:
         coeff_land_settlement = (spline_land_informal(t)
                                  * param["max_land_use_settlement"])
+        # coeff_land_settlement = (spline_land_informal(t)*(1-0.09)
+        #                          * param["max_land_use_settlement"])
     elif options["eviction"]==1:
-        coeff_land_settlement = (spline_land_informal(t)*(1-0.09)
+        coeff_land_settlement = (spline_land_informal(t)*(1-0.1)
+                                 * param["max_land_use_settlement"])
+    elif options["eviction"]==2:
+        coeff_land_settlement = (spline_land_informal(t)*(1-0.5)
+                                 * param["max_land_use_settlement"])
+    elif options["eviction"]==3:
+        coeff_land_settlement = (spline_land_informal(t)*(1-1)
                                  * param["max_land_use_settlement"])
         
         

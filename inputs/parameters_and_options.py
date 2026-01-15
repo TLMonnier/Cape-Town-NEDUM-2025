@@ -300,10 +300,21 @@ def import_param(path_precalc_inp, options):
             path_precalc_inp + 'param_incremental.npy')
 
     # NB: cannot really stimulate private investment through non-eviction guarantee
+    # param["informal_pockets"] = param["informal_pockets"]*1.03
+    # param["backyard_pockets"] = param["backyard_pockets"]*1.03
+    # param["incremental_pockets"] = param["incremental_pockets"]*1.03
     if options["amenity_upgrading"]==1:
-        param["informal_pockets"] = param["informal_pockets"]*1.03
-        param["backyard_pockets"] = param["backyard_pockets"]*1.03
-        param["incremental_pockets"] = param["incremental_pockets"]*1.03
+        param["informal_pockets"] = param["informal_pockets"] + 0.1*(1-param["informal_pockets"])
+        param["backyard_pockets"] = param["backyard_pockets"] + 0.1*(1-param["backyard_pockets"])
+        param["incremental_pockets"] = param["incremental_pockets"] + 0.1*(1-param["incremental_pockets"])
+    if options["amenity_upgrading"]==2:
+        param["informal_pockets"] = param["informal_pockets"] + 0.5*(1-param["informal_pockets"])
+        param["backyard_pockets"] = param["backyard_pockets"] + 0.5*(1-param["backyard_pockets"])
+        param["incremental_pockets"] = param["incremental_pockets"] + 0.5*(1-param["incremental_pockets"])
+    if options["amenity_upgrading"]==3:
+        param["informal_pockets"] = param["informal_pockets"] + 1*(1-param["informal_pockets"])
+        param["backyard_pockets"] = param["backyard_pockets"] + 1*(1-param["backyard_pockets"])
+        param["incremental_pockets"] = param["incremental_pockets"] + 1*(1-param["incremental_pockets"])
 
     # Housing production function parameters, as calibrated in Pfeiffer et al.
     # (table C7)

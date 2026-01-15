@@ -157,6 +157,14 @@ def compute_outputs(housing_type,
                  / (dwelling_size - (param["alpha"] * param["q0"])))
         R_mat[income_net_of_commuting_costs < 0] = 0
         R_mat[income_class_by_housing_type.formal == 0, :] = 0
+        
+        # FOR UTILITY DECOMPOSITION: save individual variables?
+        # utility_temp = (
+        #     (income_net_of_commuting_costs - dwelling_size*R_mat)**param["alpha"]
+        #     * (dwelling_size - param["q0"])**param["beta"]
+        #     * amenities[None, :]
+        #     )
+
 
     elif housing_type == 'backyard':
 
@@ -202,6 +210,9 @@ def compute_outputs(housing_type,
                    #     )[None, :] * param["informal_structure_value"])
                    )
                 )
+
+
+
 
         elif options["actual_backyards"] == 0:
             R_mat = (

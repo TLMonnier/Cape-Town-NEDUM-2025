@@ -206,5 +206,8 @@ df_utility_changes.to_excel(path_output_tables + '/df_utility_changes.xlsx', flo
 #   .format(precision=2, thousands=".", decimal=",") \
 #   .format_index(str.upper, axis=1) \
 #   .relabel_index(["Poor", "Mid-poor", "Mid-rich", "Rich"], axis=0)
-  
+
+# WELFARE DECOMPOSITION: add options to load ante and post variables
+
+
 

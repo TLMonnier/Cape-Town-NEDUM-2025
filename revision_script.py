@@ -51,6 +51,8 @@ options["urban_edge"] = 1
 options["informal_land_constrained"] = 1
 options["new_RDP_housing"] = 0
 
+# TODO: Do not converge well when too far from intiial equilibrium? Seems OKish
+
 # In Harari and Wong, informal amenities go from 1.34 to 1.58 in the center
 # (+18%), 1.17 to 1.16 in the middle (-0%), 0.88 to 0.79 in the periphery (-10%),
 # or +3% on avg
@@ -81,6 +83,8 @@ name = ('simul_UE' + str(options["urban_edge"])
         + '_Psubsid' + str(options["poor_subsidies"])
         + '_Evict' + str(options["eviction"])
         + '_IH' + str(options["incremental_housing"]))
+
+# COMPUTE COMPENSATION COST EX-POST!
 
 path_simul = path_outputs + 'revision_output'
 path_output_plots = path_simul + '/plots/'
@@ -185,7 +189,13 @@ income_net_of_commuting_costs = np.load(
 # Refer to utility changes in Harari and Wong: avg between +15%, +1% and -8%
 # is +3%
 if options["poor_subsidies"]==1:
-    income_net_of_commuting_costs[0] = income_net_of_commuting_costs[0]*1.03
+    # income_net_of_commuting_costs[0] = income_net_of_commuting_costs[0]*1.03
+    income_net_of_commuting_costs[0] = (
+        income_net_of_commuting_costs[0]
+        + param["subsidized_structure_value"]
+        * (9*param["current_rate_public_housing"] + 21*param["future_rate_public_housing"])
+        / (households_per_income_class[0]*population/sum(households_per_income_class))
+        )
 
 # ## Empty flood data (to make function run)
 fraction_capital_destroyed = pd.DataFrame()
@@ -459,3 +469,99 @@ simul_formal_landprice_discrete_map = outexp.discrete_map(
 #     simul_formal_rent_discrete, grid, geo_grid, path_output_plots,
 #     'simul_formal_rent_discrete_map',
 #     "Formal annual rent per m² (WP scale)", path_output_tables)
+
+
+# TODO: what about FAR regulations?
+
+# TEST FOR WELFARE DECOMPOSITON: what to save?
+
+## Preamble
+
+formal_size = initial_state_dwelling_size[0, :]
+backyard_size = initial_state_dwelling_size[1, :]
+informal_size = initial_state_dwelling_size[2, :]
+rdp_size = initial_state_dwelling_size[3, :]
+
+formal_rent = initial_state_rent[0, :]
+backyard_rent = initial_state_rent[1, :]
+informal_rent = initial_state_rent[2, :]
+rdp_rent = initial_state_rent[3, :]
+
+backyard_supply = initial_state_housing_supply[1,:]/1000000
+disam_backyard = param["backyard_pockets"]
+disam_backyard[backyard_supply==2] = np.nanmean(param["incremental_pockets"])
+disam_informal = param["informal_pockets"]
+
+## Theoretical values before allocation (not as homogeneous as should be?)
+
+utility_temp_formal = (
+    (income_net_of_commuting_costs - formal_size[None, :]*formal_rent[None, :])**param["alpha"]
+    * (formal_size[None, :] - param["q0"])**param["beta"]
+    * amenities[None, :]
+    )
+
+utility_temp_backyard = (
+    (income_net_of_commuting_costs - backyard_size[None, :]*backyard_rent[None, :])**param["alpha"]
+    * (backyard_size[None, :] - param["q0"])**param["beta"]
+    * amenities[None, :] * disam_backyard[None, :]
+    )
+
+utility_temp_informal = (
+    (income_net_of_commuting_costs - informal_size[None, :]*informal_rent[None, :]
+     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
+    * (informal_size[None, :] - param["q0"])**param["beta"]
+    * amenities[None, :] * disam_informal[None, :]
+    )
+
+# Size definition? Also limits in hsupply/land availability?
+# May create inconsistency with baseline levels? Should not measure? Or separately...
+# What about construction costs for backyards!
+backyard_supply[np.isnan(backyard_supply)] = 0
+backyard_rent[np.isnan(backyard_rent)] = 0
+
+informal_cost = (
+    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
+    * backyard_supply * param["backyard_size"] / param["shack_size"])
+incremental_cost = (
+    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
+    * backyard_supply * param["backyard_size"] / param["RDP_size"])
+backyard_cost = informal_cost
+backyard_cost[backyard_supply==2] = incremental_cost[backyard_supply==2]
+
+utility_temp_rdp = (
+    (income_net_of_commuting_costs
+     + backyard_supply[None, :]*param["backyard_size"]*backyard_rent[None, :]
+     - param["subsidized_structure_value"] * param["depreciation_rate"]
+     - backyard_cost)**param["alpha"]
+    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
+       - np.nanmin(backyard_supply[None, :],1)*param["backyard_size"])**param["beta"]
+    * amenities[None, :]
+    )
+
+## Allocation: can apply mask to old variables for extensive margin?
+
+agg_alloc_grid = initial_state_households>0
+
+utility_temp_mat = np.array([utility_temp_formal, utility_temp_backyard, utility_temp_informal, utility_temp_rdp])
+utility_temp_mat = utility_temp_mat*agg_alloc_grid
+utility_temp_mat[utility_temp_mat==0] = np.nan
+
+# Slight variations from min (equilibrium value) to max irrelevant except for
+# RDP beneficiaries in poor income group (up to between rich and midrich, but
+# more like midpoor on average)
+
+# Averages including RDP for the poor!!!
+avg_utility_poor = np.nansum(utility_temp_mat[:,0,:]*initial_state_households[:,0,:])/np.nansum(initial_state_households[:,0,:])
+avg_utility_midpoor = np.nansum(utility_temp_mat[:,1,:]*initial_state_households[:,1,:])/np.nansum(initial_state_households[:,1,:])
+avg_utility_midrich = np.nansum(utility_temp_mat[:,2,:]*initial_state_households[:,2,:])/np.nansum(initial_state_households[:,2,:])
+avg_utility_rich = np.nansum(utility_temp_mat[:,3,:]*initial_state_households[:,3,:])/np.nansum(initial_state_households[:,3,:])
+
+# Now deal with decomposition of interest (do averages ex post?)
+# Note that both values and worker allocation change in counterfactuals
+
+# Need to write matrix form with possibility of changing each component?
+# Also per housing type?
+
+# Allocation and values need to change at the same time for each component!
+
+
