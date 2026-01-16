@@ -564,4 +564,5 @@ avg_utility_rich = np.nansum(utility_temp_mat[:,3,:]*initial_state_households[:,
 
 # Allocation and values need to change at the same time for each component!
 
+# test = np.where(np.isnan(utility_temp_mat) & agg_alloc_grid==1)
 
