@@ -1880,6 +1880,341 @@ df_utility_changes_upgrading.to_excel(path_output_tables + '/df_utility_changes_
 #   .relabel_index(["Poor", "Mid-poor", "Mid-rich", "Rich"], axis=0)
 
 # WELFARE DECOMPOSITION: add options to load ante and post variables
+# Distinguish redeveloped backyazrds???
+
+# Do it for each scenario
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[3,:,:])]
+    )
+
+###
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:])]
+    )
+
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)))
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[1,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[2,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)
+new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[3,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[1,:,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[1,:,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1<2] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[0,:,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[2,:,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[3,:,:])]
+    )
+
+# Weird results? Has to do with simulation definitions?
+
+# Rows are housing types and columns are income groups, so we transpose
+scenario_data = {
+    'Baseline': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 2).T,
+    'Subsidies': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households, 2).T,
+    'New RDP': np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households, 2).T,
+    'New IS': np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 2).T,
+    'No UE': np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households ,2).T
+}
+
+scenario_data_upgrading = {
+    'Baseline': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 2).T,
+    'Disam. -10pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households, 2).T,
+    'Disam. -50pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households, 2).T,
+    'Disam. -100pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households, 2).T,
+    'Toler. -10pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households, 2).T,
+    'Toler. -50pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households, 2).T,
+    'Toler. -100pc': np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households, 2).T
+}
+
+## FIRST GRAPH
+
+# Labels
+income_groups = ['Poor', 'Midpoor', 'Midrich', 'Rich']
+housing_types = ['FP', 'IB (basic)', 'IB (redev.)', 'IS', 'FS']
+scenarios = list(scenario_data.keys())
+
+# Create figure with subplots (4 rows for income groups, 1 column)
+fig, axes = plt.subplots(4, 1, figsize=(12, 14))
+fig.suptitle('Distribution of HHs across housing types by income group and scenario', 
+             fontsize=16, fontweight='bold', y=0.995)
+
+# Colors for housing types: DNF
+colors = plt.cm.Set3(np.linspace(0, 1, 5))
+
+# Plot for each income group
+for i, income_group in enumerate(income_groups):
+    ax = axes[i]
+    
+    # Bar positions
+    x = np.arange(len(scenarios))
+    width = 0.6
+    
+    # Initialize bottom for stacking
+    bottom = np.zeros(len(scenarios))
+    
+    # Stack bars for each housing type
+    for j, housing_type in enumerate(housing_types):
+        # Extract data for this income group across all scenarios
+        values = [scenario_data[scenario][i, j] for scenario in scenarios]
+        
+        ax.bar(x, values, width, label=housing_type, bottom=bottom, color=colors[j])
+        bottom += values
+    
+    # Formatting
+    ax.set_ylabel('Number of HHs', fontsize=11, fontweight='bold')
+    ax.set_title(f'{income_group}', fontsize=12, fontweight='bold', pad=10)
+    ax.set_xticks(x)
+    ax.set_xticklabels(scenarios)
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    # Add legend only to the first subplot
+    if i == 0:
+        ax.legend(title='Housing types', bbox_to_anchor=(1.02, 1), loc='upper left')
+
+plt.tight_layout()
+plt.show()
+
+
+## SECOND GRAPH
+
+# Labels
+income_groups = ['Poor', 'Midpoor', 'Midrich', 'Rich']
+housing_types = ['FP', 'IB (basic)', 'IB (redev.)', 'IS', 'FS']
+scenarios = list(scenario_data_upgrading.keys())
+
+# Create figure with subplots (4 rows for income groups, 1 column)
+fig, axes = plt.subplots(4, 1, figsize=(12, 14))
+fig.suptitle('Distribution of HHs across housing types by income group and scenario', 
+             fontsize=16, fontweight='bold', y=0.995)
+
+# Colors for housing types: DNF
+colors = plt.cm.Set3(np.linspace(0, 1, 5))
+
+# Plot for each income group
+for i, income_group in enumerate(income_groups):
+    ax = axes[i]
+    
+    # Bar positions
+    x = np.arange(len(scenarios))
+    width = 0.6
+    
+    # Initialize bottom for stacking
+    bottom = np.zeros(len(scenarios))
+    
+    # Stack bars for each housing type
+    for j, housing_type in enumerate(housing_types):
+        # Extract data for this income group across all scenarios
+        values = [scenario_data_upgrading[scenario][i, j] for scenario in scenarios]
+        
+        ax.bar(x, values, width, label=housing_type, bottom=bottom, color=colors[j])
+        bottom += values
+    
+    # Formatting
+    ax.set_ylabel('Number of HHs', fontsize=11, fontweight='bold')
+    ax.set_title(f'{income_group}', fontsize=12, fontweight='bold', pad=10)
+    ax.set_xticks(x)
+    ax.set_xticklabels(scenarios)
+    ax.grid(axis='y', alpha=0.3, linestyle='--')
+    
+    # Add legend only to the first subplot
+    if i == 0:
+        ax.legend(title='Housing types', bbox_to_anchor=(1.02, 1), loc='upper left')
+
+plt.tight_layout()
+plt.show()
+
+# SOMETHING IS WRONG WITH ALLOCATION OF SECODN GRAPH...
+
 
 
 

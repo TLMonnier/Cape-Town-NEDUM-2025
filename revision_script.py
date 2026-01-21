@@ -167,7 +167,7 @@ housing_types[np.isnan(housing_types)] = 0
 # total_RDP = spline_RDP(0)
 # number_properties_RDP = spline_estimate_RDP(0)
 
-# We let all effects kick in depending on options
+# We let all effects kick in depending on options: not well defined?
 coeff_land = inpdt.import_coeff_land(
     spline_land_constraints, spline_land_backyard, spline_land_informal,
     spline_land_RDP, param, options, 29)
@@ -234,6 +234,14 @@ fraction_capital_destroyed["structure_informal_settlements"
 #  ) = eqdyn.import_scenarios(income_baseline, param, grid, path_scenarios,
 #                             options)
 
+
+# Scenario test
+
+# print(total_RDP)
+# print(np.nansum(number_properties_RDP))
+# print(np.nanmean(income_net_of_commuting_costs[0,:]))
+# print(np.nanmean(coeff_land,1))
+
 # REDO CALIBRATION TO BETTER FIT HOUSING TYPES???
 
 # ##Equilibrium function
@@ -270,6 +278,7 @@ fraction_capital_destroyed["structure_informal_settlements"
      minimum_housing_supply,
      param["coeff_A"],
      income_baseline)
+     
 
 # ##Simulation function towards 2040
 # (simulation_households_center,

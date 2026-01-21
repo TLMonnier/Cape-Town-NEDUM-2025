@@ -578,15 +578,25 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
     # We compute linear regression spline for 4 years centered around baseline
     # Construction rate comes from Pfeiffer et al.'s median scenario, then we
     # apply a lower rate after the end of the programme in 2020
-    spline_RDP = interp1d(
-        [2001 - param["baseline_year"], 2011 - param["baseline_year"],
-         2020 - param["baseline_year"], 2041 - param["baseline_year"]],
-        [RDP_restrospect, RDP_baseline,
-         RDP_baseline + 9 * param["current_rate_public_housing"],
-         RDP_baseline + 9 * param["current_rate_public_housing"]
-         + 21 * param["future_rate_public_housing"]],
-        'linear'
-        )
+    if options["new_RDP_housing"] == 1:
+        spline_RDP = interp1d(
+            [2001 - param["baseline_year"], 2011 - param["baseline_year"],
+             2020 - param["baseline_year"], 2041 - param["baseline_year"]],
+            [RDP_restrospect, RDP_baseline,
+             RDP_baseline + 9 * param["current_rate_public_housing"],
+             RDP_baseline + 9 * param["current_rate_public_housing"]
+             + 21 * param["future_rate_public_housing"]],
+            'linear'
+            )
+    elif options["new_RDP_housing"] == 0:
+        spline_RDP = interp1d(
+            [2001 - param["baseline_year"], 2011 - param["baseline_year"],
+             2020 - param["baseline_year"], 2041 - param["baseline_year"]],
+            [RDP_restrospect, RDP_baseline,
+             RDP_baseline,
+             RDP_baseline],
+            'linear'
+            )
 
     # We capture the output of the function to be used later on
     # Start of the actual construction programme
@@ -636,16 +646,27 @@ def import_land_use(grid, options, param, data_rdp, housing_types,
 
     # Regression spline
 
-    spline_estimate_RDP = interp1d(
-        year_data_informal,
-        np.transpose(
-            [number_properties_retrospect,
-             RDP_houses_estimates,
-             RDP_houses_estimates + construction_rdp.total_yield_DU_ST,
-             RDP_houses_estimates + construction_rdp.total_yield_DU_ST
-             + construction_rdp.total_yield_DU_LT]
-            ),
-        'linear')
+    if options["new_RDP_housing"] == 1:
+        spline_estimate_RDP = interp1d(
+            year_data_informal,
+            np.transpose(
+                [number_properties_retrospect,
+                 RDP_houses_estimates,
+                 RDP_houses_estimates + construction_rdp.total_yield_DU_ST,
+                 RDP_houses_estimates + construction_rdp.total_yield_DU_ST
+                 + construction_rdp.total_yield_DU_LT]
+                ),
+            'linear')
+    elif options["new_RDP_housing"] == 0:
+        spline_estimate_RDP = interp1d(
+            year_data_informal,
+            np.transpose(
+                [number_properties_retrospect,
+                 RDP_houses_estimates,
+                 RDP_houses_estimates,
+                 RDP_houses_estimates]
+                ),
+            'linear')
 
     number_properties_RDP = spline_estimate_RDP(0)
 
