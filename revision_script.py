@@ -188,13 +188,26 @@ income_net_of_commuting_costs = np.load(
 
 # Refer to utility changes in Harari and Wong: avg between +15%, +1% and -8%
 # is +3%
+# Do it only for non-RDP beneficiaries? Then, need to correct in their utilities!!!
 if options["poor_subsidies"]==1:
     # income_net_of_commuting_costs[0] = income_net_of_commuting_costs[0]*1.03
+    # income_net_of_commuting_costs[0] = (
+    #     income_net_of_commuting_costs[0]
+    #     + param["subsidized_structure_value"]
+    #     * (9*param["current_rate_public_housing"] + 21*param["future_rate_public_housing"])
+    #     / (households_per_income_class[0]*population/sum(households_per_income_class))
+    #     )
+    # income_net_of_commuting_costs[0] = (
+    #     income_net_of_commuting_costs[0]
+    #     + param["subsidized_structure_value"]
+    #     * param["current_rate_public_housing"]
+    #     / (households_per_income_class[0]*population/sum(households_per_income_class))
+    #     )
     income_net_of_commuting_costs[0] = (
         income_net_of_commuting_costs[0]
         + param["subsidized_structure_value"]
-        * (9*param["current_rate_public_housing"] + 21*param["future_rate_public_housing"])
-        / (households_per_income_class[0]*population/sum(households_per_income_class))
+        * param["current_rate_public_housing"]
+        / (households_per_income_class[0]*population/sum(households_per_income_class)-total_RDP)
         )
 
 # ## Empty flood data (to make function run)
