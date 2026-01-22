@@ -63,7 +63,7 @@ options["poor_subsidies"] = 0
 # .49 to .41 (middle: -8%):, and .78 to .61 (periphery: -17%), or -9% on avg
 # We approach that as a redistribution of cell share available for squatting to
 # formal development
-options["eviction"] = 0
+options["eviction"] = 3
 
 # TODO: rethink max_land_use parameters already at calibration stage?
 # Maybe also land use regulations and land rent redistribution?

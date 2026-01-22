@@ -184,17 +184,17 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility = np.load(
 simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = np.load(
     path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility = np.load(
     path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility = np.load(
     path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
 
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.load(
     path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
@@ -207,17 +207,17 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = np.load(
 simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.load(
     path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.load(
     path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.load(
     path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
 
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
     path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
@@ -230,17 +230,17 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
 simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size = np.load(
     path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = np.load(
     path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size = np.load(
     path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
 
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
     path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
@@ -253,17 +253,17 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
 simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_housing_supply = np.load(
     path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_housing_supply = np.load(
     path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_housing_supply = np.load(
     path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
 
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
     path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
@@ -276,17 +276,17 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
 simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent = np.load(
     path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
+    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent = np.load(
     path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent = np.load(
     path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
+    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
 
 
 # WELFARE DECOMPOSITON: write functions???
@@ -1879,10 +1879,13 @@ df_utility_changes_upgrading.to_excel(path_output_tables + '/df_utility_changes_
 #   .format_index(str.upper, axis=1) \
 #   .relabel_index(["Poor", "Mid-poor", "Mid-rich", "Rich"], axis=0)
 
+
+
+
 # WELFARE DECOMPOSITION: add options to load ante and post variables
 # Distinguish redeveloped backyazrds???
 
-# Do it for each scenario
+# Do it for each scenario (also for other variables at baseline)
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
@@ -1901,6 +1904,70 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.array(
      increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[2,:,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])]
+    )
+
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[3,:] = 0
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[3,:])]
+    )
+
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
+    )
+
+formal_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
+basic_backyard_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
+redev_backyard_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
+informal_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
+rdp_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
+for i in range(4):
+    formal_income_net_of_commuting_costs[i, :][
+        new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0,i,:]==0] = 0
+    basic_backyard_income_net_of_commuting_costs[i, :][
+        new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[1,i,:]==0] = 0
+    redev_backyard_income_net_of_commuting_costs[i, :][
+        new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[2,i,:]==0] = 0
+    informal_income_net_of_commuting_costs[i, :][
+        new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,i,:]==0] = 0
+    rdp_income_net_of_commuting_costs[i, :][
+        new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[4,i,:]==0] = 0
+    
+new_amenities = np.tile(amenities, (5,1))
+
+#
+formal_income_net_of_commuting_costs = np.nansum(formal_income_net_of_commuting_costs, 0)
+basic_backyard_income_net_of_commuting_costs = np.nansum(basic_backyard_income_net_of_commuting_costs, 0)
+redev_backyard_income_net_of_commuting_costs = np.nansum(redev_backyard_income_net_of_commuting_costs, 0)
+informal_income_net_of_commuting_costs = np.nansum(informal_income_net_of_commuting_costs, 0)
+rdp_income_net_of_commuting_costs = np.nansum(rdp_income_net_of_commuting_costs, 0)
+#
+new_income_net_of_commuting_costs = np.array(
+    [formal_income_net_of_commuting_costs,
+     basic_backyard_income_net_of_commuting_costs,
+     redev_backyard_income_net_of_commuting_costs,
+     informal_income_net_of_commuting_costs,
+     rdp_income_net_of_commuting_costs]
     )
 
 new_backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
@@ -2162,7 +2229,9 @@ for i, income_group in enumerate(income_groups):
         ax.legend(title='Housing types', bbox_to_anchor=(1.02, 1), loc='upper left')
 
 plt.tight_layout()
-plt.show()
+# plt.show()
+
+plt.savefig(path_output_plots + '/htype_breakdown.png')
 
 
 ## SECOND GRAPH
@@ -2211,10 +2280,475 @@ for i, income_group in enumerate(income_groups):
         ax.legend(title='Housing types', bbox_to_anchor=(1.02, 1), loc='upper left')
 
 plt.tight_layout()
-plt.show()
+# plt.show()
+
+plt.savefig(path_output_plots + '/htype_breakdown_upgrading.png')
 
 # SOMETHING IS WRONG WITH ALLOCATION OF SECODN GRAPH...
 
 
+### DENSITY PLOTS
 
 
+##### Rent
+
+# Example: 1000 locations, 5 housing types, 4 income groups
+n_locations = np.shape(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent)[1]
+# NEED TO UPDATE WITH REDEV LATER
+n_housing_types = 5
+n_income_groups = 4
+
+# In example data, location is the first axis: NEED TO CORRECT!
+rent = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent
+population = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households
+
+# Define rent brackets: NEED TO CHANGE FOR EACH GROUP
+# rent_bins = np.arange(0, 1000, 10)  # Adjust as needed
+# bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+
+# Labels
+housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # rent_bins = np.arange(
+    #     min(rent[population[:,income_idx,:]>0]), 
+    #     max(rent[population[:,income_idx,:]>0]),
+    #     10)
+    
+    start = min(rent[population[:,income_idx,:]>0])
+    end = np.nanquantile(rent[population[:,income_idx,:]>0], 0.99)
+    
+    rent_bins = np.arange(start, end, (end-start)/100)
+    bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+    
+    # Initialize arrays to hold binned population for each housing type
+    binned_pop = np.zeros((len(rent_bins)-1, n_housing_types))
+    
+    # Bin the population by rent bracket for each housing type
+    for housing_idx in range(n_housing_types):
+        for loc_idx in range(n_locations):
+            rent_value = rent[housing_idx, loc_idx]
+            pop_value = population[housing_idx, income_idx, loc_idx]
+            
+            # Find which bin this rent falls into
+            bin_idx = np.digitize(rent_value, rent_bins) - 1
+            if 0 <= bin_idx < len(rent_bins) - 1:
+                binned_pop[bin_idx, housing_idx] += pop_value
+    
+    # Create stacked bar chart
+    bottom = np.zeros(len(rent_bins)-1)
+    colors = plt.cm.Set3(np.linspace(0, 1, n_housing_types))
+    
+    for housing_idx in range(n_housing_types):
+        ax.bar(bin_centers, binned_pop[:, housing_idx], 
+               width=rent_bins[1]-rent_bins[0], 
+               bottom=bottom,
+               label=housing_type_labels[housing_idx],
+               color=colors[housing_idx],
+               edgecolor='white',
+               linewidth=0.5)
+        bottom += binned_pop[:, housing_idx]
+    
+    # Formatting
+    ax.set_xlabel('Rent (ZAR/year)', fontsize=10)
+    ax.set_ylabel('Nb of HHs', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(path_output_plots + '/baseline_rent_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# Optional: Print summary statistics
+print("\nSummary Statistics:")
+print("-" * 50)
+for income_idx in range(n_income_groups):
+    total_pop = population[:, income_idx, :].sum()
+    print(f"{income_group_labels[income_idx]}: Total Population = {total_pop:,}")
+    
+# NB: FS does not appear when there is no rent
+
+
+##### Income
+
+# Example: 1000 locations, 5 housing types, 4 income groups
+n_locations = np.shape(new_income_net_of_commuting_costs)[1]
+# NEED TO UPDATE WITH REDEV LATER
+n_housing_types = 5
+n_income_groups = 4
+
+# In example data, location is the first axis: NEED TO CORRECT!
+rent = new_income_net_of_commuting_costs
+population = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households
+
+# Define rent brackets: NEED TO CHANGE FOR EACH GROUP
+# rent_bins = np.arange(0, 1000, 10)  # Adjust as needed
+# bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+
+# Labels
+housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # rent_bins = np.arange(
+    #     min(rent[population[:,income_idx,:]>0]), 
+    #     max(rent[population[:,income_idx,:]>0]),
+    #     10)
+    
+    start = min(rent[population[:,income_idx,:]>0])
+    end = np.nanquantile(rent[population[:,income_idx,:]>0], 0.99)
+    
+    rent_bins = np.arange(start, end, (end-start)/100)
+    bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+    
+    # Initialize arrays to hold binned population for each housing type
+    binned_pop = np.zeros((len(rent_bins)-1, n_housing_types))
+    
+    # Bin the population by rent bracket for each housing type
+    for housing_idx in range(n_housing_types):
+        for loc_idx in range(n_locations):
+            rent_value = rent[housing_idx, loc_idx]
+            pop_value = population[housing_idx, income_idx, loc_idx]
+            
+            # Find which bin this rent falls into
+            bin_idx = np.digitize(rent_value, rent_bins) - 1
+            if 0 <= bin_idx < len(rent_bins) - 1:
+                binned_pop[bin_idx, housing_idx] += pop_value
+    
+    # Create stacked bar chart
+    bottom = np.zeros(len(rent_bins)-1)
+    colors = plt.cm.Set3(np.linspace(0, 1, n_housing_types))
+    
+    for housing_idx in range(n_housing_types):
+        ax.bar(bin_centers, binned_pop[:, housing_idx], 
+               width=rent_bins[1]-rent_bins[0], 
+               bottom=bottom,
+               label=housing_type_labels[housing_idx],
+               color=colors[housing_idx],
+               edgecolor='white',
+               linewidth=0.5)
+        bottom += binned_pop[:, housing_idx]
+    
+    # Formatting
+    ax.set_xlabel('Income net of commuting (ZAR/year)', fontsize=10)
+    ax.set_ylabel('Nb of HHs', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(path_output_plots + '/baseline_income_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# Optional: Print summary statistics
+print("\nSummary Statistics:")
+print("-" * 50)
+for income_idx in range(n_income_groups):
+    total_pop = population[:, income_idx, :].sum()
+    print(f"{income_group_labels[income_idx]}: Total Population = {total_pop:,}")
+    
+# NB: FS does not appear when there is no rent
+
+
+##### Dwelling size
+
+# Example: 1000 locations, 5 housing types, 4 income groups
+n_locations = np.shape(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size)[1]
+# NEED TO UPDATE WITH REDEV LATER
+n_housing_types = 5
+n_income_groups = 4
+
+# In example data, location is the first axis: NEED TO CORRECT!
+rent = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size
+population = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households
+
+# Define rent brackets: NEED TO CHANGE FOR EACH GROUP
+# rent_bins = np.arange(0, 1000, 10)  # Adjust as needed
+# bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+
+# Labels
+housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # rent_bins = np.arange(
+    #     min(rent[population[:,income_idx,:]>0]), 
+    #     max(rent[population[:,income_idx,:]>0]),
+    #     10)
+    
+    start = min(rent[population[:,income_idx,:]>0])
+    # end = np.nanquantile(rent[population[:,income_idx,:]>0], 0.99)
+    end = max(rent[population[:,income_idx,:]>0])+10
+    
+    rent_bins = np.arange(start, end, (end-start)/100)
+    bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+    
+    # Initialize arrays to hold binned population for each housing type
+    binned_pop = np.zeros((len(rent_bins)-1, n_housing_types))
+    
+    # Bin the population by rent bracket for each housing type
+    for housing_idx in range(n_housing_types):
+        for loc_idx in range(n_locations):
+            rent_value = rent[housing_idx, loc_idx]
+            pop_value = population[housing_idx, income_idx, loc_idx]
+            
+            # Find which bin this rent falls into
+            bin_idx = np.digitize(rent_value, rent_bins) - 1
+            if 0 <= bin_idx < len(rent_bins) - 1:
+                binned_pop[bin_idx, housing_idx] += pop_value
+    
+    # Create stacked bar chart
+    bottom = np.zeros(len(rent_bins)-1)
+    colors = plt.cm.Set3(np.linspace(0, 1, n_housing_types))
+    
+    for housing_idx in range(n_housing_types):
+        ax.bar(bin_centers, binned_pop[:, housing_idx], 
+               width=rent_bins[1]-rent_bins[0], 
+               bottom=bottom,
+               label=housing_type_labels[housing_idx],
+               color=colors[housing_idx],
+               edgecolor='white',
+               linewidth=0.5)
+        bottom += binned_pop[:, housing_idx]
+    
+    # Formatting
+    ax.set_xlabel('Dwelling size (m²)', fontsize=10)
+    ax.set_ylabel('Nb of HHs', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(path_output_plots + '/baseline_dsize_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# Optional: Print summary statistics
+print("\nSummary Statistics:")
+print("-" * 50)
+for income_idx in range(n_income_groups):
+    total_pop = population[:, income_idx, :].sum()
+    print(f"{income_group_labels[income_idx]}: Total Population = {total_pop:,}")
+    
+# NB: FS does not appear when there is no rent
+
+
+
+##### Amenities
+
+# Example: 1000 locations, 5 housing types, 4 income groups
+n_locations = np.shape(new_amenities)[1]
+# NEED TO UPDATE WITH REDEV LATER
+n_housing_types = 5
+n_income_groups = 4
+
+# In example data, location is the first axis: NEED TO CORRECT!
+rent = new_amenities
+population = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households
+
+# Define rent brackets: NEED TO CHANGE FOR EACH GROUP
+# rent_bins = np.arange(0, 1000, 10)  # Adjust as needed
+# bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+
+# Labels
+housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # rent_bins = np.arange(
+    #     min(rent[population[:,income_idx,:]>0]), 
+    #     max(rent[population[:,income_idx,:]>0]),
+    #     10)
+    
+    start = min(rent[population[:,income_idx,:]>0])
+    end = np.nanquantile(rent[population[:,income_idx,:]>0], 0.99)
+    
+    rent_bins = np.arange(start, end, (end-start)/100)
+    bin_centers = (rent_bins[:-1] + rent_bins[1:]) / 2
+    
+    # Initialize arrays to hold binned population for each housing type
+    binned_pop = np.zeros((len(rent_bins)-1, n_housing_types))
+    
+    # Bin the population by rent bracket for each housing type
+    for housing_idx in range(n_housing_types):
+        for loc_idx in range(n_locations):
+            rent_value = rent[housing_idx, loc_idx]
+            pop_value = population[housing_idx, income_idx, loc_idx]
+            
+            # Find which bin this rent falls into
+            bin_idx = np.digitize(rent_value, rent_bins) - 1
+            if 0 <= bin_idx < len(rent_bins) - 1:
+                binned_pop[bin_idx, housing_idx] += pop_value
+    
+    # Create stacked bar chart
+    bottom = np.zeros(len(rent_bins)-1)
+    colors = plt.cm.Set3(np.linspace(0, 1, n_housing_types))
+    
+    for housing_idx in range(n_housing_types):
+        ax.bar(bin_centers, binned_pop[:, housing_idx], 
+               width=rent_bins[1]-rent_bins[0], 
+               bottom=bottom,
+               label=housing_type_labels[housing_idx],
+               color=colors[housing_idx],
+               edgecolor='white',
+               linewidth=0.5)
+        bottom += binned_pop[:, housing_idx]
+    
+    # Formatting
+    ax.set_xlabel('Amenity index', fontsize=10)
+    ax.set_ylabel('Nb of HHs', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(path_output_plots + '/baseline_amenity_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# Optional: Print summary statistics
+print("\nSummary Statistics:")
+print("-" * 50)
+for income_idx in range(n_income_groups):
+    total_pop = population[:, income_idx, :].sum()
+    print(f"{income_group_labels[income_idx]}: Total Population = {total_pop:,}")
+    
+# NB: FS does not appear when there is no rent
+
+
+########## NOW FOR SCENARIOS
+
+#### Rent
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Example data structure - replace with your actual data
+# rent: shape (n_scenarios, n_locations, n_housing_types)
+# population: shape (n_scenarios, n_locations, n_housing_types, n_income_groups)
+
+# Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
+n_scenarios = 5
+n_locations = 1000
+n_housing_types = 5
+n_income_groups = 4
+
+# Generate sample data (replace with your actual arrays)
+rent = np.random.uniform(500, 3000, (n_scenarios, n_locations, n_housing_types))
+population = np.random.randint(0, 100, (n_scenarios, n_locations, n_housing_types, n_income_groups))
+
+# Number of bins for histograms
+n_bins = 30  # Adjust as needed
+
+# Labels
+scenario_labels = [f'Scenario {i+1}' for i in range(n_scenarios)]
+income_group_labels = [f'Income Group {i+1}' for i in range(n_income_groups)]
+
+# Colors for scenarios
+colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, loc_idx, housing_idx]
+                p = population[scenario_idx, loc_idx, housing_idx, income_idx]
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create histogram bins
+            rent_min = rent_values.min()
+            rent_max = rent_values.max()
+            bins = np.linspace(rent_min, rent_max, n_bins + 1)
+            
+            # Calculate weighted histogram
+            hist, bin_edges = np.histogram(rent_values, bins=bins, weights=pop_values)
+            bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+            
+            # Plot as line with filled area
+            ax.plot(bin_centers, hist, 
+                   label=scenario_labels[scenario_idx],
+                   color=colors[scenario_idx],
+                   linewidth=2,
+                   alpha=0.8)
+            
+            # Add semi-transparent fill
+            ax.fill_between(bin_centers, hist, 
+                           alpha=0.2, 
+                           color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Rent ($)', fontsize=10)
+    ax.set_ylabel('Population', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('rent_distribution_scenarios.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# Optional: Print summary statistics
+print("\nSummary Statistics:")
+print("-" * 70)
+for income_idx in range(n_income_groups):
+    print(f"\n{income_group_labels[income_idx]}:")
+    for scenario_idx in range(n_scenarios):
+        total_pop = population[scenario_idx, :, :, income_idx].sum()
+        
+        # Calculate weighted average rent
+        rent_values = []
+        pop_values = []
+        for loc_idx in range(n_locations):
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, loc_idx, housing_idx]
+                p = population[scenario_idx, loc_idx, housing_idx, income_idx]
+                if p > 0:
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            avg_rent = np.average(rent_values, weights=pop_values)
+            print(f"  {scenario_labels[scenario_idx]}: Pop={total_pop:,}, Avg Rent=${avg_rent:.2f}")
+        else:
+            print(f"  {scenario_labels[scenario_idx]}: Pop={total_pop:,}, No data")
