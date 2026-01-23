@@ -3869,9 +3869,309 @@ plt.show()
 
 # TODO: Write plot and table functions!!! DNF appropriate options
 
+# TODO: need one average graph for all income groups??? Maybe just for maps?
+# But then, not very clear what is happening...
 
 #################################
 
 ### NOW DEAL WITH SPACE (baseline then scenarios)
 
 #################################
+
+##### BASELINE
+
+# CLAUDE CODE
+# I have an array giving me housing rents in thousands of locations for 5 housing types and an array giving me the population in each location for each housing type across 4 income groups. I also have a geodataframe with geometry for each location. Write the Python code to plot 3D maps for each income group, where in each location bar height represents population and bar color intensity represents housing rent (averaged across housing types with populations in each category used as weights). Add a map background with real geographic information beyond polygon boundaries.
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.colors import Normalize
+from matplotlib.cm import ScalarMappable
+import geopandas as gpd
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+import contextily as ctx
+from PIL import Image
+import io
+import requests
+
+# Assuming you have:
+# rents: shape (n_locations, 5) - rents for 5 housing types
+# population: shape (n_locations, 5, 4) - population for 5 housing types x 4 income groups
+# gdf: GeoDataFrame with geometry for each location
+
+def calculate_weighted_rent(rents, population, income_group_idx):
+    """
+    Calculate population-weighted average rent for each location and income group.
+    
+    Parameters:
+    - rents: array of shape (n_locations, 5)
+    - population: array of shape (n_locations, 5, 4)
+    - income_group_idx: index of income group (0-3)
+    
+    Returns:
+    - weighted_rents: array of shape (n_locations,)
+    """
+    # Get population for this income group across housing types
+    pop = population[:, income_group_idx, :]  # shape: (n_locations, 5)
+    
+    # Calculate weighted average rent
+    # Where population is 0, we'll handle it to avoid division by zero
+    total_pop = pop.sum(axis=0, keepdims=True)
+    total_pop = np.where(total_pop == 0, 1, total_pop)  # Avoid division by zero
+    
+    weighted_rents = (rents * pop).sum(axis=0) / total_pop.squeeze()
+    
+    return weighted_rents
+
+def get_basemap_image(gdf, zoom='auto', source=ctx.providers.OpenStreetMap.Mapnik):
+    """
+    Fetch a basemap image for the extent of the GeoDataFrame.
+    
+    Parameters:
+    - gdf: GeoDataFrame with geometry
+    - zoom: zoom level or 'auto'
+    - source: contextily basemap provider
+    
+    Returns:
+    - img: numpy array of the basemap image
+    - extent: (left, right, bottom, top) in the GDF's CRS
+    """
+    # Ensure GDF is in Web Mercator (EPSG:3857) for contextily
+    gdf_merc = gdf.to_crs(epsg=3857)
+    
+    # Get bounds
+    bounds = gdf_merc.total_bounds  # (minx, miny, maxx, maxy)
+    
+    # Fetch basemap
+    img, extent = ctx.bounds2img(bounds[0], bounds[1], bounds[2], bounds[3], 
+                                 zoom=zoom, source=source)
+    
+    # Convert extent back to original CRS if needed
+    # For now, we'll work in Web Mercator
+    return img, extent, gdf_merc
+
+def plot_3d_rent_map(gdf, rents, population, income_group_idx, 
+                     income_group_name=None, figsize=(16, 12),
+                     basemap_source=ctx.providers.CartoDB.Positron,
+                     basemap_alpha=0.6):
+    """
+    Create a 3D map with bar height = population, color = weighted rent, and real basemap.
+    
+    Parameters:
+    - gdf: GeoDataFrame with geometry
+    - rents: array of shape (n_locations, 5)
+    - population: array of shape (n_locations, 5, 4)
+    - income_group_idx: index of income group (0-3)
+    - income_group_name: name for plot title
+    - basemap_source: contextily provider for basemap
+    - basemap_alpha: transparency of basemap (0-1)
+    """
+    # Calculate total population for this income group
+    total_pop = population[:, income_group_idx, :].sum(axis=0)
+    
+    # Calculate weighted average rent
+    weighted_rents = calculate_weighted_rent(rents, population, income_group_idx)
+    
+    # Get basemap
+    basemap_img, extent, gdf_merc = get_basemap_image(gdf, source=basemap_source)
+    
+    # Get centroids in Web Mercator projection
+    centroids = gdf_merc.geometry.centroid
+    x = centroids.x.values
+    y = centroids.y.values
+    
+    # Set up figure
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111, projection='3d')
+    
+    # Add basemap as image at z=0
+    # Create mesh grid for the basemap
+    xx, yy = np.meshgrid(
+        np.linspace(extent[0], extent[1], basemap_img.shape[1]),
+        np.linspace(extent[2], extent[3], basemap_img.shape[0])
+    )
+    zz = np.zeros_like(xx)
+    
+    # Plot the basemap
+    ax.plot_surface(xx, yy, zz, rstride=1, cstride=1, 
+                    facecolors=basemap_img/255.0, 
+                    shade=False, alpha=basemap_alpha, zorder=1)
+    
+    # Add polygon boundaries for clarity
+    for idx, geom in enumerate(gdf_merc.geometry):
+        if geom.geom_type == 'Polygon':
+            poly_coords = np.array(geom.exterior.coords)
+            verts = [(coord[0], coord[1], 0) for coord in poly_coords]
+            poly = Poly3DCollection([verts], alpha=0.1, facecolors='none', 
+                                   edgecolor='black', linewidth=0.8, zorder=2)
+            ax.add_collection3d(poly)
+        elif geom.geom_type == 'MultiPolygon':
+            for poly_geom in geom.geoms:
+                poly_coords = np.array(poly_geom.exterior.coords)
+                verts = [(coord[0], coord[1], 0) for coord in poly_coords]
+                poly = Poly3DCollection([verts], alpha=0.1, facecolors='none', 
+                                       edgecolor='black', linewidth=0.8, zorder=2)
+                ax.add_collection3d(poly)
+    
+    # Normalize rent values for coloring
+    norm = Normalize(vmin=np.nanmin(weighted_rents), vmax=np.nanmax(weighted_rents))
+    cmap = plt.cm.YlOrRd  # Yellow to Red colormap
+    
+    # Create bars
+    # Bar width/depth - adjust based on your coordinate system
+    dx = np.ones_like(x) * (x.max() - x.min()) / 100
+    dy = np.ones_like(y) * (y.max() - y.min()) / 100
+    dz = total_pop
+    z = np.zeros_like(total_pop)
+    
+    # Color based on weighted rent
+    colors = cmap(norm(weighted_rents))
+    
+    # Plot bars
+    ax.bar3d(x, y, z, dx, dy, dz, color=colors, alpha=0.85, 
+             edgecolor='black', linewidth=0.3, zorder=3)
+    
+    # Set axis limits to match basemap extent
+    ax.set_xlim(extent[0], extent[1])
+    ax.set_ylim(extent[2], extent[3])
+    ax.set_zlim(0, np.max(total_pop) * 1.1)
+    
+    # Labels and title
+    ax.set_xlabel('Longitude (Web Mercator)', fontsize=10)
+    ax.set_ylabel('Latitude (Web Mercator)', fontsize=10)
+    ax.set_zlabel('Nb of HHs', fontsize=10)
+    
+    title = f'Spatial population distribution with rent levels'
+    if income_group_name:
+        title += f' - {income_group_name}'
+    ax.set_title(title, fontsize=14, fontweight='bold', pad=20)
+    
+    # Add colorbar
+    sm = ScalarMappable(cmap=cmap, norm=norm)
+    sm.set_array([])
+    cbar = plt.colorbar(sm, ax=ax, shrink=0.5, aspect=5, pad=0.1)
+    cbar.set_label('Weighted Average Rent', rotation=270, labelpad=20)
+    
+    # Adjust viewing angle
+    ax.view_init(elev=30, azim=45)
+    
+    # Remove background panes for cleaner look
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+    
+    plt.tight_layout()
+    
+    return fig, ax
+
+# Example usage:
+# Assuming your arrays are named: rents, population, gdf
+
+income_group_names = ['Poor', 'Midpoor', 
+                      'Midrich', 'Rich']
+
+# Basemap options (choose one):
+# ctx.providers.OpenStreetMap.Mapnik - detailed street map
+# ctx.providers.CartoDB.Positron - clean, minimal map
+# ctx.providers.CartoDB.Voyager - colorful with labels
+# ctx.providers.Stamen.Terrain - terrain/topography
+# ctx.providers.Esri.WorldImagery - satellite imagery
+
+gdf = gpd.read_file(path_data + "grid_reference_500.shp")
+rents = new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent
+
+# Create a 3D map for each income group
+for i in range(4):
+    fig, ax = plot_3d_rent_map(gdf, rents, population, i, 
+                               income_group_name=income_group_names[i],
+                               basemap_source=ctx.providers.CartoDB.Positron)
+    plt.savefig(f'rent_map_income_group_{i+1}_basemap.png', 
+                dpi=300, bbox_inches='tight', facecolor='white')
+    plt.show()
+
+# Optional: Create a 2x2 subplot with all income groups
+fig = plt.figure(figsize=(20, 16))
+
+# Get basemap once for all subplots
+basemap_img, extent, gdf_merc = get_basemap_image(gdf, 
+                                                   source=ctx.providers.CartoDB.Positron)
+
+for i in range(4):
+    ax = fig.add_subplot(2, 2, i+1, projection='3d')
+    
+    # Add basemap
+    xx, yy = np.meshgrid(
+        np.linspace(extent[0], extent[1], basemap_img.shape[1]),
+        np.linspace(extent[2], extent[3], basemap_img.shape[0])
+    )
+    zz = np.zeros_like(xx)
+    ax.plot_surface(xx, yy, zz, rstride=1, cstride=1, 
+                    facecolors=basemap_img/255.0, 
+                    shade=False, alpha=0.5, zorder=1)
+    
+    # Add polygon boundaries
+    for idx, geom in enumerate(gdf_merc.geometry):
+        if geom.geom_type == 'Polygon':
+            poly_coords = np.array(geom.exterior.coords)
+            verts = [(coord[0], coord[1], 0) for coord in poly_coords]
+            poly = Poly3DCollection([verts], alpha=0.1, facecolors='none', 
+                                   edgecolor='black', linewidth=0.5, zorder=2)
+            ax.add_collection3d(poly)
+        elif geom.geom_type == 'MultiPolygon':
+            for poly_geom in geom.geoms:
+                poly_coords = np.array(poly_geom.exterior.coords)
+                verts = [(coord[0], coord[1], 0) for coord in poly_coords]
+                poly = Poly3DCollection([verts], alpha=0.1, facecolors='none', 
+                                       edgecolor='black', linewidth=0.5, zorder=2)
+                ax.add_collection3d(poly)
+    
+    # Calculate data
+    total_pop = population[:, i, :].sum(axis=0)
+    weighted_rents = calculate_weighted_rent(rents, population, i)
+    
+    # Get centroids
+    centroids = gdf_merc.geometry.centroid
+    x = centroids.x.values
+    y = centroids.y.values
+    
+    # Normalize and color
+    norm = Normalize(vmin=np.nanmin(weighted_rents), vmax=np.nanmax(weighted_rents))
+    cmap = plt.cm.YlOrRd
+    colors = cmap(norm(weighted_rents))
+    
+    # Bar dimensions
+    dx = np.ones_like(x) * (x.max() - x.min()) / 100
+    dy = np.ones_like(y) * (y.max() - y.min()) / 100
+    dz = total_pop
+    z = np.zeros_like(total_pop)
+    
+    # Plot
+    ax.bar3d(x, y, z, dx, dy, dz, color=colors, alpha=0.85, 
+             edgecolor='black', linewidth=0.2, zorder=3)
+    
+    # Set limits
+    ax.set_xlim(extent[0], extent[1])
+    ax.set_ylim(extent[2], extent[3])
+    ax.set_zlim(0, np.max(population[:, :, i].sum(axis=1)) * 1.1)
+    
+    ax.set_xlabel('Longitude', fontsize=8)
+    ax.set_ylabel('Latitude', fontsize=8)
+    ax.set_zlabel('Nb of HHs', fontsize=8)
+    ax.set_title(income_group_names[i], fontsize=11, fontweight='bold')
+    ax.view_init(elev=30, azim=45)
+    
+    # Clean background
+    ax.xaxis.pane.fill = False
+    ax.yaxis.pane.fill = False
+    ax.zaxis.pane.fill = False
+
+plt.suptitle('Spatial population distribution with rent levels by income group', 
+             fontsize=16, fontweight='bold', y=0.98)
+plt.tight_layout()
+plt.savefig('all_income_groups_combined_basemap.png', 
+            dpi=300, bbox_inches='tight', facecolor='white')
+plt.show()
+
+
+##### SCENARIO CHANGES
