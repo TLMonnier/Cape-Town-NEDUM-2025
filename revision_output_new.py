@@ -2008,6 +2008,21 @@ new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.array(
      np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[3,:])]
     )
+#
+basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
+    )
 
 new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)))
 new_backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)
@@ -2040,6 +2055,21 @@ new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.array(
      increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent,
      np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[3,:])]
+    )
+#
+basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
     )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)))
@@ -2075,6 +2105,21 @@ new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent = np.array(
      np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent[3,:])]
     )
+#
+basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
+    )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)))
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)
@@ -2108,6 +2153,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent = np.array(
      increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent,
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[3,:])]
+    )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[3,:])]
     )
 
 ###
@@ -2145,6 +2205,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent = np.array(
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[3,:])]
     )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
+    )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)))
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)
@@ -2178,6 +2253,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent = np.array(
      increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent,
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[3,:])]
+    )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
     )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)))
@@ -2213,6 +2303,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent = np.array(
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[3,:])]
     )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[3,:])]
+    )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)))
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)
@@ -2246,6 +2351,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent = np.array(
      increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent,
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[3,:])]
+    )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[3,:])]
     )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)))
@@ -2281,6 +2401,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent = np.array(
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[3,:])]
     )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[3,:])]
+    )
 
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = np.zeros((4,len(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)))
 new_backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[0,:] = np.copy(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)
@@ -2314,6 +2449,21 @@ new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent = np.array(
      increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent,
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[2,:]),
      np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[3,:])]
+    )
+#
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[1,:])
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size = np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[1,:])
+basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1==2] = 0
+increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1<2] = 0
+# Adjust
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[3,:] = param["backyard_size"] + param["RDP_size"]
+#
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size = np.array(
+    [np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[0,:]),
+     basic_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size,
+     increm_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size,
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[2,:]),
+     np.copy(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[3,:])]
     )
 
 # Weird results? Has to do with simulation definitions?
@@ -2798,7 +2948,6 @@ for income_idx in range(n_income_groups):
 
 #### Rent
 
-
 # Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
 n_scenarios = 5
 n_locations = np.shape(new_amenities)[1]
@@ -2835,19 +2984,23 @@ colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
 fig, axes = plt.subplots(2, 2, figsize=(14, 10))
 axes = axes.flatten()
 
+# for income_idx in [3]:
 for income_idx in range(n_income_groups):
     ax = axes[income_idx]
     
     # Plot distribution for each scenario
+    # for scenario_idx in [0]:
     for scenario_idx in range(n_scenarios):
         # Collect all rent-population pairs for this scenario and income group
         rent_values = []
         pop_values = []
         
         for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
             for housing_idx in range(n_housing_types):
                 r = rent[scenario_idx, housing_idx, loc_idx]
                 p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                # DOUBLE COUNTING DOES NOT APPEAR AS THERE IS ONLY ONE INCOME GROUP PER HOUSING TYPE IN EACH LOCATION!
                 if p > 0:  # Only include locations with population
                     rent_values.append(r)
                     pop_values.append(p)
@@ -2874,11 +3027,11 @@ for income_idx in range(n_income_groups):
                 if income_idx==0:
                     rent_max = 200
                 elif income_idx==1:
-                    rent_max = 600
+                    rent_max = 500
                 elif income_idx==2:
                     rent_max = 1000
                 elif income_idx==3:
-                    rent_max = 1500
+                    rent_max = 1400
                 
                 rent_range = np.linspace(rent_min, rent_max, n_points)
                 
@@ -2891,7 +3044,7 @@ for income_idx in range(n_income_groups):
                 ax.plot(rent_range, density_scaled, 
                        label=scenario_labels[scenario_idx],
                        color=colors[scenario_idx],
-                       linewidth=2.5,
+                       linewidth=1,
                        alpha=0.9)
                 
                 # Add semi-transparent fill
@@ -2910,3 +3063,815 @@ plt.tight_layout()
 plt.savefig(path_output_plots + '/scenarios_rent_pop_distrib.png', dpi=300, bbox_inches='tight')
 plt.show()
 
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Income
+
+# Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
+n_scenarios = 5
+n_locations = np.shape(new_amenities)[1]
+n_housing_types = 5
+n_income_groups = 4
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs])
+
+population = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households])
+
+# Number of points for smooth curve
+n_points = 100  # Adjust for smoother/coarser curves
+
+# Labels
+scenario_labels = ["Baseline", "Subsidies", "New RDP", "New IS", "No UE"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Colors for scenarios
+colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [3]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # for scenario_idx in [0]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, income_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                # NO DOUBLE COUNTING
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                if income_idx==0:
+                    rent_min = 13000
+                    rent_max = 19000
+                elif income_idx==1:
+                    rent_max = 55000
+                elif income_idx==2:
+                    rent_max = 168000
+                elif income_idx==3:
+                    rent_min = 755000
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Income net of commuting (ZAR/year)', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_income_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Amenities (double counting??) Takes longer with correction? Different results?
+
+# Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
+n_scenarios = 5
+n_locations = np.shape(new_amenities)[1]
+# n_housing_types = 5
+n_income_groups = 4
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    amenities,
+    amenities,
+    amenities,
+    amenities,
+    amenities])
+
+population = np.stack([
+    np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 0),
+    np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households, 0),
+    np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households, 0),
+    np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 0),
+    np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 0)])
+
+# Number of points for smooth curve
+# MAKES IT EASIER TO VISUALIZE JUMPS IN DISTRIBUTION?
+n_points = 100  # Adjust for smoother/coarser curves
+
+# Labels
+scenario_labels = ["Baseline", "Subsidies", "New RDP", "New IS", "No UE"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Colors for scenarios
+colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [3]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # for scenario_idx in [0]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            # for housing_idx in range(n_housing_types):
+            r = rent[scenario_idx, loc_idx]
+            p = population[scenario_idx, income_idx, loc_idx]
+            # NO DOUBLE COUNTING? Doesn't change anything
+            if p > 0:  # Only include locations with population
+                rent_values.append(r)
+                pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                if income_idx==0:
+                    rent_max = 1.2
+                elif income_idx==1:
+                    rent_max = 1.2
+                elif income_idx==2:
+                    rent_max = 1.2
+                elif income_idx==3:
+                    rent_min = 0.9
+                    rent_max = 1.3
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Amenity index', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_amenity_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Dwelling sizes
+
+# Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
+n_scenarios = 5
+n_locations = np.shape(new_amenities)[1]
+n_housing_types = 5
+n_income_groups = 4
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size])
+
+population = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households])
+
+# Number of points for smooth curve
+n_points = 100  # Adjust for smoother/coarser curves
+
+# Labels
+scenario_labels = ["Baseline", "Subsidies", "New RDP", "New IS", "No UE"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Colors for scenarios
+colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [1]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # Mass probability for dwelling size for midpoor in new RDP scenario!
+    # for scenario_idx in [2]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, housing_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                # if income_idx==0:
+                #     rent_max = 1.2
+                # elif income_idx==1:
+                #     rent_max = 1.2
+                # elif income_idx==2:
+                #     rent_max = 1.2
+                # elif income_idx==3:
+                #     rent_min = 0.9
+                #     rent_max = 1.3
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Ad hoc correction
+                if scenario_idx==2 and income_idx==1:
+                    density_scaled[density_scaled>4] = 4
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Dwelling sizes (m²)', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_dsize_pop_distrib.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+###### MORE SCENARIOS
+
+#### Rent
+
+# Example: 5 scenarios, 1000 locations, 5 housing types, 4 income groups
+n_scenarios = 7
+n_locations = np.shape(new_amenities)[1]
+n_housing_types = 5
+n_income_groups = 4
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent])
+
+population = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households])
+
+# Number of points for smooth curve
+n_points = 100  # Adjust for smoother/coarser curves
+
+# Labels
+scenario_labels = ["Baseline", "Disam. -10pc", "Disam. -50pc", "Disam. -100pc", "Toler. -10pc", "Toler. -50pc", "Toler. -100pc"]
+income_group_labels = ["Poor", "Midpoor", "Midrich", "Rich"]
+
+# Colors for scenarios
+colors = plt.cm.tab10(np.linspace(0, 1, n_scenarios))
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [3]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # for scenario_idx in [0]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, housing_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                # DOUBLE COUNTING DOES NOT APPEAR AS THERE IS ONLY ONE INCOME GROUP PER HOUSING TYPE IN EACH LOCATION!
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                if income_idx==0:
+                    rent_max = 400
+                elif income_idx==1:
+                    rent_max = 800
+                elif income_idx==2:
+                    rent_max = 1000
+                elif income_idx==3:
+                    rent_max = 2500
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Rent (ZAR/year)', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_rent_pop_distrib_upgrading.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Income
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs,
+    income_net_of_commuting_costs])
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [3]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # for scenario_idx in [0]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, income_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                # NO DOUBLE COUNTING
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                # if income_idx==0:
+                #     rent_min = 13000
+                #     rent_max = 19000
+                # elif income_idx==1:
+                #     rent_max = 55000
+                # elif income_idx==2:
+                #     rent_max = 168000
+                # elif income_idx==3:
+                #     rent_min = 755000
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Income net of commuting (ZAR/year)', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_income_pop_distrib_upgrading.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Amenities (double counting??) Takes longer with correction? Different results?
+
+rent = np.stack([
+    amenities,
+    amenities,
+    amenities,
+    amenities,
+    amenities,
+    amenities,
+    amenities])
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [3]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # for scenario_idx in [0]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                # NO DOUBLE COUNTING? Doesn't change anything
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                # if income_idx==0:
+                #     rent_max = 1.2
+                # elif income_idx==1:
+                #     rent_max = 1.2
+                # elif income_idx==2:
+                #     rent_max = 1.2
+                # elif income_idx==3:
+                #     rent_min = 0.9
+                #     rent_max = 1.3
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Amenity index', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_amenity_pop_distrib_upgrading.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+
+#### Dwelling sizes
+
+
+# Generate sample data (replace with your actual arrays)
+
+rent = np.stack([
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size,
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size])
+
+
+# Create a figure with subplots for each income group
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+axes = axes.flatten()
+
+# for income_idx in [1]:
+for income_idx in range(n_income_groups):
+    ax = axes[income_idx]
+    
+    # Plot distribution for each scenario
+    # Mass probability for dwelling size for midpoor in new RDP scenario!
+    # for scenario_idx in [0,1,2,4,5,6]:
+    for scenario_idx in range(n_scenarios):
+        # Collect all rent-population pairs for this scenario and income group
+        rent_values = []
+        pop_values = []
+        
+        for loc_idx in range(n_locations):
+            # for housing_idx in [0]:
+            for housing_idx in range(n_housing_types):
+                r = rent[scenario_idx, housing_idx, loc_idx]
+                p = population[scenario_idx, housing_idx, income_idx, loc_idx]
+                if p > 0:  # Only include locations with population
+                    rent_values.append(r)
+                    pop_values.append(p)
+        
+        if len(rent_values) > 0:
+            rent_values = np.array(rent_values)
+            pop_values = np.array(pop_values)
+            
+            # Create smooth continuous distribution using KDE
+            # Repeat rent values weighted by population for KDE
+            rent_weighted = np.repeat(rent_values, pop_values.astype(int))
+            
+            if len(rent_weighted) > 1:
+                # Use Gaussian KDE for smooth distribution
+                kde = gaussian_kde(rent_weighted, bw_method='scott')
+                
+                # Create smooth x-axis range
+                rent_min = rent_values.min()
+                rent_max = rent_values.max()
+
+                # rent_max = rent_values[pop_values>1000].max()
+                # rent_max = np.nanquantile(rent_values, 0.99)
+                
+                # if income_idx==0:
+                #     rent_max = 1.2
+                # elif income_idx==1:
+                #     rent_max = 1.2
+                # elif income_idx==2:
+                #     rent_max = 1.2
+                # elif income_idx==3:
+                #     rent_min = 0.9
+                #     rent_max = 1.3
+                
+                rent_range = np.linspace(rent_min, rent_max, n_points)
+                
+                # Evaluate KDE and scale by total population
+                density = kde(rent_range)
+                # density_scaled = density * pop_values.sum()
+                density_scaled = density
+                
+                # Ad hoc correction
+                if scenario_idx==3 and income_idx==1:
+                    density_scaled[density_scaled>1.2] = 1.2
+                
+                # Plot smooth curve with filled area
+                ax.plot(rent_range, density_scaled, 
+                       label=scenario_labels[scenario_idx],
+                       color=colors[scenario_idx],
+                       linewidth=1,
+                       alpha=0.9)
+                
+                # Add semi-transparent fill
+                ax.fill_between(rent_range, density_scaled, 
+                               alpha=0.2, 
+                               color=colors[scenario_idx])
+    
+    # Formatting
+    ax.set_xlabel('Dwelling sizes (m²)', fontsize=10)
+    ax.set_ylabel('Density', fontsize=10)
+    ax.set_title(income_group_labels[income_idx], fontsize=12, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=8)
+    ax.grid(axis='both', alpha=0.3)
+    
+plt.tight_layout()
+plt.savefig(path_output_plots + '/scenarios_dsize_pop_distrib_upgrading.png', dpi=300, bbox_inches='tight')
+plt.show()
+
+# FOR RICH AND MIDRICH, BASELINE IS INDISTINGUISHIBLE FROM SUBSIDIES!!!
+
+# TODO: incorporate increased amenities or subsidy revenues in plots?
+
+
+# TODO: multiply amentiies by disamenities and add backyard revenues and construction costs to income?
+
+# TODO: Write plot and table functions!!! DNF appropriate options
+
+
+#################################
+
+### NOW DEAL WITH SPACE (baseline then scenarios)
+
+#################################
