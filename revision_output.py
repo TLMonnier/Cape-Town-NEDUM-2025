@@ -12,7 +12,7 @@ import pandas as pd
 # import os
 import geopandas as gpd
 import matplotlib.pyplot as plt
-import seaborn as sns
+# mimport seaborn as sns
 
 # ## We also import our own packages
 import inputs.data as inpdt

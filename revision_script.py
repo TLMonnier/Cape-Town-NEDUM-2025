@@ -49,7 +49,7 @@ options = inpprm.import_options()
 options["urban_edge"] = 1
 # param["year_urban_edge"] = param["baseline_year"]
 options["informal_land_constrained"] = 1
-options["new_RDP_housing"] = 0
+options["new_RDP_housing"] = 1
 
 # TODO: Do not converge well when too far from intiial equilibrium? Seems OKish
 

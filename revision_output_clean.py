@@ -109,11 +109,10 @@ fraction_capital_destroyed["structure_informal_backyards"
 fraction_capital_destroyed["structure_informal_settlements"
                            ] = np.zeros(24014)
 
-############################################
+###############################################################################
 
-# TODO: MOVE FUNCTIONS IN SIDE SCRIPT
-
-# LOAD SIMULATION RESULTS
+# TODO: CODE FUNCTIONS ONLY WHEN NEED TO EDIT RELATIVELY SIMPLE COMMANDS BECOMES BURDENSOME
+# OR TO PROOF-READ RESULTS! DO AT NEXT STAGE THEN ADD DO SIDE SCRIPT
 
 def load_simulation_data(path_simul, data_type, simulation_name):
     """
@@ -166,150 +165,71 @@ def load_multiple_simulation_data(path_simul, data_types, simulation_names):
     
     return results
 
-# ## Import simulation results using helper functions
 simulation_configs = [
     'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
     'simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
     'simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
     'simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1',
-    'simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1',
     'simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1',
+    'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1',
+    'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1'
 ]
 
-# Load data for all simulations
-utility_data = load_multiple_simulation_data(path_simul, 'utility', simulation_configs)
+# PROCESS SIMULATION RESULTS
 
-# Access loaded data
+## LOAD DATA FOR ALL SIMULATIONS
+
+utility_data = load_multiple_simulation_data(path_simul, 'utility', simulation_configs)
+households_data = load_multiple_simulation_data(path_simul, 'households', simulation_configs)
+dwelling_size_data = load_multiple_simulation_data(path_simul, 'dwelling_size', simulation_configs)
+rent_data = load_multiple_simulation_data(path_simul, 'rent', simulation_configs)
+housing_supply_data = load_multiple_simulation_data(path_simul, 'housing_supply', simulation_configs)
+
+## ACCESS LOADED DATA
+
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[0]]
 simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[1]]
 simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[2]]
 simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[3]]
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[4]]
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility = utility_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = utility_data[simulation_configs[6]]
 
-#############################################
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = households_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = households_data[simulation_configs[6]]
 
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility = np.load(
-    path_simul + '/initial_state_utility_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = dwelling_size_data[simulation_configs[6]]
 
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.load(
-    path_simul + '/initial_state_households_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = rent_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = rent_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = rent_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent = rent_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent = rent_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent = rent_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent = rent_data[simulation_configs[6]]
 
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size = np.load(
-    path_simul + '/initial_state_dwelling_size_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_housing_supply = housing_supply_data[simulation_configs[6]]
 
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_housing_supply = np.load(
-    path_simul + '/initial_state_housing_supply_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
+## ACCESS INDIVIDUAL VARIABLES FOR POST-PROCESSING
 
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1.npy')
-simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent = np.load(
-    path_simul + '/initial_state_rent_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1.npy')
-
-
-# WELFARE DECOMPOSITON: write functions???
-
-## Load variables
-
-### Dwelling sizes
+### DWELLING SIZE
 
 formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[0, :]
 backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size[1, :]
@@ -331,42 +251,22 @@ backyard_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconst
 informal_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[2, :]
 rdp_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_dwelling_size[3, :]
 
-formal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[0, :]
-backyard_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[1, :]
-informal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[2, :]
-rdp_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_dwelling_size[3, :]
-
 formal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[0, :]
 backyard_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[1, :]
 informal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[2, :]
 rdp_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_dwelling_size[3, :]
-
-formal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[0, :]
-backyard_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[1, :]
-informal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[2, :]
-rdp_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_dwelling_size[3, :]
 
 formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[0, :]
 backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[1, :]
 informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[2, :]
 rdp_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_dwelling_size[3, :]
 
-formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[0, :]
-backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[1, :]
-informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[2, :]
-rdp_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_dwelling_size[3, :]
-
 formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[0, :]
 backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[1, :]
 informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[2, :]
 rdp_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_dwelling_size[3, :]
 
-formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[0, :]
-backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[1, :]
-informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[2, :]
-rdp_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_dwelling_size[3, :]
-
-### Market rents
+### HOUSING RENTS
 
 formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[0, :]
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent[1, :]
@@ -388,56 +288,33 @@ backyard_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconst
 informal_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent[2, :]
 rdp_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_rent[3, :]
 
-formal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[0, :]
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[1, :]
-informal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[2, :]
-rdp_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_rent[3, :]
-
 formal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[0, :]
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[1, :]
 informal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[2, :]
 rdp_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_rent[3, :]
-
-formal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[0, :]
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[1, :]
-informal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[2, :]
-rdp_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_rent[3, :]
 
 formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[0, :]
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[1, :]
 informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[2, :]
 rdp_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_rent[3, :]
 
-formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[0, :]
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[1, :]
-informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[2, :]
-rdp_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_rent[3, :]
-
 formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[0, :]
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[1, :]
 informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[2, :]
 rdp_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_rent[3, :]
 
-formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[0, :]
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[1, :]
-informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[2, :]
-rdp_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_rent[3, :]
-
-### Correct for backyard parameters
+### BACKYARD HOUSING SUPPLY
 
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_housing_supply[1, :]/1000000
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_housing_supply[1, :]/1000000
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_housing_supply[1, :]/1000000
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_housing_supply[1, :]/1000000
 
-# NB: corresponds to baseline (correct in appropriate scenarios)
+## ADJUST DISAMENITY PARAMETERS
+
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = param["backyard_pockets"]
 disam_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = param["backyard_pockets"]
 disam_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = param["backyard_pockets"]
@@ -450,7 +327,6 @@ disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = param["backyard_
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = param["backyard_pockets"]
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = param["backyard_pockets"]
 
-# NB: only works when all values are the same (non-location-specific calibration)
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = (
     np.nanmean(param["incremental_pockets"]))
 disam_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1==2] = (
@@ -459,19 +335,11 @@ disam_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE
     np.nanmean(param["incremental_pockets"]))
 disam_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1==2] = ( 
     np.nanmean(param["incremental_pockets"]))
-disam_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1==2] = ( 
-    np.nanmean(param["incremental_pockets"])) + 0.1*(1-np.nanmean(param["incremental_pockets"]))
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1==2] = ( 
     np.nanmean(param["incremental_pockets"])) + 0.5*(1-np.nanmean(param["incremental_pockets"]))
-disam_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1==2] = ( 
-    np.nanmean(param["incremental_pockets"])) + 1*(1-np.nanmean(param["incremental_pockets"]))
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1==2] = ( 
     np.nanmean(param["incremental_pockets"]))
-disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1==2] = ( 
-    np.nanmean(param["incremental_pockets"]))
 disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1==2] = ( 
-    np.nanmean(param["incremental_pockets"]))
-disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1==2] = ( 
     np.nanmean(param["incremental_pockets"]))
 
 disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = param["informal_pockets"]
@@ -486,6 +354,8 @@ disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = param["informal_
 disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = param["informal_pockets"]
 disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = param["informal_pockets"]
 
+## DISTINGUISH BETWEEN BASIC AND REDEVELOPED BACKYARDS
+
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)] = 0
 backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1)] = 0
@@ -494,20 +364,14 @@ backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard
 backyard_rent_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1)] = 0
 backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1)] = 0
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)] = 0
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)] = 0
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)] = 0
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)] = 0
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)] = 0
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)] = 0
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)] = 0
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)] = 0
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)] = 0
-backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)] = 0
-backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)] = 0
+
+## ADJUST FOR THE DIFFERENCE IN CONSTRUCTION COSTS
 
 informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1 = (
     (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
@@ -549,16 +413,6 @@ backyard_cost_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1 = informal_cost_UE1
 backyard_cost_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1==2] = ( 
     incremental_cost_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1==2])
 
-informal_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 * param["backyard_size"] / param["shack_size"])
-incremental_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 * param["backyard_size"] / param["RDP_size"])
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1 = informal_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1==2] = ( 
-    incremental_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1==2])
-
 informal_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = (
     (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
     * backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 * param["backyard_size"] / param["shack_size"])
@@ -568,16 +422,6 @@ incremental_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = (
 backyard_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1 = informal_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1
 backyard_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1==2] = ( 
     incremental_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1==2])
-
-informal_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 * param["backyard_size"] / param["shack_size"])
-incremental_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 * param["backyard_size"] / param["RDP_size"])
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1 = informal_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1==2] = ( 
-    incremental_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1==2])
 
 informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = (
     (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
@@ -589,16 +433,6 @@ backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1 = informal_cost_UE1
 backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1==2] = ( 
     incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1==2])
 
-informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 * param["backyard_size"] / param["shack_size"])
-incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 * param["backyard_size"] / param["RDP_size"])
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1 = informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1==2] = ( 
-    incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1==2])
-
 informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = (
     (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
     * backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 * param["backyard_size"] / param["shack_size"])
@@ -609,68 +443,66 @@ backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1 = informal_cost_UE1
 backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1==2] = ( 
     incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1==2])
 
-informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 * param["backyard_size"] / param["shack_size"])
-incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = (
-    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
-    * backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 * param["backyard_size"] / param["RDP_size"])
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1 = informal_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1
-backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1==2] = ( 
-    incremental_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1==2])
+## ADJUST REMAINING PARAMETERS
 
-### Adjust remaining parameters
-
-# DNF, else changes the source!!!!
 subsid_income_net_of_commuting_costs = np.copy(income_net_of_commuting_costs)
 
-# Needs to be yearly to be realistic...
-# subsid_income_net_of_commuting_costs[0] = (
-#     income_net_of_commuting_costs[0]
-#     + param["subsidized_structure_value"]
-#     * (9*param["current_rate_public_housing"] + 21*param["future_rate_public_housing"])
-#     / (households_per_income_class[0]*population/sum(households_per_income_class))
-#     )
 subsid_income_net_of_commuting_costs[0] = (
     income_net_of_commuting_costs[0]
     + param["subsidized_structure_value"]
     * param["current_rate_public_housing"]
     / ((households_per_income_class[0]-total_RDP)*population/sum(households_per_income_class))
     )
-# Can also use future
 
-# Successively build changes upon baseline utility FOR EACH SCENARIO
-# NB: maybe automatize the scenario part?
+###############################################################################
 
-## USE NEW SPATIAL ALLOCATION FOR EACH VARIABLE TO BE UPDATED (when relevant?)
-## Only works with average values, but DNF Jensen inequality: cannot go too much into details
+# SCENARIO DEFINITIONS
 
-### Define baseline
+# TODO: When relevant, show visuals for scenario definition
 
-utility_formal_base = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
+# Subsidies: The total yearly amount to be spent by the local government on formal subsidized housing
+# according to the City of Cape Town’s Housing Pipeline as contained in its Integrated Human Settlement
+# Framework (2013) is redistributed as a direct transfer to low-income non-beneficiaries. The monetary
+# value is obtained by multiplying the theoretical number of housing units to be built by the calibrated
+# construction costs.
 
-utility_backyard_base = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
+# New RDP: New formal subsidized housing units are built according to the expected completion of the
+# City of Cape Town’s Housing Pipeline as of 2040 (conservative estimate). This corresponds to the
+# construction of 65,000 units (roughly 2,200 per year) in specific sites, or an increase of the
+# public housing supply by roughly 33%.
 
-utility_informal_base = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
+# New IS: All areas designated by the City of Cape Town as at risk of being squatted become
+# available for informal settlements (generous estimate). Note that this only affects some
+# fixed share of grid cell areas and does not preclude formal development from occuring at
+# the same time. Nor does this imply that these newly available areas will all be settled 
+# in equilibrium.
+
+# No UE: The urban edge constraint in place at baseline year is relieved and formal
+# development allowed to expand in the rural hinterland. In reality, such expansion
+# should be accompanied by an extension of infrastructure networks to make it sustainable,
+# but we do not model it and simply extrapolate the transporation costs estimated at
+# baseline as a proof of concept.
+
+# Disam. -50pc: The disamenity gap between different forms of informal housing and
+# formal housing is reduced by 50%. This stands for aggressive slum upgrading programs
+# that would be uniform across space.
+
+# Toler. -50pc: The areas available for informal settlements are reduced by 50% and
+# become available for formal private development. This stands for aggressive eviction
+# or formalization policies that would be uniform across space.
+
+###############################################################################
+
+# TABLE: UTILITY CHANGES
+
+# FOOTNOTE: The table shows the utility change rates per income group in the model for each scenario.
+# The utility of the low-income group is split across non-beneficiaries (who share a common utility
+# level determined in equilibrium) and beneficiaries (whose utilities are exogenous and heterogeneous
+# across space) of formal subsidized housing. The reported values for the beneficiaries correspond
+# to population weighted averages. The values reported in the final row are population weighted 
+# averages aggregated for all income groups.
+
+## WE COMPUTE THE EX-POST UTILITIES IN RDP TO GET AN AVERAGE ACROSS SPACE (NON-EQUILIBRIUM VALUES)
 
 utility_rdp_base = (
     (income_net_of_commuting_costs
@@ -681,68 +513,6 @@ utility_rdp_base = (
     * (param["RDP_size"] + param["backyard_size"] - param["q0"]
        - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
     * amenities[None, :]
-    )
-
-#### NB: need to go together when using different allocation matrices (test it)
-#### Do we really need allocation grids? Maybe just do extensive margin before adjusting variables (discuss sequence after test)
-#### Advantage is that we can be more granular in changes of interest
-#### NOTE THAT EXTENSIVE MARGIN IS ON BOTH LOCATION (3D with rent or just 1D with size and aspect, amenities, etc: or just plot distrib) AND HOUSING TYPE
-
-# Idea of graphs is to go further in the analysis!
-
-utility_base_mat = np.array([utility_formal_base, utility_backyard_base, utility_informal_base, utility_rdp_base])
-base_utility_poor = (np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-                     / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-base_utility_midpoor = (np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-                        / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-base_utility_midrich =(np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-                       / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-base_utility_rich = (np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-                     / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-### No urban edge
-
-#### Not sure if extensive effect mean something...
-
-noUE_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-noUE_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-noUE_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-noUE_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-#### Intensive effects
-
-utility_formal_noUE_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_noUE_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_informal_noUE_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
     )
 
 utility_rdp_noUE_housing_eff = (
@@ -756,66 +526,6 @@ utility_rdp_noUE_housing_eff = (
     * amenities[None, :]
     )
 
-utility_noUE_housing_eff_mat = np.array([
-    utility_formal_noUE_housing_eff, utility_backyard_noUE_housing_eff, utility_informal_noUE_housing_eff, utility_rdp_noUE_housing_eff])
-utility_poor_noUE_housing_eff = (
-    np.nansum(utility_noUE_housing_eff_mat[:,0,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_noUE_housing_eff = (
-    np.nansum(utility_noUE_housing_eff_mat[:,1,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_noUE_housing_eff = (
-    np.nansum(utility_noUE_housing_eff_mat[:,2,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_noUE_housing_eff = (
-    np.nansum(utility_noUE_housing_eff_mat[:,3,:]*simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### New IS
-
-#### Not sure if extensive effect mean something...
-
-newIS_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-newIS_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-newIS_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-newIS_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_newIS_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_newIS_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_informal_newIS_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
 utility_rdp_newIS_housing_eff = (
     (income_net_of_commuting_costs
      + backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
@@ -825,66 +535,6 @@ utility_rdp_newIS_housing_eff = (
     * (param["RDP_size"] + param["backyard_size"] - param["q0"]
        - np.nanmin(backyard_supply_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
     * amenities[None, :]
-    )
-
-utility_newIS_housing_eff_mat = np.array([
-    utility_formal_newIS_housing_eff, utility_backyard_newIS_housing_eff, utility_informal_newIS_housing_eff, utility_rdp_newIS_housing_eff])
-utility_poor_newIS_housing_eff = (
-    np.nansum(utility_newIS_housing_eff_mat[:,0,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_newIS_housing_eff = (
-    np.nansum(utility_newIS_housing_eff_mat[:,1,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_newIS_housing_eff = (
-    np.nansum(utility_newIS_housing_eff_mat[:,2,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_newIS_housing_eff = (
-    np.nansum(utility_newIS_housing_eff_mat[:,3,:]*simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### New RDP
-
-#### Not sure if extensive effect mean something...
-
-newRDP_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-newRDP_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-newRDP_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-newRDP_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_newRDP_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_newRDP_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_informal_newRDP_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1[None, :]
     )
 
 utility_rdp_newRDP_housing_eff = (
@@ -898,249 +548,6 @@ utility_rdp_newRDP_housing_eff = (
     * amenities[None, :]
     )
 
-utility_newRDP_housing_eff_mat = np.array([
-    utility_formal_newRDP_housing_eff, utility_backyard_newRDP_housing_eff, utility_informal_newRDP_housing_eff, utility_rdp_newRDP_housing_eff])
-utility_poor_newRDP_housing_eff = (
-    np.nansum(utility_newRDP_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_newRDP_housing_eff = (
-    np.nansum(utility_newRDP_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_newRDP_housing_eff = (
-    np.nansum(utility_newRDP_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_newRDP_housing_eff = (
-    np.nansum(utility_newRDP_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### Amenity upgrading (low)
-
-#### Not sure if extensive effect means something...
-
-Aup1_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:]))
-Aup1_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:]))
-Aup1_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:]))
-Aup1_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Aup1_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup1_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup1_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_rdp_Aup1_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Aup1_housing_eff_mat = np.array([
-    utility_formal_Aup1_housing_eff, utility_backyard_Aup1_housing_eff, utility_informal_Aup1_housing_eff, utility_rdp_Aup1_housing_eff])
-utility_poor_Aup1_housing_eff = (
-    np.nansum(utility_Aup1_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup1_housing_eff = (
-    np.nansum(utility_Aup1_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup1_housing_eff = (
-    np.nansum(utility_Aup1_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup1_housing_eff = (
-    np.nansum(utility_Aup1_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-utility_formal_Aup1_amenity_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup1_amenity_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup1_amenity_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_rdp_Aup1_amenity_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Aup1_amenity_eff_mat = np.array([
-    utility_formal_Aup1_amenity_eff, utility_backyard_Aup1_amenity_eff, utility_informal_Aup1_amenity_eff, utility_rdp_Aup1_amenity_eff])
-utility_poor_Aup1_amenity_eff = (
-    np.nansum(utility_Aup1_amenity_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup1_amenity_eff = (
-    np.nansum(utility_Aup1_amenity_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup1_amenity_eff = (
-    np.nansum(utility_Aup1_amenity_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup1_amenity_eff = (
-    np.nansum(utility_Aup1_amenity_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### Amenity upgrading (medium)
-
-#### Not sure if extensive effect means something...
-
-Aup2_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:]))
-Aup2_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:]))
-Aup2_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:]))
-Aup2_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Aup2_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup2_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup2_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_rdp_Aup2_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Aup2_housing_eff_mat = np.array([
-    utility_formal_Aup2_housing_eff, utility_backyard_Aup2_housing_eff, utility_informal_Aup2_housing_eff, utility_rdp_Aup2_housing_eff])
-utility_poor_Aup2_housing_eff = (
-    np.nansum(utility_Aup2_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup2_housing_eff = (
-    np.nansum(utility_Aup2_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup2_housing_eff = (
-    np.nansum(utility_Aup2_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup2_housing_eff = (
-    np.nansum(utility_Aup2_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-utility_formal_Aup2_amenity_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup2_amenity_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup2_amenity_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
-    )
-
 utility_rdp_Aup2_amenity_eff = (
     (income_net_of_commuting_costs
      + backyard_supply_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1[None, :]
@@ -1152,246 +559,6 @@ utility_rdp_Aup2_amenity_eff = (
     * amenities[None, :]
     )
 
-utility_Aup2_amenity_eff_mat = np.array([
-    utility_formal_Aup2_amenity_eff, utility_backyard_Aup2_amenity_eff, utility_informal_Aup2_amenity_eff, utility_rdp_Aup2_amenity_eff])
-utility_poor_Aup2_amenity_eff = (
-    np.nansum(utility_Aup2_amenity_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup2_amenity_eff = (
-    np.nansum(utility_Aup2_amenity_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup2_amenity_eff = (
-    np.nansum(utility_Aup2_amenity_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup2_amenity_eff = (
-    np.nansum(utility_Aup2_amenity_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### Amenity upgrading (high)
-
-#### Not sure if extensive effect means something...
-
-Aup3_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:]))
-Aup3_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:]))
-Aup3_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:]))
-Aup3_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Aup3_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup3_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup3_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_rdp_Aup3_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Aup3_housing_eff_mat = np.array([
-    utility_formal_Aup3_housing_eff, utility_backyard_Aup3_housing_eff, utility_informal_Aup3_housing_eff, utility_rdp_Aup3_housing_eff])
-utility_poor_Aup3_housing_eff = (
-    np.nansum(utility_Aup3_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup3_housing_eff = (
-    np.nansum(utility_Aup3_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup3_housing_eff = (
-    np.nansum(utility_Aup3_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup3_housing_eff = (
-    np.nansum(utility_Aup3_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-utility_formal_Aup3_amenity_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-# Take care
-utility_backyard_Aup3_amenity_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-    )
-
-# Take care
-utility_informal_Aup3_amenity_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-    )
-
-utility_rdp_Aup3_amenity_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Aup3_amenity_eff_mat = np.array([
-    utility_formal_Aup3_amenity_eff, utility_backyard_Aup3_amenity_eff, utility_informal_Aup3_amenity_eff, utility_rdp_Aup3_amenity_eff])
-utility_poor_Aup3_amenity_eff = (
-    np.nansum(utility_Aup3_amenity_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,0,:]))
-utility_midpoor_Aup3_amenity_eff = (
-    np.nansum(utility_Aup3_amenity_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,1,:]))
-utility_midrich_Aup3_amenity_eff = (
-    np.nansum(utility_Aup3_amenity_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,2,:]))
-utility_rich_Aup3_amenity_eff = (
-    np.nansum(utility_Aup3_amenity_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[:,3,:]))
-
-
-### Susbidies
-
-#### Not sure if extensive effect mean something...
-
-subsid_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:]))
-subsid_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:]))
-subsid_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:]))
-subsid_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_subsid_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_subsid_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-    )
-
-utility_informal_subsid_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-    )
-
-utility_rdp_subsid_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_subsid_housing_eff_mat = np.array([
-    utility_formal_subsid_housing_eff, utility_backyard_subsid_housing_eff, utility_informal_subsid_housing_eff, utility_rdp_subsid_housing_eff])
-utility_poor_subsid_housing_eff = (
-    np.nansum(utility_subsid_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:]))
-utility_midpoor_subsid_housing_eff = (
-    np.nansum(utility_subsid_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:]))
-utility_midrich_subsid_housing_eff = (
-    np.nansum(utility_subsid_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:]))
-utility_rich_subsid_housing_eff = (
-    np.nansum(utility_subsid_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:]))
-
-
-utility_formal_subsid_income_eff = (
-    (subsid_income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_subsid_income_eff = (
-    (subsid_income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-    )
-
-utility_informal_subsid_income_eff = (
-    (subsid_income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
-    )
-
-# DO NOT WANT TO DOUBLE COUNT BENEFITS
 utility_rdp_subsid_income_eff = (
     (income_net_of_commuting_costs
      + backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :]
@@ -1401,137 +568,6 @@ utility_rdp_subsid_income_eff = (
     * (param["RDP_size"] + param["backyard_size"] - param["q0"]
        - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[None, :],1)*param["backyard_size"])**param["beta"]
     * amenities[None, :]
-    )
-
-utility_subsid_income_eff_mat = np.array([
-    utility_formal_subsid_income_eff, utility_backyard_subsid_income_eff, utility_informal_subsid_income_eff, utility_rdp_subsid_income_eff])
-utility_poor_subsid_income_eff = (
-    np.nansum(utility_subsid_income_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0,:]))
-utility_midpoor_subsid_income_eff = (
-    np.nansum(utility_subsid_income_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,1,:]))
-utility_midrich_subsid_income_eff = (
-    np.nansum(utility_subsid_income_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,2,:]))
-utility_rich_subsid_income_eff = (
-    np.nansum(utility_subsid_income_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,3,:]))
-
-
-### Eviction (low)
-
-#### Not sure if extensive effect mean something...
-
-Evict1_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,0,:]))
-Evict1_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,1,:]))
-Evict1_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,2,:]))
-Evict1_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Evict1_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_Evict1_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-    )
-
-utility_informal_Evict1_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-    )
-
-utility_rdp_Evict1_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Evict1_housing_eff_mat = np.array([
-    utility_formal_Evict1_housing_eff, utility_backyard_Evict1_housing_eff, utility_informal_Evict1_housing_eff, utility_rdp_Evict1_housing_eff])
-utility_poor_Evict1_housing_eff = (
-    np.nansum(utility_Evict1_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,0,:]))
-utility_midpoor_Evict1_housing_eff = (
-    np.nansum(utility_Evict1_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,1,:]))
-utility_midrich_Evict1_housing_eff = (
-    np.nansum(utility_Evict1_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,2,:]))
-utility_rich_Evict1_housing_eff = (
-    np.nansum(utility_Evict1_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[:,3,:]))
-
-
-### Eviction (medium)
-
-#### Not sure if extensive effect mean something...
-
-Evict2_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0,:]))
-Evict2_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,1,:]))
-Evict2_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,2,:]))
-Evict2_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Evict2_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_Evict2_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
-    )
-
-utility_informal_Evict2_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[None, :]
     )
 
 utility_rdp_Evict2_housing_eff = (
@@ -1545,208 +581,18 @@ utility_rdp_Evict2_housing_eff = (
     * amenities[None, :]
     )
 
-utility_Evict2_housing_eff_mat = np.array([
-    utility_formal_Evict2_housing_eff, utility_backyard_Evict2_housing_eff, utility_informal_Evict2_housing_eff, utility_rdp_Evict2_housing_eff])
-utility_poor_Evict2_housing_eff = (
-    np.nansum(utility_Evict2_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0,:]))
-utility_midpoor_Evict2_housing_eff = (
-    np.nansum(utility_Evict2_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,1,:]))
-utility_midrich_Evict2_housing_eff = (
-    np.nansum(utility_Evict2_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,2,:]))
-utility_rich_Evict2_housing_eff = (
-    np.nansum(utility_Evict2_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,3,:]))
-
-
-### Eviction (high)
-
-#### Not sure if extensive effect mean something...
-
-Evict3_utility_poor_alloc_eff = (
-    np.nansum(utility_base_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,0,:]))
-Evict3_utility_midpoor_alloc_eff = (
-    np.nansum(utility_base_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,1,:]))
-Evict3_utility_midrich_alloc_eff =(
-    np.nansum(utility_base_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,2,:]))
-Evict3_utility_rich_alloc_eff = (
-    np.nansum(utility_base_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,3,:]))
-
-#### Intensive effects
-
-utility_formal_Evict3_housing_eff = (
-    (income_net_of_commuting_costs
-     - formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     * formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :])**param["alpha"]
-    * (formal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_backyard_Evict3_housing_eff = (
-    (income_net_of_commuting_costs
-     - backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     * backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :])**param["alpha"]
-    * (backyard_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-    )
-
-utility_informal_Evict3_housing_eff = (
-    (income_net_of_commuting_costs
-     - informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     * informal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-    )
-
-utility_rdp_Evict3_housing_eff = (
-    (income_net_of_commuting_costs
-     + backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     * param["backyard_size"]*backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_Evict3_housing_eff_mat = np.array([
-    utility_formal_Evict3_housing_eff, utility_backyard_Evict3_housing_eff, utility_informal_Evict3_housing_eff, utility_rdp_Evict3_housing_eff])
-utility_poor_Evict3_housing_eff = (
-    np.nansum(utility_Evict3_housing_eff_mat[:,0,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,0,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,0,:]))
-utility_midpoor_Evict3_housing_eff = (
-    np.nansum(utility_Evict3_housing_eff_mat[:,1,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,1,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,1,:]))
-utility_midrich_Evict3_housing_eff = (
-    np.nansum(utility_Evict3_housing_eff_mat[:,2,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,2,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,2,:]))
-utility_rich_Evict3_housing_eff = (
-    np.nansum(utility_Evict3_housing_eff_mat[:,3,:]*simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,3,:])
-    / np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[:,3,:]))
-
-
-## BUILD TABLE
-
-# Makes no sense? Problem comes from RDP? Cross-check with main utilities
-poor_utility_changes = pd.DataFrame({
-    "Subsidies": [subsid_utility_poor_alloc_eff, utility_poor_subsid_housing_eff, utility_poor_subsid_income_eff],
-    "New RDP": [newRDP_utility_poor_alloc_eff, utility_poor_newRDP_housing_eff, utility_poor_newRDP_housing_eff],
-    "New IS": [newIS_utility_poor_alloc_eff, utility_poor_newIS_housing_eff, utility_poor_newIS_housing_eff],
-    "No UE": [noUE_utility_poor_alloc_eff, utility_poor_noUE_housing_eff, utility_poor_noUE_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-midpoor_utility_changes = pd.DataFrame({
-    "Subsidies": [subsid_utility_midpoor_alloc_eff, utility_midpoor_subsid_housing_eff, utility_midpoor_subsid_income_eff],
-    "New RDP": [newRDP_utility_midpoor_alloc_eff, utility_midpoor_newRDP_housing_eff, utility_midpoor_newRDP_housing_eff],
-    "New IS": [newIS_utility_midpoor_alloc_eff, utility_midpoor_newIS_housing_eff, utility_midpoor_newIS_housing_eff],
-    "No UE": [noUE_utility_midpoor_alloc_eff, utility_midpoor_noUE_housing_eff, utility_midpoor_noUE_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-midrich_utility_changes = pd.DataFrame({
-    "Subsidies": [subsid_utility_midrich_alloc_eff, utility_midrich_subsid_housing_eff, utility_midrich_subsid_income_eff],
-    "New RDP": [newRDP_utility_midrich_alloc_eff, utility_midrich_newRDP_housing_eff, utility_midrich_newRDP_housing_eff],
-    "New IS": [newIS_utility_midrich_alloc_eff, utility_midrich_newIS_housing_eff, utility_midrich_newIS_housing_eff],
-    "No UE": [noUE_utility_midrich_alloc_eff, utility_midrich_noUE_housing_eff, utility_midrich_noUE_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-rich_utility_changes = pd.DataFrame({
-    "Subsidies": [subsid_utility_rich_alloc_eff, utility_rich_subsid_housing_eff, utility_rich_subsid_income_eff],
-    "New RDP": [newRDP_utility_rich_alloc_eff, utility_rich_newRDP_housing_eff, utility_rich_newRDP_housing_eff],
-    "New IS": [newIS_utility_rich_alloc_eff, utility_rich_newIS_housing_eff, utility_rich_newIS_housing_eff],
-    "No UE": [noUE_utility_rich_alloc_eff, utility_rich_noUE_housing_eff, utility_rich_noUE_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-
-for col_name in poor_utility_changes.columns:
-    poor_utility_changes[col_name] = (poor_utility_changes[col_name]-base_utility_poor)/base_utility_poor
-for col_name in midpoor_utility_changes.columns:
-    midpoor_utility_changes[col_name] = (midpoor_utility_changes[col_name]-base_utility_midpoor)/base_utility_midpoor
-for col_name in midrich_utility_changes.columns:
-    midrich_utility_changes[col_name] = (midrich_utility_changes[col_name]-base_utility_midrich)/base_utility_midrich
-for col_name in rich_utility_changes.columns:
-    rich_utility_changes[col_name] = (rich_utility_changes[col_name]-base_utility_rich)/base_utility_rich
-
-with pd.ExcelWriter(path_output_tables + '/utility_change_decomp.xlsx') as writer:
-    poor_utility_changes.to_excel(writer, float_format="%.3f", sheet_name="poor")
-    midpoor_utility_changes.to_excel(writer, float_format="%.3f", sheet_name="midpoor")
-    midrich_utility_changes.to_excel(writer, float_format="%.3f", sheet_name="midrich")
-    rich_utility_changes.to_excel(writer, float_format="%.3f", sheet_name="rich")
-
-#
-
-poor_utility_changes_upgrading = pd.DataFrame({
-    "Disam. -10pc": [Aup1_utility_poor_alloc_eff, utility_poor_Aup1_housing_eff, utility_poor_Aup1_amenity_eff],
-    "Disam. -50pc": [Aup2_utility_poor_alloc_eff, utility_poor_Aup2_housing_eff, utility_poor_Aup2_amenity_eff],
-    "Disam. -100pc": [Aup3_utility_poor_alloc_eff, utility_poor_Aup3_housing_eff, utility_poor_Aup3_amenity_eff],
-    "Toler. -10pc": [Evict1_utility_poor_alloc_eff, utility_poor_Evict1_housing_eff, utility_poor_Evict1_housing_eff],
-    "Toler. -50pc": [Evict2_utility_poor_alloc_eff, utility_poor_Evict2_housing_eff, utility_poor_Evict2_housing_eff],
-    "Toler. -100pc": [Evict3_utility_poor_alloc_eff, utility_poor_Evict3_housing_eff, utility_poor_Evict3_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-midpoor_utility_changes_upgrading = pd.DataFrame({
-    "Disam. -10pc": [Aup1_utility_midpoor_alloc_eff, utility_midpoor_Aup1_housing_eff, utility_midpoor_Aup1_amenity_eff],
-    "Disam. -50pc": [Aup2_utility_midpoor_alloc_eff, utility_midpoor_Aup2_housing_eff, utility_midpoor_Aup2_amenity_eff],
-    "Disam. -100pc": [Aup3_utility_midpoor_alloc_eff, utility_midpoor_Aup3_housing_eff, utility_midpoor_Aup3_amenity_eff],
-    "Toler. -10pc": [Evict1_utility_midpoor_alloc_eff, utility_midpoor_Evict1_housing_eff, utility_midpoor_Evict1_housing_eff],
-    "Toler. -50pc": [Evict2_utility_poor_alloc_eff, utility_poor_Evict2_housing_eff, utility_poor_Evict2_housing_eff],
-    "Toler. -100pc": [Evict3_utility_poor_alloc_eff, utility_poor_Evict3_housing_eff, utility_poor_Evict3_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-midrich_utility_changes_upgrading = pd.DataFrame({
-    "Disam. -10pc": [Aup1_utility_midrich_alloc_eff, utility_midrich_Aup1_housing_eff, utility_midrich_Aup1_amenity_eff],
-    "Disam. -50pc": [Aup2_utility_midrich_alloc_eff, utility_midrich_Aup2_housing_eff, utility_midrich_Aup2_amenity_eff],
-    "Disam. -100pc": [Aup3_utility_midrich_alloc_eff, utility_midrich_Aup3_housing_eff, utility_midrich_Aup3_amenity_eff],
-    "Toler. -10pc": [Evict1_utility_midrich_alloc_eff, utility_midrich_Evict1_housing_eff, utility_midrich_Evict1_housing_eff],
-    "Toler. -50pc": [Evict2_utility_poor_alloc_eff, utility_poor_Evict2_housing_eff, utility_poor_Evict2_housing_eff],
-    "Toler. -100pc": [Evict3_utility_poor_alloc_eff, utility_poor_Evict3_housing_eff, utility_poor_Evict3_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-rich_utility_changes_upgrading = pd.DataFrame({
-    "Disam. -10pc": [Aup1_utility_rich_alloc_eff, utility_rich_Aup1_housing_eff, utility_rich_Aup1_amenity_eff],
-    "Disam. -50pc": [Aup2_utility_rich_alloc_eff, utility_rich_Aup2_housing_eff, utility_rich_Aup2_amenity_eff],
-    "Disam. -100pc": [Aup3_utility_rich_alloc_eff, utility_rich_Aup3_housing_eff, utility_rich_Aup3_amenity_eff],
-    "Toler. -10pc": [Evict1_utility_rich_alloc_eff, utility_rich_Evict1_housing_eff, utility_rich_Evict1_housing_eff],
-    "Toler. -50pc": [Evict2_utility_poor_alloc_eff, utility_poor_Evict2_housing_eff, utility_poor_Evict2_housing_eff],
-    "Toler. -100pc": [Evict3_utility_poor_alloc_eff, utility_poor_Evict3_housing_eff, utility_poor_Evict3_housing_eff]},
-    index=["Ext. margin", "Int. margin", "Dir. effect"])
-
-for col_name in poor_utility_changes_upgrading.columns:
-    poor_utility_changes_upgrading[col_name] = (poor_utility_changes_upgrading[col_name]-base_utility_poor)/base_utility_poor
-for col_name in midpoor_utility_changes_upgrading.columns:
-    midpoor_utility_changes_upgrading[col_name] = (midpoor_utility_changes_upgrading[col_name]-base_utility_midpoor)/base_utility_midpoor
-for col_name in midrich_utility_changes_upgrading.columns:
-    midrich_utility_changes_upgrading[col_name] = (midrich_utility_changes_upgrading[col_name]-base_utility_midrich)/base_utility_midrich
-for col_name in rich_utility_changes_upgrading.columns:
-    rich_utility_changes_upgrading[col_name] = (rich_utility_changes_upgrading[col_name]-base_utility_rich)/base_utility_rich
-
-with pd.ExcelWriter(path_output_tables + '/utility_change_decomp_upgrading.xlsx') as writer:
-    poor_utility_changes_upgrading.to_excel(writer, float_format="%.3f", sheet_name="poor")
-    midpoor_utility_changes_upgrading.to_excel(writer, float_format="%.3f", sheet_name="midpoor")
-    midrich_utility_changes_upgrading.to_excel(writer, float_format="%.3f", sheet_name="midrich")
-    rich_utility_changes_upgrading.to_excel(writer, float_format="%.3f", sheet_name="rich")
-
-#####
-
-# Consistency issues with poor group definition?
-# Other errors... Is decomposition that interesting?
-# TODO: Comment out? For now, leverage definition for RDP utilities...
-
-#####
-
-# Weighted sum... Population ratio?
+## WE CREATE THE ARRAYS USED IN FINAL TABLE
 
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,axis=(0,2))
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:])
 avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = (
     (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
+     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_base[0, :]))
     / population)
 ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = np.append(
     simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]),
+    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_base[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]),
     avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility])
-
-# Can make sense for RDP utility to go down if more people are covered...
 
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households,axis=(0,2))
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[3,:,:])
@@ -1792,111 +638,52 @@ ext_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = np.append(
     [np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_noUE_housing_eff[0, :])/np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[3,:,:]),
     avg_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility])
 
-df_utility_changes = pd.DataFrame({
-    "Subsidies": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility,
-    "New RDP": ext_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility,
-    "New IS": ext_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
-    "No UE": ext_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility},
-    index=["Poor (no RDP)", "Midpoor", "Midrich", "Rich", "Poor (RDP)", "Weighted avg"])
-
-for col_name in df_utility_changes.columns:
-    df_utility_changes[col_name] = (df_utility_changes[col_name]-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility)/ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility
-
-# Add baseline column for reference? Just refer to bar plots for population breakdown across htypes
-
-df_utility_changes.to_excel(path_output_tables + '/df_utility_changes.xlsx', float_format="%.3f")
-
-###
-
-# TODO: Weird that it all gives the same? Cross-check with breakdown
-
-agg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households,axis=(0,2))
-agg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[3,:,:])
-avg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = (
-    (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
-    / population)
-ext_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = np.append(
-    simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_households[3,:,:]),
-    avg_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility])
-
 agg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households,axis=(0,2))
 agg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:])
 avg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = (
     (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
+     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_Aup2_amenity_eff[0, :]))
     / population)
 ext_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = np.append(
     simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]),
+    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_Aup2_amenity_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[3,:,:]),
     avg_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility])
-
-agg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households,axis=(0,2))
-agg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[3,:,:])
-avg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility = (
-    (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
-    / population)
-ext_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility = np.append(
-    simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_households[3,:,:]),
-    avg_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility])
-
-agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households,axis=(0,2))
-agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[3,:,:])
-avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility = (
-    (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
-    / population)
-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility = np.append(
-    simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_households[3,:,:]),
-    avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility])
 
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households,axis=(0,2))
 agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:])
 avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = (
     (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
+     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]*utility_rdp_Evict2_housing_eff[0, :]))
     / population)
 ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = np.append(
     simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]),
+    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]*utility_rdp_Evict2_housing_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[3,:,:]),
     avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility])
 
-agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households,axis=(0,2))
-agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[0] = agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[0] - np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[3,:,:])
-avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility = (
-    (np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility*agg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households)
-     + np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :]))
-    / population)
-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility = np.append(
-    simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility,
-    [np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[3,:,:]*utility_rdp_subsid_income_eff[0, :])/np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_households[3,:,:]),
-    avg_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility])
+## WE CREATE THE TABLE
 
-df_utility_changes_upgrading = pd.DataFrame({
-    "Disam. -10pc": ext_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility,
+df_utility_changes = pd.DataFrame({
+    "Subsidies": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility,
+    "New FS": ext_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility,
+    "New IS": ext_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
+    "No UE": ext_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
     "Disam. -50pc": ext_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility,
-    "Disam. -100pc": ext_UE1_ISconstr1_RDPnew0_Aup3_Psubsid0_Evict0_IH1_utility,
-    "Toler. -10pc": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict1_IH1_utility,
-    "Toler. -50pc": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility,
-    "Toler. -100pc": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict3_IH1_utility},
-    index=["Poor (no RDP)", "Midpoor", "Midrich", "Rich", "Poor (RDP)", "Weighted avg"])
+    "Toler. -50pc": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility},
+    index=["Low inc. (no FS)", "Mid-low inc.", "Mid-high inc.", "High inc.", "Low inc. (FS)", "Weighted avg"])
 
-for col_name in df_utility_changes_upgrading.columns:
-    df_utility_changes_upgrading[col_name] = (df_utility_changes_upgrading[col_name]-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility)/ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility
+for col_name in df_utility_changes.columns:
+    df_utility_changes[col_name] = (df_utility_changes[col_name]-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility)/ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility
 
-df_utility_changes_upgrading.to_excel(path_output_tables + '/df_utility_changes_upgrading.xlsx', float_format="%.3f")
-
-# styled_df_utility_changes = df_utility_changes.style \
-#   .format(precision=2, thousands=".", decimal=",") \
-#   .format_index(str.upper, axis=1) \
-#   .relabel_index(["Poor", "Mid-poor", "Mid-rich", "Rich"], axis=0)
+df_utility_changes.to_excel(path_output_tables + '/df_utility_changes.xlsx', float_format="%.3f")
 
 
+# TODO: Also with baseline!
 
+###############################################################################
+
+# FIGURE 1: AGGREGATE HOUSING TYPE BREAKDOWN
+
+# TODO: ADD TOTAL LINE?
 
 # WELFARE DECOMPOSITION: add options to load ante and post variables
 # Distinguish redeveloped backyazrds???
