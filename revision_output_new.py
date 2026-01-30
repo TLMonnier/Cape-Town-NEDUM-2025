@@ -170,10 +170,10 @@ def load_multiple_simulation_data(path_simul, data_types, simulation_names):
 simulation_configs = [
     'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
     'simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
-    'simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1',
-    'simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1',
-    'simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1',
+    'simul_UE1_ISconstr0_RDPnew1_Aup0_Psubsid0_Evict0_IH1',
     'simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1',
+    'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1',
+    'simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1',
 ]
 
 # Load data for all simulations
@@ -183,9 +183,9 @@ utility_data = load_multiple_simulation_data(path_simul, 'utility', simulation_c
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[0]]
 simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[1]]
 simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[2]]
-simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[3]]
-simul_UE1_ISconstr1_RDPnew0_Aup1_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[4]]
-simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew1_Aup2_Psubsid0_Evict0_IH1_utility = utility_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility = utility_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = utility_data[simulation_configs[5]]
 
 #############################################
 
