@@ -20,7 +20,6 @@ from scipy.stats import gaussian_kde
 from joblib import Parallel, delayed
 import multiprocessing
 
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.colors import Normalize
 from matplotlib.cm import ScalarMappable
 import contextily as ctx
@@ -28,8 +27,6 @@ from pyproj import Transformer
 
 import inputs.data as inpdt
 import inputs.parameters_and_options as inpprm
-
-
 
 ## DEFINE FILE PATHS
 
@@ -106,26 +103,6 @@ housing_limit = inpdt.import_housing_limit(grid, param)
     mitchells_plain_grid_baseline, grid_formal_density_HFA, coeff_land,
     interest_rate, options
     )
-
-# TODO: REMOVE FLOOD MODEL FROM JUE SCRIPT
-    
-fraction_capital_destroyed = pd.DataFrame()
-fraction_capital_destroyed["structure_formal_2"] = np.zeros(24014)
-fraction_capital_destroyed["structure_formal_1"] = np.zeros(24014)
-fraction_capital_destroyed["structure_subsidized_2"] = np.zeros(24014)
-fraction_capital_destroyed["structure_subsidized_1"] = np.zeros(24014)
-fraction_capital_destroyed["contents_formal"] = np.zeros(24014)
-fraction_capital_destroyed["contents_informal"] = np.zeros(24014)
-fraction_capital_destroyed["contents_subsidized"] = np.zeros(24014)
-fraction_capital_destroyed["contents_backyard"] = np.zeros(24014)
-fraction_capital_destroyed["structure_backyards"] = np.zeros(24014)
-fraction_capital_destroyed["structure_formal_backyards"] = np.zeros(24014)
-fraction_capital_destroyed["structure_informal_backyards"
-                           ] = np.zeros(24014)
-fraction_capital_destroyed["structure_informal_settlements"
-                           ] = np.zeros(24014)
-
-# TODO: also reduce the above?
 
 ###############################################################################
 
@@ -317,18 +294,6 @@ backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[np.isnan(backyard_r
 ###############################################################################
 
 # SCENARIO DEFINITIONS
-
-# TODO: When relevant, show visuals for scenario definition
-
-# TODO: refine scenarios
-
-# TODO: other plots for inputs and annex
-
-# TODO: put functions in other script for replication package
-
-# TODO: loop over plotting function execution only when sure of what we want?
-
-# TODO: add interal comments and print statements for package
 
 # Subsidies: The total yearly amount to be spent by the local government on formal subsidized housing
 # according to the City of Cape Town’s Housing Pipeline as contained in its Integrated Human Settlement
@@ -1738,8 +1703,6 @@ results = Parallel(n_jobs=n_jobs, verbose=10)(
 
 # %%
 
-# TODO: Also housing types?
-
 # FIGURES 10-11: 3D MAPS IN ABSOLUTE VALUES (choose variable and scenario)
 
 ## FOOTNOTE: The plot shows the spatial distribution of the number of households per grid cell
@@ -1779,7 +1742,6 @@ def calculate_weighted_average_rent_allinc(population_array, rent_array):
             weighted_rents[loc_idx] = 0
     
     return weighted_rents
-
 
 ## WE IMPORT BASEMAP FOR PLOTS
 
@@ -2192,44 +2154,27 @@ results = Parallel(n_jobs=n_jobs, verbose=10)(
     for array_varname in array_varnames
 )
 
+###############################################################################
+
 # %%
 
-# Htype
+# FIGURES 12-13: 3D MAPS OF HOUSING TYPES (choose scenario)
 
-# I have a Python function that plots 3D bar plots where bar height stands for the number of households in each location and bar color stands for the rent level in each location. Plots are shown separately for 4 income groups. Now, I also have arrays that give the number of households per housing type in each location for each income group. Can you code a new Function that plots a 3D bar plot where bar heigth still stands for the total number of households in each location, but bar colors are now stacked for the population per housing type in each location (I am not interested in rent levels anymore)? I will provide you with the original function code.
+## FOOTNOTE: The plot shows the spatial distribution of the number of households per grid cell
+## with distinct colors for each housing type, at baseline and for given scenario.
+## Since the same income group can be found in several housing types within one cell
+## (but only one income group can be found in each housing type within one cell),
+## the color bars are stacked when relevant.
+## (The aggregate distribution across income groups is also shown for reference.)
+## The z axes are comparable across scenarios.
+
+## WE DEFINE THE MAIN PLOTTING FUNCTION
 
 def plot_four_income_groups_3d_housing_types(elev, gdf, population_by_housing_type,
-                                              incgrp_names, incgrp_labels, scenario_name,
-                                              z_bounds, housing_type_labels=None,
-                                              add_legend=True, add_basemap=True, basemap_alpha=0.3):
-    """
-    Plot 3D bar charts with stacked colors representing different housing types.
-    
-    Parameters:
-    -----------
-    elev : float
-        Elevation angle for 3D view
-    gdf : GeoDataFrame
-        GeoDataFrame containing location geometries
-    population_by_housing_type : numpy.ndarray
-        Array of shape (n_housing_types=5, n_income_groups=4, n_locations=24014)
-    incgrp_names : list
-        Names of income groups (for indexing)
-    incgrp_labels : list
-        Labels for income groups (for display)
-    scenario_name : str
-        Name of scenario for file saving
-    z_bounds : numpy.ndarray
-        Z-axis bounds, shape (4, 2) for min/max per income group
-    housing_type_labels : list, optional
-        Labels for the 5 housing types. If None, defaults to "Type 1", "Type 2", etc.
-    add_legend : bool
-        Whether to add a legend showing housing types
-    add_basemap : bool
-        Whether to add a basemap
-    basemap_alpha : float
-        Alpha transparency for basemap
-    """
+                                             incgrp_names, incgrp_labels, scenario_name,
+                                             z_bounds, housing_type_labels=None,
+                                             add_legend=True, add_basemap=True, basemap_alpha=0.3):
+
     plt.ioff()
     
     if gdf.crs is None:
@@ -2240,13 +2185,11 @@ def plot_four_income_groups_3d_housing_types(elev, gdf, population_by_housing_ty
         gdf = gdf.to_crs('EPSG:4326')
     
     fig = plt.figure(figsize=(20, 16))
-    
-    # Get coordinates
+
     centroids = gdf.geometry.centroid
     x_coords = centroids.x.values 
     y_coords = centroids.y.values 
-    
-    # Calculate bar dimensions
+
     lon_range = x_coords.max() - x_coords.min()
     lat_range = y_coords.max() - y_coords.min()
     if lon_range < 1:
@@ -2258,45 +2201,35 @@ def plot_four_income_groups_3d_housing_types(elev, gdf, population_by_housing_ty
     
     dx = lon_range * scale_factor
     dy = lat_range * scale_factor
-    
-    # Set up colors for housing types using Set3 colormap
+
     housing_type_colors = plt.cm.Set3(np.linspace(0, 1, 5))
-    
-    # Default labels if none provided
+
     if housing_type_labels is None:
         housing_type_labels = [f'Type {i+1}' for i in range(5)]
-    
-    # Loop through income groups
+
     for idx, (incgrp_name, incgrp_label) in enumerate(zip(incgrp_names, incgrp_labels)):
         
         ax = fig.add_subplot(2, 2, idx + 1, projection='3d', computed_zorder=False)
         
         if add_basemap:
             add_basemap_to_3d(ax, gdf, alpha=basemap_alpha)
-        
-        # Extract data for this income group: shape (5, 24014)
+
         population_data = population_by_housing_type[:, idx, :]
-        
-        # Calculate total population per location
+
         total_population = population_data.sum(axis=0)  # shape (24014,)
-        
-        # Filter out locations with zero total population
+
         non_zero_mask = total_population > 0
         
         x_coords_filtered = x_coords[non_zero_mask]
         y_coords_filtered = y_coords[non_zero_mask]
-        total_population_filtered = total_population[non_zero_mask]
-        population_data_filtered = population_data[:, non_zero_mask]  # shape (5, n_filtered)
+        population_data_filtered = population_data[:, non_zero_mask]
         
-        # Plot stacked bars
         if len(x_coords_filtered) > 0:
             z_bottom = np.zeros_like(x_coords_filtered)
-            
-            # Stack bars for each housing type
+
             for housing_type_idx in range(5):
                 heights = population_data_filtered[housing_type_idx, :]
-                
-                # Only plot if there's population in this housing type
+
                 mask_with_pop = heights > 0
                 if mask_with_pop.any():
                     ax.bar3d(x_coords_filtered[mask_with_pop], 
@@ -2310,31 +2243,25 @@ def plot_four_income_groups_3d_housing_types(elev, gdf, population_by_housing_ty
                             linewidth=0, 
                             shade=True, 
                             zorder=10)
-                
-                # Update bottom for next housing type
+
                 z_bottom = z_bottom + heights
         
-        # Set z-axis limits
         z_min = z_bounds[idx, 0]
         z_max = z_bounds[idx, 1]
         ax.set_zlim(min(0, z_min), max(0, z_max))
         
-        # Labels and title
         ax.set_xlabel('Longitude', labelpad=5)
         ax.set_ylabel('Latitude', labelpad=20)
         ax.set_zlabel('Nb of HHs', labelpad=20)
         ax.set_title(incgrp_label, fontsize=12, fontweight='bold')
         
-        # Tick parameters
         ax.tick_params(axis='x', pad=5, labelsize=8)
         ax.tick_params(axis='y', pad=15, labelsize=8)
         ax.tick_params(axis='z', pad=15, labelsize=8)
         
-        # View angle
         ax.view_init(elev=elev, azim=270)
         ax.grid(True, alpha=0.3)
-        
-        # Add legend for housing types
+
         if add_legend:
             from matplotlib.patches import Patch
             legend_elements = [Patch(facecolor=housing_type_colors[i], 
@@ -2350,38 +2277,13 @@ def plot_four_income_groups_3d_housing_types(elev, gdf, population_by_housing_ty
     
     return
 
+## ALSO FOR AGGREGATE POPULATION
+
 def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type,
-                                              scenario_name,
-                                              z_bounds, housing_type_labels=None,
-                                              add_legend=True, add_basemap=True, basemap_alpha=0.3):
-    """
-    Plot 3D bar charts with stacked colors representing different housing types.
-    
-    Parameters:
-    -----------
-    elev : float
-        Elevation angle for 3D view
-    gdf : GeoDataFrame
-        GeoDataFrame containing location geometries
-    population_by_housing_type : numpy.ndarray
-        Array of shape (n_housing_types=5, n_income_groups=4, n_locations=24014)
-    incgrp_names : list
-        Names of income groups (for indexing)
-    incgrp_labels : list
-        Labels for income groups (for display)
-    scenario_name : str
-        Name of scenario for file saving
-    z_bounds : numpy.ndarray
-        Z-axis bounds, shape (4, 2) for min/max per income group
-    housing_type_labels : list, optional
-        Labels for the 5 housing types. If None, defaults to "Type 1", "Type 2", etc.
-    add_legend : bool
-        Whether to add a legend showing housing types
-    add_basemap : bool
-        Whether to add a basemap
-    basemap_alpha : float
-        Alpha transparency for basemap
-    """
+                                           scenario_name,
+                                           z_bounds, housing_type_labels=None,
+                                           add_legend=True, add_basemap=True, basemap_alpha=0.3):
+
     plt.ioff()
     
     if gdf.crs is None:
@@ -2392,13 +2294,11 @@ def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type
         gdf = gdf.to_crs('EPSG:4326')
     
     fig = plt.figure(figsize=(20, 16))
-    
-    # Get coordinates
+
     centroids = gdf.geometry.centroid
     x_coords = centroids.x.values 
     y_coords = centroids.y.values 
-    
-    # Calculate bar dimensions
+
     lon_range = x_coords.max() - x_coords.min()
     lat_range = y_coords.max() - y_coords.min()
     if lon_range < 1:
@@ -2410,11 +2310,9 @@ def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type
     
     dx = lon_range * scale_factor
     dy = lat_range * scale_factor
-    
-    # Set up colors for housing types using Set3 colormap
+
     housing_type_colors = plt.cm.Set3(np.linspace(0, 1, 5))
-    
-    # Default labels if none provided
+
     if housing_type_labels is None:
         housing_type_labels = [f'Type {i+1}' for i in range(5)]
         
@@ -2422,30 +2320,23 @@ def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type
     
     if add_basemap:
         add_basemap_to_3d(ax, gdf, alpha=basemap_alpha)
-    
-    # Extract data for this income group: shape (5, 24014)
+
     population_data = population_by_housing_type
-    
-    # Calculate total population per location
-    total_population = population_data.sum(axis=0)  # shape (24014,)
-    
-    # Filter out locations with zero total population
+
+    total_population = population_data.sum(axis=0)
+
     non_zero_mask = total_population > 0
     
     x_coords_filtered = x_coords[non_zero_mask]
     y_coords_filtered = y_coords[non_zero_mask]
-    total_population_filtered = total_population[non_zero_mask]
-    population_data_filtered = population_data[:, non_zero_mask]  # shape (5, n_filtered)
-    
-    # Plot stacked bars
+    population_data_filtered = population_data[:, non_zero_mask]
+
     if len(x_coords_filtered) > 0:
         z_bottom = np.zeros_like(x_coords_filtered)
-        
-        # Stack bars for each housing type
+
         for housing_type_idx in range(5):
             heights = population_data_filtered[housing_type_idx, :]
-            
-            # Only plot if there's population in this housing type
+
             mask_with_pop = heights > 0
             if mask_with_pop.any():
                 ax.bar3d(x_coords_filtered[mask_with_pop], 
@@ -2459,30 +2350,24 @@ def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type
                         linewidth=0, 
                         shade=True, 
                         zorder=10)
-            
-            # Update bottom for next housing type
+
             z_bottom = z_bottom + heights
-    
-    # Set z-axis limits
+
     z_min = z_bounds[0]
     z_max = z_bounds[1]
     ax.set_zlim(min(0, z_min), max(0, z_max))
-    
-    # Labels and title
+
     ax.set_xlabel('Longitude', labelpad=5)
     ax.set_ylabel('Latitude', labelpad=20)
     ax.set_zlabel('Nb of HHs', labelpad=20)
-    
-    # Tick parameters
+
     ax.tick_params(axis='x', pad=5, labelsize=8)
     ax.tick_params(axis='y', pad=15, labelsize=8)
     ax.tick_params(axis='z', pad=15, labelsize=8)
-    
-    # View angle
+
     ax.view_init(elev=elev, azim=270)
     ax.grid(True, alpha=0.3)
-    
-    # Add legend for housing types
+
     if add_legend:
         from matplotlib.patches import Patch
         legend_elements = [Patch(facecolor=housing_type_colors[i], 
@@ -2498,6 +2383,7 @@ def plot_one_income_group_3d_housing_types(elev, gdf, population_by_housing_type
     
     return
 
+## WE LOOP OVER SCENARIOS (IN A SIMPLE FASHION)
 
 for scenario_name in scenario_names_map:
     plot_four_income_groups_3d_housing_types(
@@ -2520,12 +2406,4 @@ for scenario_name in scenario_names_map:
         z_bounds=z_bounds_agg,
         housing_type_labels=['FP', 'IB (basic)', 'IB (redev.)', 'IS', 'FS']
     )
-
-
-
-
-
-
-
-
 
