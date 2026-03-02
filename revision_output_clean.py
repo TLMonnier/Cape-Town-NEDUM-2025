@@ -27,6 +27,7 @@ from pyproj import Transformer
 
 import inputs.data as inpdt
 import inputs.parameters_and_options as inpprm
+import outputs.export_outputs as outexp
 
 ## DEFINE FILE PATHS
 
@@ -103,6 +104,14 @@ housing_limit = inpdt.import_housing_limit(grid, param)
     mitchells_plain_grid_baseline, grid_formal_density_HFA, coeff_land,
     interest_rate, options
     )
+     
+### FOR MODEL VALIDATION
+     
+if options["convert_sp_data"] == 1:
+    income_distribution_grid = inpdt.convert_income_distribution(
+        income_distribution, grid, path_data, data_sp)
+
+income_distribution_grid = np.load(path_data + "income_distrib_grid.npy")
 
 ###############################################################################
 
@@ -142,9 +151,12 @@ simulation_configs = [
 
 utility_data = load_multiple_simulation_data(path_simul, 'utility', simulation_configs)
 households_data = load_multiple_simulation_data(path_simul, 'households', simulation_configs)
+households_housing_types_data = load_multiple_simulation_data(path_simul, 'households_housing_types', simulation_configs)
+household_centers_data = load_multiple_simulation_data(path_simul, 'household_centers', simulation_configs)
 dwelling_size_data = load_multiple_simulation_data(path_simul, 'dwelling_size', simulation_configs)
 rent_data = load_multiple_simulation_data(path_simul, 'rent', simulation_configs)
 housing_supply_data = load_multiple_simulation_data(path_simul, 'housing_supply', simulation_configs)
+limit_city_data = load_multiple_simulation_data(path_simul, 'limit_city', simulation_configs)
 
 ## ACCESS LOADED DATA
 
@@ -163,6 +175,22 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households = households_dat
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households = households_data[simulation_configs[4]]
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households = households_data[simulation_configs[5]]
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households = households_data[simulation_configs[6]]
+
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households_housing_types = households_housing_types_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households_housing_types = households_housing_types_data[simulation_configs[6]]
+
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_household_centers = household_centers_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_household_centers = household_centers_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_household_centers = household_centers_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_household_centers = household_centers_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_household_centers = household_centers_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_household_centers = household_centers_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_household_centers = household_centers_data[simulation_configs[6]]
 
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[0]]
 simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_dwelling_size = dwelling_size_data[simulation_configs[1]]
@@ -187,6 +215,14 @@ simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_housing_supply = housing_su
 simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[4]]
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_housing_supply = housing_supply_data[simulation_configs[5]]
 simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_housing_supply = housing_supply_data[simulation_configs[6]]
+
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_limit_city = limit_city_data[simulation_configs[0]]
+simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_limit_city = limit_city_data[simulation_configs[1]]
+simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_limit_city = limit_city_data[simulation_configs[2]]
+simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_limit_city = limit_city_data[simulation_configs[3]]
+simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_limit_city = limit_city_data[simulation_configs[4]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_limit_city = limit_city_data[simulation_configs[5]]
+simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_limit_city = limit_city_data[simulation_configs[6]]
 
 ## ACCESS INDIVIDUAL VARIABLES FOR POST-PROCESSING
 
@@ -290,6 +326,45 @@ backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[np.isnan(backyard
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1)] = 0
 backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[np.isnan(backyard_supply_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)] = 0
 backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1[np.isnan(backyard_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1)] = 0
+
+# pop_formal = np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,1)[0]
+# mean_rent = np.nansum(formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1*pop_formal)/np.nansum(pop_formal)
+# print(mean_rent)
+
+# pop_formal_midlow = simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[0,1,:]
+# mean_rent_midlow = np.nansum(formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1*pop_formal_midlow)/np.nansum(pop_formal_midlow)
+# print(f"Mean: {mean_rent_midlow}")
+
+# def weighted_median(values, weights):
+
+#     sorted_indices = np.argsort(values)
+#     sorted_values = values[sorted_indices]
+#     sorted_weights = weights[sorted_indices]
+
+#     cumulative_weights = np.cumsum(sorted_weights)
+#     total_weight = cumulative_weights[-1]
+#     half_weight = total_weight / 2.0
+
+#     median_index = np.searchsorted(cumulative_weights, half_weight)
+
+#     return sorted_values[median_index]
+
+# values = formal_rent_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1
+# weights = pop_formal_midlow/np.nansum(pop_formal_midlow)
+
+# weighted_med = weighted_median(values, weights)
+
+# print(f"Weighted median: {weighted_med}")
+
+# footprint_increase = (
+#     np.nansum(simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_limit_city)
+#     /np.nansum(simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_limit_city)
+#     - 1
+#     )
+
+# print(f"Footprint increase: {footprint_increase}")
+
+
 
 ###############################################################################
 
@@ -471,13 +546,13 @@ ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility = gen_new_utility_arr
 ## WE CREATE THE TABLE
 
 df_utility_changes = pd.DataFrame({
-    "Subsidies": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility,
-    "New FS": ext_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility,
-    "New IS": ext_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
-    "No UE": ext_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
-    "Disam. -50pc": ext_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility,
-    "Toler. -50pc": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility},
-    index=["Low inc. (no FS)", "Mid-low inc.", "Mid-high inc.", "High inc.", "Low inc. (FS)", "Weighted avg"])
+    "Cash Transfers": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_utility,
+    "Public Housing": ext_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_utility,
+    "Tolerance": ext_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
+    "No Urban Edge": ext_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility,
+    "Upgrading": ext_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_utility,
+    "Evictions": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_utility},
+    index=["Low inc. (excl. beneficiaries)", "Mid-low income", "Mid-high income", "High income", "Low inc. (only beneficiaries)", "Social welfare"])
 
 for col_name in df_utility_changes.columns:
     df_utility_changes[col_name] = (df_utility_changes[col_name]-ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility)/ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility
@@ -487,8 +562,8 @@ df_utility_changes.to_excel(path_output_tables + '/df_utility_changes.xlsx', flo
 ## WE ALSO CREATE A TABLE WITH BASELINE LEVELS FOR REFERENCE
 
 df_utility_baseline = pd.DataFrame({
-    "Baseline": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility},
-    index=["Low inc. (no FS)", "Mid-low inc.", "Mid-high inc.", "High inc.", "Low inc. (FS)", "Weighted avg"])
+    "Benchmark": ext_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility},
+    index=["Low inc. (excl. beneficiaries)", "Mid-low income", "Mid-high income", "High income", "Low inc. (only beneficiaries)", "Social welfare"])
 
 df_utility_changes_baseline = pd.concat([df_utility_baseline, df_utility_changes], axis=1)
 
@@ -693,6 +768,64 @@ new_income_net_of_commuting_costs_Evict = gen_new_income_per_scenario(
 
 new_amenities = np.tile(amenities, (5,1))
 
+# pop_phtype = np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2))
+# pop_phtype_pct = pop_phtype/np.nansum(pop_phtype)
+# print(pop_phtype)
+# print(pop_phtype_pct)
+
+# pop_phtype_RDPnew = np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households, (1,2))
+# pop_phtype_pct_RDPnew = pop_phtype_RDPnew/np.nansum(pop_phtype_RDPnew)
+# print(pop_phtype_RDPnew)
+# print(pop_phtype_pct_RDPnew)
+
+###############################################################################
+
+# %% APPENDIX AND OTHER VISUALIZATION
+
+print("APPENDIX AND OTHER VISUALIZATION")
+
+## VALIDATION
+
+# (agg_FP_income_valid, agg_IB_income_valid, agg_IS_income_valid
+#  ) = outexp.valid_pop_htype_income(
+#      simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, households_per_income_and_housing, 'Simulation',
+#      'Data', path_output_plots, path_output_tables
+#      )
+
+# WE REMOVE THE IQ RANGE AS IT IS CONFUSING WHEN USING MEAN INSTEAD OF MEDIAN
+outexp.validation_density(
+    grid, simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types, housing_types,
+    path_output_plots, path_output_tables
+    )
+
+new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types = np.nansum(
+    new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, 1
+    )
+
+dist_HH_per_housing_1d = outexp.valid_pop_housing_types(
+    grid, new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households_housing_types, housing_types,
+    path_output_plots, path_output_tables
+    )
+
+# dist_HH_per_incgrp_1d = outexp.valid_pop_income_groups(
+#         grid, simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_household_centers, income_distribution_grid,
+#         path_output_plots, path_output_tables)
+
+# We adjust the data on prices to correspond to rents (formal)
+housing_price_1d = outexp.valid_housing_price(
+    grid, simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_rent, interest_rate, param,
+    housing_types_sp, data_sp,
+    path_output_plots, path_output_tables)
+
+df = outexp.valid_housing_supply(
+    grid, simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_housing_supply,
+    path_output_plots, path_output_tables)
+
+
+# Also show validation per income group? For other variables??
+
+# TODO: update backyarding to account for redevelopment
+
 ###############################################################################
 
 # %% FIGURE 1: HH BREAKDOWN PER HOUSING TYPE
@@ -707,25 +840,25 @@ print("FIGURE 1: HH BREAKDOWN PER HOUSING TYPE")
 ## WE STORE THE VALUES TO BE PLOTTED
 
 scenario_data = {
-    'Baseline': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
+    'Benchmark': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
                            np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T]),
-    'Subsidies': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0:2,:], 2).T,
-                            np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households, (1,2)).T]),
-    'New RDP': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
+    'Public housing': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
                           np.nansum(new_simul_UE1_ISconstr1_RDPnew1_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T]),
-    'New IS': np.vstack([np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
-                         np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T]),
-    'No UE': np.vstack([np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:] ,2).T,
-                        np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T]),
-    'Disam. -50pc': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
+    'Cash Transfers': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households[:,0:2,:], 2).T,
+                            np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid1_Evict0_IH1_households, (1,2)).T]),
+    'Upgrading': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
                                np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup2_Psubsid0_Evict0_IH1_households, (1,2)).T]),
-    'Toler. -50pc': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0:2,:], 2).T,
+    'Evictions': np.vstack([np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households[:,0:2,:], 2).T,
                                np.nansum(new_simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict2_IH1_households, (1,2)).T]),
+    'Tolerance': np.vstack([np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:], 2).T,
+                         np.nansum(new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T]),
+    'No Urban Edge': np.vstack([np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households[:,0:2,:] ,2).T,
+                        np.nansum(new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households, (1,2)).T])
 }
 
 ## WE DEAL WITH THE AXES DEFINITION
 
-income_groups = ['Low inc.', 'Mid-low inc.', 'All']
+income_groups = ['Low income', 'Mid-low income', 'All']
 housing_types = ['FP', 'IB (basic)', 'IB (redev.)', 'IS', 'FS']
 scenarios = list(scenario_data.keys())
 
@@ -734,8 +867,8 @@ scenarios = list(scenario_data.keys())
 plt.ioff()
 
 fig, axes = plt.subplots(3, 1, figsize=(12, 14))
-fig.suptitle('Distribution of HHs across housing types by scenario', 
-             fontsize=16, fontweight='bold', y=0.995)
+# fig.suptitle('Distribution of HHs across housing types by scenario', 
+#              fontsize=16, fontweight='bold', y=0.995)
 
 colors = plt.cm.Set3(np.linspace(0, 1, 5))
 
@@ -753,7 +886,7 @@ for i, income_group in enumerate(income_groups):
         ax.bar(x, values, width, label=housing_type, bottom=bottom, color=colors[j])
         bottom += values
 
-    ax.set_ylabel('Number of HHs', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Number of households', fontsize=11, fontweight='bold')
     formatter = ticker.StrMethodFormatter('{x:,.0f}')
     ax.yaxis.set_major_formatter(formatter)
     ax.set_title(f'{income_group}', fontsize=12, fontweight='bold', pad=10)
@@ -793,7 +926,7 @@ def plot_baseline_distrib_per_incgrp(new_simul_array, new_simul_households,
     population = new_simul_households
 
     housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
-    income_group_labels = ["Low inc.", "Mid-low inc.", "Mid-high inc.", "High inc."]
+    income_group_labels = ["Low income", "Mid-low income", "Mid-high income", "High income"]
 
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     axes = axes.flatten()
@@ -1047,7 +1180,7 @@ print("FIGURES 6-9: SCENARIO DISTRIBUTIONS ACROSS KEY VARIABLES (select main sce
 def plot_comparison_distrib_per_incgrp(baseline_array, baseline_households,
                                        scenario_array, scenario_households,
                                        xlabel, xvar_name, compar_name,
-                                       baseline_label="Baseline",
+                                       baseline_label="Benchmark",
                                        scenario_label="Scenario",
                                        end_option="percentile"):
         
@@ -1057,7 +1190,7 @@ def plot_comparison_distrib_per_incgrp(baseline_array, baseline_households,
     n_housing_types = 5
     n_income_groups = 4
     housing_type_labels = ["FP", "IB (basic)", "IB (redev.)", "IS", "FS"]
-    income_group_labels = ["Low inc.", "Mid-low inc.", "Mid-high inc.", "High inc."]
+    income_group_labels = ["Low income", "Mid-low income", "Mid-high income", "High income"]
     
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     axes = axes.flatten()
@@ -1145,7 +1278,7 @@ def plot_comparison_distrib_per_incgrp(baseline_array, baseline_households,
 def plot_comparison_distrib_all_incgrp(baseline_array, baseline_households,
                                        scenario_array, scenario_households,
                                        xlabel, xvar_name, compar_name,
-                                       baseline_label="Baseline",
+                                       baseline_label="Benchmark",
                                        scenario_label="Scenario",
                                        end_option="percentile"):
    
@@ -1282,8 +1415,8 @@ array_label_dict = {'rent': "Annual rent (ZAR/m²)",
                     'income_net_of_commuting_costs': "Expected income net of commuting costs (ZAR/year)",
                     'amenities': "Amenity index"}
 
-scenario_labels_dict = {'noUE': "No UE", 'newIS': "New IS", 'newRDP': "New FS",
-                        'Aup': "Disam. -50pc", 'subsid': "Subsidies", 'Evict': "Toler. -50pc"}
+scenario_labels_dict = {'noUE': "No Urban Edge", 'newIS': "Tolerance", 'newRDP': "Public Housing",
+                        'Aup': "Upgrading", 'subsid': "Cash Transfers", 'Evict': "Evictions"}
 
 scenario_hhs_dict = {'noUE': new_simul_UE0_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
                      'newIS': new_simul_UE1_ISconstr0_RDPnew0_Aup0_Psubsid0_Evict0_IH1_households,
@@ -1513,7 +1646,7 @@ def compar_density_plots(new_array_scenarios, new_households_scenarios,
 
     n_points = 100
 
-    income_group_labels = ["Low inc.", "Mid-low inc.", "Mid-high inc.", "High inc."]
+    income_group_labels = ["Low income", "Mid-low income", "Mid-high income", "High income"]
 
     colors = plt.cm.Paired(np.linspace(0, 1, n_scenarios))
 
@@ -1677,11 +1810,11 @@ def process_scenario_variable_dens(scenario_name, array_varname,
                                    array_label_dict, scenario_labels_dict):
     
     compar_density_plots(compar_array[array_varname][scenario_name], compar_hhs[scenario_name],
-                         2, ["Baseline", scenario_labels_dict[scenario_name]],
+                         2, ["Benchmark", scenario_labels_dict[scenario_name]],
                          array_label_dict[array_varname], array_varname, scenario_name)
     
     compar_density_plots_all_incgrp(compar_array[array_varname][scenario_name], compar_hhs[scenario_name],
-                         2, ["Baseline", scenario_labels_dict[scenario_name]],
+                         2, ["Benchmark", scenario_labels_dict[scenario_name]],
                          array_label_dict[array_varname], array_varname, scenario_name)
     
     plt.close('all')
@@ -2096,40 +2229,40 @@ def process_scenario_variable_maps_simple(scenario_name, array_varname,
 gdf = gpd.read_file(path_data + "grid_reference_500.shp")
 
 incgrp_names = ['poor', 'midpoor', 'midrich', 'rich']
-incgrp_labels = ['Low inc.', 'Mid-low inc.', 'Mid-high inc.', 'High inc.']
+incgrp_labels = ['Low income', 'Mid-low income', 'Mid-high income', 'High income']
 
 array_label_dict_map = {'rent': 'Weighted avg annual rent (ZAR/m²)',
                         'dwelling_size': 'Weighted avg dwelling size (m²)',
                         'income_net_of_commuting_costs': 'Expected income net of commuting costs (ZAR/year)',
                         'amenities': 'Amenity index'}
 
-scenario_names_map = ['baseline', 'noUE', 'newIS', 'newRDP', 'Aup', 'subsid', 'Evict']
+scenario_names_map = ['Benchmark', 'noUE', 'newIS', 'newRDP', 'Aup', 'subsid', 'Evict']
 
-base_scenario_hhs_dict = {'baseline': baseline_households}
+base_scenario_hhs_dict = {'Benchmark': baseline_households}
 population_array = base_scenario_hhs_dict | scenario_hhs_dict
 
-base_scenario_array_dict = {'baseline': baseline_array_dict}
+base_scenario_array_dict = {'Benchmark': baseline_array_dict}
 rent_array = base_scenario_array_dict | scenarios_array_dict
 
 ### THEN WE IMPORT THE PLOT VALUE BOUNDS
 
 z_bounds, z_bounds_agg, v_bounds_rent, v_bounds_agg_rent = process_scenario_variable_maps_simple(
-    'baseline', 'rent', 
+    'Benchmark', 'rent', 
     population_array, rent_array,
     array_label_dict_map)
 
 _, _, v_bounds_dwelling_size, v_bounds_agg_dwelling_size = process_scenario_variable_maps_simple(
-    'baseline', 'dwelling_size', 
+    'Benchmark', 'dwelling_size', 
     population_array, rent_array,
     array_label_dict_map)
 
 _, _, v_bounds_income_net_of_commuting_costs, v_bounds_agg_income_net_of_commuting_costs = process_scenario_variable_maps_simple(
-    'baseline', 'income_net_of_commuting_costs', 
+    'Benchmark', 'income_net_of_commuting_costs', 
     population_array, rent_array,
     array_label_dict_map)
 
 _, _, v_bounds_amenities, v_bounds_agg_amenities = process_scenario_variable_maps_simple(
-    'baseline', 'amenities', 
+    'Benchmark', 'amenities', 
     population_array, rent_array,
     array_label_dict_map)
 
@@ -2391,7 +2524,7 @@ for scenario_name in scenario_names_map:
         gdf=gdf,
         population_by_housing_type=population_array[scenario_name],  # shape (5, 4, 24014)
         incgrp_names=['poor', 'midpoor', 'midrich', 'rich'],
-        incgrp_labels=['Low inc.', 'Med-low inc.', 'Med-high inc.', 'High inc.'],
+        incgrp_labels=['Low income', 'Med-low inc.', 'Med-high inc.', 'High income'],
         scenario_name=scenario_name,
         z_bounds=z_bounds,
         housing_type_labels=['FP', 'IB (basic)', 'IB (redev.)', 'IS', 'FS']

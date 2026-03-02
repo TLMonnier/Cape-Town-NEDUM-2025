@@ -49,7 +49,7 @@ options = inpprm.import_options()
 options["urban_edge"] = 1
 # param["year_urban_edge"] = param["baseline_year"]
 options["informal_land_constrained"] = 1
-options["new_RDP_housing"] = 1
+options["new_RDP_housing"] = 0
 
 # TODO: Do not converge well when too far from intiial equilibrium? Seems OKish
 
@@ -63,7 +63,7 @@ options["poor_subsidies"] = 0
 # .49 to .41 (middle: -8%):, and .78 to .61 (periphery: -17%), or -9% on avg
 # We approach that as a redistribution of cell share available for squatting to
 # formal development
-options["eviction"] = 3
+options["eviction"] = 0
 
 # TODO: rethink max_land_use parameters already at calibration stage?
 # Maybe also land use regulations and land rent redistribution?
@@ -209,6 +209,15 @@ if options["poor_subsidies"]==1:
         * param["current_rate_public_housing"]
         / (households_per_income_class[0]*population/sum(households_per_income_class)-total_RDP)
         )
+    
+# transfer_value = (
+#     param["subsidized_structure_value"] * param["current_rate_public_housing"]
+#     / (households_per_income_class[0]*population/sum(households_per_income_class)-total_RDP)
+#     )
+
+# print(np.nanmin(transfer_value))
+# print(np.nanmean(transfer_value))
+# print(np.nanmax(transfer_value))
 
 # ## Empty flood data (to make function run)
 fraction_capital_destroyed = pd.DataFrame()
@@ -279,7 +288,9 @@ fraction_capital_destroyed["structure_informal_settlements"
      param["coeff_A"],
      income_baseline)
      
-
+# simul_UE0_ISconstr1_RDPnew0_Aup2_Psubsid1_Evict0_IH1_utility = initial_state_utility
+# print(simul_UE0_ISconstr1_RDPnew0_Aup2_Psubsid1_Evict0_IH1_utility/simul_UE1_ISconstr1_RDPnew0_Aup0_Psubsid0_Evict0_IH1_utility)
+     
 # ##Simulation function towards 2040
 # (simulation_households_center,
 #  simulation_households_housing_type,
@@ -396,6 +407,11 @@ np.save(path_simul + '/initial_state_limit_city_' + name + '.npy',
 # print(np.nansum(formal_backyard_pop))
 # print(np.nansum(informal_backyard_pop))
 # print(backyard_data)
+
+
+df = outexp.valid_housing_supply(
+    grid, initial_state_capital_land,
+    path_output_plots, path_output_tables)
 
 # ##Household density
 simul_nb_households_tot = np.nansum(initial_state_households_housing_types, 0)
