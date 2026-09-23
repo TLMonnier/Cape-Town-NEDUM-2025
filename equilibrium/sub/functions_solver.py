@@ -55,13 +55,22 @@ def compute_dwelling_size_formal(utility, amenities, param,
     # explicit function is given in explicit_qfunc(q, q_0, alpha), and the
     # observed part (corresponding to the left side of equation given in
     # technical documentation) is given below:
-    left_side = (
-        (np.array(utility)[:, None] / np.array(amenities)[None, :])
-        * ((1 + (param["fraction_z_dwellings"]
-                 * np.array(fraction_capital_destroyed.contents_formal)[
-                     None, :])) ** (param["alpha"]))
-        / ((param["alpha"] * income_temp) ** param["alpha"])
-        )
+    if options["risk_misperc"] == 0 :
+        left_side = (
+            (np.array(utility)[:, None] / np.array(amenities)[None, :])
+            * ((1 + (param["fraction_z_dwellings"]
+                    * np.array(fraction_capital_destroyed.contents_formal)[
+                        None, :])) ** (param["alpha"]))
+            / ((param["alpha"] * income_temp) ** param["alpha"])
+            )
+    elif options["risk_misperc"] == 1 :
+        left_side = (
+            (np.array(utility)[:, None] / np.array(amenities)[None, :])
+            * ((1 + (param["fraction_z_dwellings"]
+                    * param["risk_internaliz"]*np.array(fraction_capital_destroyed.contents_formal)[
+                        None, :])) ** (param["alpha"]))
+            / ((param["alpha"] * income_temp) ** param["alpha"])
+            )
 
     # We get a regression spline expressing dwelling size as an implicit
     # function of explicit_qfunc(q, q_0, alpha) for some arbitrarily chosen q
@@ -198,15 +207,26 @@ def compute_housing_supply_formal(
 
         # See technical documentation for math formulas
         # NB: we convert values to supply in m² per km² of available land
-        housing_supply = (
-            1000000
-            * (construction_param ** (1/param["coeff_a"]))
-            * ((param["coeff_b"]
-                / (interest_rate + param["depreciation_rate"]
-                   + capital_destroyed))
-               ** (param["coeff_b"]/param["coeff_a"]))
-            * ((R) ** (param["coeff_b"]/param["coeff_a"]))
-            )
+        if options["risk_misperc"] == 0 :
+            housing_supply = (
+                1000000
+                * (construction_param ** (1/param["coeff_a"]))
+                * ((param["coeff_b"]
+                    / (interest_rate + param["depreciation_rate"]
+                    + capital_destroyed))
+                ** (param["coeff_b"]/param["coeff_a"]))
+                * ((R) ** (param["coeff_b"]/param["coeff_a"]))
+                )
+        elif options["risk_misperc"] == 1 :
+            housing_supply = (
+                1000000
+                * (construction_param ** (1/param["coeff_a"]))
+                * ((param["coeff_b"]
+                    / (interest_rate + param["depreciation_rate"]
+                    + param["risk_internaliz"]*capital_destroyed))
+                ** (param["coeff_b"]/param["coeff_a"]))
+                * ((R) ** (param["coeff_b"]/param["coeff_a"]))
+                )
 
         # Below the agricultural rent, no housing is built
         housing_supply[R < agricultural_rent] = 0
@@ -288,22 +308,34 @@ def compute_housing_supply_backyard(R, R_nodisam, param, income_net_of_commuting
                
     Z_IB = ((param["depreciation_rate"] + interest_rate)
             * (param["informal_structure_value"]/param["shack_size"]))
-            
-    mu = ((param["alpha"] *
-         (param["RDP_size"] + param["backyard_size"] - param["q0"])
-         / (param["backyard_size"]))
-        - (param["beta"]
-           * (income_net_of_commuting_costs[0, :]
-              - (capital_destroyed * param["subsidized_structure_value"])
-              - (param["depreciation_rate"] * param["subsidized_structure_value"]))
-           / (param["backyard_size"] * (R-Z_IB)))
-        )
+
+    if options["risk_misperc"] == 0:
+        mu = ((param["alpha"] *
+            (param["RDP_size"] + param["backyard_size"] - param["q0"])
+            / (param["backyard_size"]))
+            - (param["beta"]
+            * (income_net_of_commuting_costs[0, :]
+                - (capital_destroyed * param["subsidized_structure_value"])
+                - (param["depreciation_rate"] * param["subsidized_structure_value"]))
+            / (param["backyard_size"] * (R-Z_IB)))
+            )
+    elif options["risk_misperc"] == 1:
+        mu = ((param["alpha"] *
+            (param["RDP_size"] + param["backyard_size"] - param["q0"])
+            / (param["backyard_size"]))
+            - (param["beta"]
+            * (income_net_of_commuting_costs[0, :]
+                - (param["risk_internaliz"]*capital_destroyed * param["subsidized_structure_value"])
+                - (param["depreciation_rate"] * param["subsidized_structure_value"]))
+            / (param["backyard_size"] * (R-Z_IB)))
+            )
     
     housing_supply = mu
     
     housing_supply = np.minimum(housing_supply, 1)
     housing_supply = np.maximum(housing_supply, 0)
-    
+
+    # NB: We do not include this option in flood model
     if options["incremental_housing"]==1:
     
         Z_IH = ((param["depreciation_rate"] + interest_rate)

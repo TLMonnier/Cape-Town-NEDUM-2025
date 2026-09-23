@@ -171,89 +171,170 @@ def compute_outputs(housing_type,
         # See technical documentation for math formula
 
         if options["actual_backyards"] == 1:
-            R_mat = (
-                (1 / param["shack_size"])
-                * (income_net_of_commuting_costs
-                   - ((1 + np.array(
-                       fraction_capital_destroyed.contents_backyard)[None, :]
-                       * param["fraction_z_dwellings"])
-                       * ((utility[:, None]
-                           / (amenities[None, :]
-                              * param_backyards_pockets[None, :]
-                              * ((dwelling_size - param["q0"])
-                                 ** param["beta"])))
-                          ** (1 / param["alpha"])))
-                   # - (param["informal_structure_value"]
-                   #    * (interest_rate + param["depreciation_rate"]))
-                   # - (np.array(
-                   #     fraction_capital_destroyed.structure_backyards
-                   #     )[None, :] * param["informal_structure_value"])
-                   )
-                )
-            R_mat_nodisam = (
-                (1 / param["shack_size"])
-                * (income_net_of_commuting_costs
-                   - ((1 + np.array(
-                       fraction_capital_destroyed.contents_backyard)[None, :]
-                       * param["fraction_z_dwellings"])
-                       * ((utility[:, None]
-                           / (amenities[None, :]
-                              # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
-                              * param_incremental_pockets[None, :]
-                              * ((dwelling_size - param["q0"])
-                                 ** param["beta"])))
-                          ** (1 / param["alpha"])))
-                   # - (param["informal_structure_value"]
-                   #    * (interest_rate + param["depreciation_rate"]))
-                   # - (np.array(
-                   #     fraction_capital_destroyed.structure_backyards
-                   #     )[None, :] * param["informal_structure_value"])
-                   )
-                )
-
+            if options["risk_misperc"] == 0:
+                R_mat = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                    - ((1 + np.array(
+                        fraction_capital_destroyed.contents_backyard)[None, :]
+                        * param["fraction_z_dwellings"])
+                        * ((utility[:, None]
+                            / (amenities[None, :]
+                                * param_backyards_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     fraction_capital_destroyed.structure_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
+                    )
+                R_mat_nodisam = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                    - ((1 + np.array(
+                        fraction_capital_destroyed.contents_backyard)[None, :]
+                        * param["fraction_z_dwellings"])
+                        * ((utility[:, None]
+                            / (amenities[None, :]
+                                # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                                * param_incremental_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     fraction_capital_destroyed.structure_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
+                    )
+            elif options["risk_misperc"] == 1:
+                R_mat = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                    - ((1 + np.array(
+                        param["risk_internaliz"]*fraction_capital_destroyed.contents_backyard)[None, :]
+                        * param["fraction_z_dwellings"])
+                        * ((utility[:, None]
+                            / (amenities[None, :]
+                                * param_backyards_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     param["risk_internaliz"]*fraction_capital_destroyed.structure_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
+                    )
+                R_mat_nodisam = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                    - ((1 + np.array(
+                        param["risk_internaliz"]*fraction_capital_destroyed.contents_backyard)[None, :]
+                        * param["fraction_z_dwellings"])
+                        * ((utility[:, None]
+                            / (amenities[None, :]
+                                # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                                * param_incremental_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                    # - (param["informal_structure_value"]
+                    #    * (interest_rate + param["depreciation_rate"]))
+                    # - (np.array(
+                    #     param["risk_internaliz"]*fraction_capital_destroyed.structure_backyards
+                    #     )[None, :] * param["informal_structure_value"])
+                    )
+                    )
 
 
 
         elif options["actual_backyards"] == 0:
-            R_mat = (
-                (1 / param["shack_size"])
-                * (income_net_of_commuting_costs
-                    - ((1 + np.array(
-                        fraction_capital_destroyed.contents_backyard)[None, :]
-                        * param["fraction_z_dwellings"])
-                        * ((utility[:, None]
-                            / (amenities[None, :]
-                               * param_backyards_pockets[None, :]
-                               * ((dwelling_size - param["q0"])
-                                  ** param["beta"])))
-                           ** (1 / param["alpha"])))
-                    # - (param["informal_structure_value"]
-                    #    * (interest_rate + param["depreciation_rate"]))
-                    # - (np.array(
-                    #     fraction_capital_destroyed.structure_informal_backyards
-                    #     )[None, :] * param["informal_structure_value"])
+            if options["risk_misperc"] == 0:
+                R_mat = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                        - ((1 + np.array(
+                            fraction_capital_destroyed.contents_backyard)[None, :]
+                            * param["fraction_z_dwellings"])
+                            * ((utility[:, None]
+                                / (amenities[None, :]
+                                * param_backyards_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        #    * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                        #     fraction_capital_destroyed.structure_informal_backyards
+                        #     )[None, :] * param["informal_structure_value"])
+                        )
                     )
-                )
-            R_mat_nodisam = (
-                (1 / param["shack_size"])
-                * (income_net_of_commuting_costs
-                    - ((1 + np.array(
-                        fraction_capital_destroyed.contents_backyard)[None, :]
-                        * param["fraction_z_dwellings"])
-                        * ((utility[:, None]
-                            / (amenities[None, :]
-                               # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
-                               * param_incremental_pockets[None, :]
-                               * ((dwelling_size - param["q0"])
-                                  ** param["beta"])))
-                           ** (1 / param["alpha"])))
-                    # - (param["informal_structure_value"]
-                    #    * (interest_rate + param["depreciation_rate"]))
-                    # - (np.array(
-                    #     fraction_capital_destroyed.structure_informal_backyards
-                    #     )[None, :] * param["informal_structure_value"])
+                R_mat_nodisam = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                        - ((1 + np.array(
+                            fraction_capital_destroyed.contents_backyard)[None, :]
+                            * param["fraction_z_dwellings"])
+                            * ((utility[:, None]
+                                / (amenities[None, :]
+                                # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                                * param_incremental_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        #    * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                        #     fraction_capital_destroyed.structure_informal_backyards
+                        #     )[None, :] * param["informal_structure_value"])
+                        )
                     )
-                )
+            elif options["risk_misperc"] == 1:
+                R_mat = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                        - ((1 + np.array(
+                            param["risk_internaliz"]*fraction_capital_destroyed.contents_backyard)[None, :]
+                            * param["fraction_z_dwellings"])
+                            * ((utility[:, None]
+                                / (amenities[None, :]
+                                * param_backyards_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        #    * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                        #     param["risk_internaliz"]*fraction_capital_destroyed.structure_informal_backyards
+                        #     )[None, :] * param["informal_structure_value"])
+                        )
+                    )
+                R_mat_nodisam = (
+                    (1 / param["shack_size"])
+                    * (income_net_of_commuting_costs
+                        - ((1 + np.array(
+                            param["risk_internaliz"]*fraction_capital_destroyed.contents_backyard)[None, :]
+                            * param["fraction_z_dwellings"])
+                            * ((utility[:, None]
+                                / (amenities[None, :]
+                                # * param_backyards_pockets[None, :]**param["disam_reduc_fact"]
+                                * param_incremental_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                    ** param["beta"])))
+                            ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        #    * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                        #     param["risk_internaliz"]*fraction_capital_destroyed.structure_informal_backyards
+                        #     )[None, :] * param["informal_structure_value"])
+                        )
+                    )
 
         R_mat[income_class_by_housing_type.backyard == 0, :] = 0
         R_mat_nodisam[income_class_by_housing_type.backyard == 0, :] = 0
@@ -291,22 +372,41 @@ def compute_outputs(housing_type,
 
         # See technical documentation for math formula
 
-        R_mat = (
-            (1 / param["shack_size"])
-            * (income_net_of_commuting_costs
-                - ((1 + np.array(fraction_capital_destroyed.contents_informal)[
-                    None, :] * param["fraction_z_dwellings"])
-                    * ((utility[:, None] / (amenities[None, :]
-                                            * param_pockets[None, :]
-                                            * ((dwelling_size - param["q0"])
-                                               ** param["beta"])))
-                       ** (1 / param["alpha"])))
-                - (param["informal_structure_value"]
-                   * (interest_rate + param["depreciation_rate"]))
-                - (np.array(
-                    fraction_capital_destroyed.structure_informal_settlements
-                    )[None, :] * param["informal_structure_value"]))
-            )
+        if options["risk_misperc"] == 0:
+            R_mat = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs
+                    - ((1 + np.array(fraction_capital_destroyed.contents_informal)[
+                        None, :] * param["fraction_z_dwellings"])
+                        * ((utility[:, None] / (amenities[None, :]
+                                                * param_pockets[None, :]
+                                                * ((dwelling_size - param["q0"])
+                                                ** param["beta"])))
+                        ** (1 / param["alpha"])))
+                    - (param["informal_structure_value"]
+                    * (interest_rate + param["depreciation_rate"]))
+                    - (np.array(
+                        fraction_capital_destroyed.structure_informal_settlements
+                        )[None, :] * param["informal_structure_value"]))
+                )
+
+        elif options["risk_misperc"] == 1:
+            R_mat = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs
+                    - ((1 + param["risk_internaliz"]*np.array(fraction_capital_destroyed.contents_informal)[
+                        None, :] * param["fraction_z_dwellings"])
+                        * ((utility[:, None] / (amenities[None, :]
+                                                * param_pockets[None, :]
+                                                * ((dwelling_size - param["q0"])
+                                                ** param["beta"])))
+                        ** (1 / param["alpha"])))
+                    - (param["informal_structure_value"]
+                    * (interest_rate + param["depreciation_rate"]))
+                    - (param["risk_internaliz"]*np.array(
+                        fraction_capital_destroyed.structure_informal_settlements
+                        )[None, :] * param["informal_structure_value"]))
+                )
 
         R_mat[income_class_by_housing_type.settlement == 0, :] = 0
 
