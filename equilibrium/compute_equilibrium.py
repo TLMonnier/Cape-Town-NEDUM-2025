@@ -7,7 +7,7 @@ import copy
 import equilibrium.sub.compute_outputs as eqout
 
 
-def compute_equilibrium(fraction_capital_destroyed, amenities, param,
+def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_protec, amenities, param,
                         housing_limit, population, households_per_income_class,
                         total_RDP, coeff_land, income_net_of_commuting_costs,
                         grid, options, agricultural_rent, interest_rate,
@@ -195,6 +195,8 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     amenities = amenities[selected_pixels]
     fraction_capital_destroyed = fraction_capital_destroyed.iloc[
         selected_pixels, :]
+    fraction_capital_destroyed_protec = fraction_capital_destroyed_protec.iloc[
+        selected_pixels, :]
     param_pockets = param["informal_pockets"][selected_pixels]
     param_backyards_pockets = param["backyard_pockets"][selected_pixels]
     param_incremental_pockets = param["incremental_pockets"][selected_pixels]
@@ -250,9 +252,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     (simulated_jobs[index_iteration, 0, :], rent_matrix[index_iteration, 0, :],
      simulated_people_housing_types[index_iteration, 0, :],
      simulated_people[0, :, :], housing_supply[0, :], dwelling_size[0, :],
-     R_mat[0, :, :]) = eqout.compute_outputs(
+     R_mat[0, :, :], mask_self_protec) = eqout.compute_outputs(
          'formal', utility[index_iteration, :], amenities, param,
-         income_net_of_commuting_costs, fraction_capital_destroyed, grid,
+         income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[0, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
@@ -262,9 +264,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     (simulated_jobs[index_iteration, 1, :], rent_matrix[index_iteration, 1, :],
      simulated_people_housing_types[index_iteration, 1, :],
      simulated_people[1, :, :], housing_supply[1, :], dwelling_size[1, :],
-     R_mat[1, :, :]) = eqout.compute_outputs(
+     R_mat[1, :, :], mask_self_protec) = eqout.compute_outputs(
          'backyard', utility[index_iteration, :], amenities, param,
-         income_net_of_commuting_costs, fraction_capital_destroyed, grid,
+         income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[1, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
@@ -274,9 +276,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
     (simulated_jobs[index_iteration, 2, :], rent_matrix[index_iteration, 2, :],
      simulated_people_housing_types[index_iteration, 2, :],
      simulated_people[2, :, :], housing_supply[2, :], dwelling_size[2, :],
-     R_mat[2, :, :]) = eqout.compute_outputs(
+     R_mat[2, :, :], mask_self_protec) = eqout.compute_outputs(
          'informal', utility[index_iteration, :], amenities, param,
-         income_net_of_commuting_costs, fraction_capital_destroyed, grid,
+         income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[2, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
@@ -380,9 +382,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
              simulated_people[0, :, :],
              housing_supply[0, :],
              dwelling_size[0, :],
-             R_mat[0, :, :]) = eqout.compute_outputs(
+             R_mat[0, :, :], mask_self_protec) = eqout.compute_outputs(
                  'formal', utility[index_iteration, :], amenities, param,
-                 income_net_of_commuting_costs, fraction_capital_destroyed,
+                 income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[0, :],
                  minimum_housing_supply, construction_param, housing_in,
@@ -396,9 +398,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
              simulated_people[1, :, :],
              housing_supply[1, :],
              dwelling_size[1, :],
-             R_mat[1, :, :]) = eqout.compute_outputs(
+             R_mat[1, :, :], mask_self_protec) = eqout.compute_outputs(
                  'backyard', utility[index_iteration, :], amenities, param,
-                 income_net_of_commuting_costs, fraction_capital_destroyed,
+                 income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[1, :],
                  minimum_housing_supply, construction_param, housing_in,
@@ -412,9 +414,9 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
              simulated_people[2, :, :],
              housing_supply[2, :],
              dwelling_size[2, :],
-             R_mat[2, :, :]) = eqout.compute_outputs(
+             R_mat[2, :, :], mask_self_protec) = eqout.compute_outputs(
                  'informal', utility[index_iteration, :], amenities, param,
-                 income_net_of_commuting_costs, fraction_capital_destroyed,
+                 income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[2, :],
                  minimum_housing_supply, construction_param, housing_in,
@@ -564,4 +566,5 @@ def compute_equilibrium(fraction_capital_destroyed, amenities, param,
             initial_state_rent_matrix,
             initial_state_capital_land,
             initial_state_average_income,
-            initial_state_limit_city)
+            initial_state_limit_city,
+            mask_self_protec)

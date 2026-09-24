@@ -10,6 +10,7 @@ def compute_outputs(housing_type,
                     param,
                     income_net_of_commuting_costs,
                     fraction_capital_destroyed,
+                    fraction_capital_destroyed_protec,
                     grid,
                     income_class_by_housing_type,
                     options,
@@ -252,8 +253,6 @@ def compute_outputs(housing_type,
                     )
                     )
 
-
-
         elif options["actual_backyards"] == 0:
             if options["risk_misperc"] == 0:
                 R_mat = (
@@ -372,6 +371,9 @@ def compute_outputs(housing_type,
 
         # See technical documentation for math formula
 
+        # NB: compute alternative rent under protection (just one mode for now)
+        # Take care to dimensions and cleaning?
+
         if options["risk_misperc"] == 0:
             R_mat = (
                 (1 / param["shack_size"])
@@ -387,6 +389,22 @@ def compute_outputs(housing_type,
                     * (interest_rate + param["depreciation_rate"]))
                     - (np.array(
                         fraction_capital_destroyed.structure_informal_settlements
+                        )[None, :] * param["informal_structure_value"]))
+                )
+            R_mat_protec = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs-param["sandbag_course_cost"]
+                    - ((1 + np.array(fraction_capital_destroyed_protec.contents_informal)[
+                        None, :] * param["fraction_z_dwellings"])
+                        * ((utility[:, None] / (amenities[None, :]
+                                                * param_pockets[None, :]
+                                                * ((dwelling_size - param["q0"])
+                                                ** param["beta"])))
+                        ** (1 / param["alpha"])))
+                    - (param["informal_structure_value"]
+                    * (interest_rate + param["depreciation_rate"]))
+                    - (np.array(
+                        fraction_capital_destroyed_protec.structure_informal_settlements
                         )[None, :] * param["informal_structure_value"]))
                 )
 
@@ -407,8 +425,54 @@ def compute_outputs(housing_type,
                         fraction_capital_destroyed.structure_informal_settlements
                         )[None, :] * param["informal_structure_value"]))
                 )
+            R_mat_protec = (
+                (1 / param["shack_size"])
+                * (income_net_of_commuting_costs-param["sandbag_course_cost"]
+                    - ((1 + param["risk_internaliz"]*np.array(fraction_capital_destroyed_protec.contents_informal)[
+                        None, :] * param["fraction_z_dwellings"])
+                        * ((utility[:, None] / (amenities[None, :]
+                                                * param_pockets[None, :]
+                                                * ((dwelling_size - param["q0"])
+                                                ** param["beta"])))
+                        ** (1 / param["alpha"])))
+                    - (param["informal_structure_value"]
+                    * (interest_rate + param["depreciation_rate"]))
+                    - (param["risk_internaliz"]*np.array(
+                        fraction_capital_destroyed_protec.structure_informal_settlements
+                        )[None, :] * param["informal_structure_value"]))
+                )
 
         R_mat[income_class_by_housing_type.settlement == 0, :] = 0
+        R_mat_protec[income_class_by_housing_type.settlement == 0, :] = 0
+
+        # We clean the results just in case
+        R_mat_protec[R_mat_protec < 0] = 0
+        R_mat_protec[np.isnan(R_mat_protec)] = 0
+    
+        # We select highest bidder (income group) in each location
+        proba_protec = (R_mat_protec == np.nanmax(R_mat_protec, 0))
+        # We correct the matrix if binding budget constraint
+        # (and other precautions)
+        limit_protec = ((income_net_of_commuting_costs > 0)
+                 & (proba_protec > 0)
+                 & (~np.isnan(income_net_of_commuting_costs))
+                 & (R_mat_protec > 0))
+        proba_protec = proba_protec * limit_protec
+    
+        # Yields directly the selected income group for each location
+        which_group_protec = np.nanargmax(R_mat_protec, 0)
+    
+        # Then we recover rent and dwelling size associated with the selected
+        # income group in each location
+        R_protec = np.empty(len(which_group_protec))
+        R_protec[:] = np.nan
+        # dwelling_size_temp_protec = np.empty(len(which_group_protec))
+        # dwelling_size_temp_protec[:] = np.nan
+        for i in range(0, len(which_group_protec)):
+            R_protec[i] = R_mat_protec[int(which_group_protec[i]), i]
+        #     dwelling_size_temp_protec[i] = dwelling_size[int(which_group_protec[i]), i]
+    
+        # dwelling_size_protec = dwelling_size_temp_protec
 
     # We clean the results just in case
     R_mat[R_mat < 0] = 0
@@ -467,6 +531,42 @@ def compute_outputs(housing_type,
         proba = proba * limit
 
     elif housing_type == 'informal':
+
+        dom_net_inc = np.empty(len(which_group))
+        dom_net_inc[:] = np.nan
+        for i in range(0, len(which_group)):
+            dom_net_inc[i] = income_net_of_commuting_costs[int(which_group[i]), i]
+
+        dom_net_inc_protec = np.empty(len(which_group_protec))
+        dom_net_inc_protec[:] = np.nan
+        for i in range(0, len(which_group_protec)):
+            dom_net_inc_protec[i] = income_net_of_commuting_costs[int(which_group_protec[i]), i]
+
+        # How to implement protection choice?
+
+        z = ((dom_net_inc
+              - (dwelling_size*R
+                + param["informal_structure_value"]
+                * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed.structure_informal_settlements)
+                ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed.contents_informal)
+                )
+
+        z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
+              - (dwelling_size*R_protec
+                + param["informal_structure_value"]
+                * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed_protec.structure_informal_settlements)
+                ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed_protec.contents_informal)
+                )
+
+        R[z_protec>z] = R_protec[z_protec>z]
+
+        mask_self_protec = (z_protec > z)
+
+        # With CRRA?
+
+        # No need to compare full utilities: z is enough
+        # NB: take care to dimensions
+
         # We simply take a supply equal to the available constructible land,
         # hence ones when considering supply per land unit (informal
         # settlements are assumed not costly to build), then convert to m²
@@ -497,4 +597,4 @@ def compute_outputs(housing_type,
         R = np.maximum(R, agricultural_rent)
 
     return (job_simul, R, people_init, people_center, housing_supply,
-            dwelling_size, R_mat)
+            dwelling_size, R_mat, mask_self_protec)

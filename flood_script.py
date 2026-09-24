@@ -77,18 +77,19 @@ options["incremental_housing"] = 0
 
 # ## Output name
 
-options["agents_anticipate_floods"] = 0
+options["agents_anticipate_floods"] = 1
 
 options["climate_change"] = 0
 
 options["risk_misperc"] = 0
 
-options["subsid_insur"] = 0
+# NB: need to compute homogeneous tax ex post wrt damage estimates
+# options["subsid_insur"] = 0
 
 options["self_protec"] = 0
 
 name = ('simul_AF' + str(options["agents_anticipate_floods"]) + '_CC' + str(options["climate_change"])
-        + '_RM' + str(options["risk_misperc"]) + '_SI' + str(options["subsid_insur"]) + '_SP' + str(options["self_protec"]))
+        + '_RM' + str(options["risk_misperc"]) + '_SP' + str(options["self_protec"]))
 
 # COMPUTE COMPENSATION COST EX-POST!
 
@@ -117,7 +118,18 @@ param = inpprm.import_param(
 # NB: this is based on formal data (but can use additional references to argue for homeneity across income groups / housing types) 
 
 param["risk_internaliz"] = 0.36
-#param["risk_internaliz"] = 0.60
+
+# Can go up to three levels, with 15cm elevation each (for IS only)
+# NB: get inspiration from redevelopment choice?
+# NB: add an option to allow it to be susidized
+# NB: check ex post if we recover take-up rates aligned with Visser et al.
+param["sandbag_course_cost"] = 1500 # correcting for inflation
+# param["sandbag_course_cost"] = 3150
+
+# Matters for self-protection decision???
+param["CRRA"] = 0.2772
+
+# Measure who subscribes?
 
 # # Load data
 
@@ -233,7 +245,7 @@ if options["poor_subsidies"]==1:
 
 # If agents anticipate floods, we return output from damage functions
 if options["agents_anticipate_floods"] == 1:
-    (fraction_capital_destroyed, structural_damages_small_houses,
+    (fraction_capital_destroyed, fraction_capital_destroyed_protec, structural_damages_small_houses,
      structural_damages_medium_houses, structural_damages_large_houses,
      content_damages, structural_damages_type1, structural_damages_type2,
      structural_damages_type3a, structural_damages_type3b,
@@ -257,6 +269,22 @@ elif options["agents_anticipate_floods"] == 0:
     fraction_capital_destroyed["structure_informal_backyards"
                                ] = np.zeros(24014)
     fraction_capital_destroyed["structure_informal_settlements"
+                               ] = np.zeros(24014)
+
+    fraction_capital_destroyed_protec = pd.DataFrame()
+    fraction_capital_destroyed_protec["structure_formal_2"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_formal_1"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_subsidized_2"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_subsidized_1"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["contents_formal"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["contents_informal"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["contents_subsidized"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["contents_backyard"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_backyards"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_formal_backyards"] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_informal_backyards"
+                               ] = np.zeros(24014)
+    fraction_capital_destroyed_protec["structure_informal_settlements"
                                ] = np.zeros(24014)
 
 # (spline_agricultural_price, spline_interest_rate,
@@ -289,8 +317,10 @@ elif options["agents_anticipate_floods"] == 0:
  initial_state_rent_matrix,
  initial_state_capital_land,
  initial_state_average_income,
- initial_state_limit_city) = eqcmp.compute_equilibrium(
+ initial_state_limit_city,
+ mask_self_protec) = eqcmp.compute_equilibrium(
      fraction_capital_destroyed,
+     fraction_capital_destroyed_protec,
      amenities,
      param,
      housing_limit,
