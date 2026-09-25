@@ -1,16 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-
-
-
-"""
 
 import numpy as np
 import copy
 from scipy.interpolate import interp1d
 
 
-def compute_dwelling_size_formal(utility, amenities, param,
+def compute_dwelling_size_formal(utility, amenities, param, options,
                                  income_net_of_commuting_costs,
                                  fraction_capital_destroyed):
     """
@@ -305,8 +300,16 @@ def compute_housing_supply_backyard(R, R_nodisam, param, income_net_of_commuting
                           dwelling_size <= param["threshold"]]
 
     # New computation due to structure costs!
+
+    # NEED TO INCLUDE FLOOD RISKS FOR BACKYARD STRUCTURES?
                
-    Z_IB = ((param["depreciation_rate"] + interest_rate)
+    # - (param["informal_structure_value"]
+    #    * (interest_rate + param["depreciation_rate"]))
+    # - (np.array(
+    #     fraction_capital_destroyed.structure_backyards
+    #     )[None, :] * param["informal_structure_value"])
+
+    Z_IB = ((param["depreciation_rate"] + fraction_capital_destroyed.structure_backyards + interest_rate)
             * (param["informal_structure_value"]/param["shack_size"]))
 
     if options["risk_misperc"] == 0:
@@ -335,7 +338,7 @@ def compute_housing_supply_backyard(R, R_nodisam, param, income_net_of_commuting
     housing_supply = np.minimum(housing_supply, 1)
     housing_supply = np.maximum(housing_supply, 0)
 
-    # NB: We do not include this option in flood model
+    # NB: We do not include this option in flood model!!!
     if options["incremental_housing"]==1:
     
         Z_IH = ((param["depreciation_rate"] + interest_rate)

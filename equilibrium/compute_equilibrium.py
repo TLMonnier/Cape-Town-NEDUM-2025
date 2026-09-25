@@ -6,8 +6,9 @@ import copy
 
 import equilibrium.sub.compute_outputs as eqout
 
-
-def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_protec, amenities, param,
+def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_protec,
+                        damages_table, damages_protec_table, interval_table_fathom,
+                        amenities, param,
                         housing_limit, population, households_per_income_class,
                         total_RDP, coeff_land, income_net_of_commuting_costs,
                         grid, options, agricultural_rent, interest_rate,
@@ -220,9 +221,11 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
     housing_supply = np.empty((3, len(grid.dist)))
     dwelling_size = np.empty((3, len(grid.dist)))
     R_mat = np.empty((3, 4, len(grid.dist)))
+    mask_self_protec = np.empty((3, len(grid.dist)))
     housing_supply[:] = np.nan
     dwelling_size[:] = np.nan
     R_mat[:] = np.nan
+    mask_self_protec[:] = np.nan
 
     # Initialisation solver
     utility = np.zeros((param["max_iter"], param["nb_of_income_classes"]))
@@ -252,37 +255,40 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
     (simulated_jobs[index_iteration, 0, :], rent_matrix[index_iteration, 0, :],
      simulated_people_housing_types[index_iteration, 0, :],
      simulated_people[0, :, :], housing_supply[0, :], dwelling_size[0, :],
-     R_mat[0, :, :], mask_self_protec) = eqout.compute_outputs(
+     R_mat[0, :, :], mask_self_protec[0, :]) = eqout.compute_outputs(
          'formal', utility[index_iteration, :], amenities, param,
          income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[0, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets, param_incremental_pockets
+         param_backyards_pockets, param_incremental_pockets,
+         damages_table, damages_protec_table, interval_table_fathom
          )
     #  Backyard housing
     (simulated_jobs[index_iteration, 1, :], rent_matrix[index_iteration, 1, :],
      simulated_people_housing_types[index_iteration, 1, :],
      simulated_people[1, :, :], housing_supply[1, :], dwelling_size[1, :],
-     R_mat[1, :, :], mask_self_protec) = eqout.compute_outputs(
+     R_mat[1, :, :], mask_self_protec[1, :]) = eqout.compute_outputs(
          'backyard', utility[index_iteration, :], amenities, param,
          income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[1, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets, param_incremental_pockets
+         param_backyards_pockets, param_incremental_pockets,
+         damages_table, damages_protec_table, interval_table_fathom
          )
     #  Informal housing
     (simulated_jobs[index_iteration, 2, :], rent_matrix[index_iteration, 2, :],
      simulated_people_housing_types[index_iteration, 2, :],
      simulated_people[2, :, :], housing_supply[2, :], dwelling_size[2, :],
-     R_mat[2, :, :], mask_self_protec) = eqout.compute_outputs(
+     R_mat[2, :, :], mask_self_protec[2, :]) = eqout.compute_outputs(
          'informal', utility[index_iteration, :], amenities, param,
          income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec, grid,
          income_class_by_housing_type, options, housing_limit,
          agricultural_rent, interest_rate, coeff_land[2, :],
          minimum_housing_supply, construction_param, housing_in, param_pockets,
-         param_backyards_pockets, param_incremental_pockets
+         param_backyards_pockets, param_incremental_pockets,
+         damages_table, damages_protec_table, interval_table_fathom
          )
 
     # Compute error and adjust utility
@@ -382,13 +388,14 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
              simulated_people[0, :, :],
              housing_supply[0, :],
              dwelling_size[0, :],
-             R_mat[0, :, :], mask_self_protec) = eqout.compute_outputs(
+             R_mat[0, :, :], mask_self_protec[0, :]) = eqout.compute_outputs(
                  'formal', utility[index_iteration, :], amenities, param,
                  income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[0, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets, param_incremental_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets,
+                 damages_table, damages_protec_table, interval_table_fathom
                  )
 
             #  Backyard housing
@@ -398,13 +405,14 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
              simulated_people[1, :, :],
              housing_supply[1, :],
              dwelling_size[1, :],
-             R_mat[1, :, :], mask_self_protec) = eqout.compute_outputs(
+             R_mat[1, :, :], mask_self_protec[1, :]) = eqout.compute_outputs(
                  'backyard', utility[index_iteration, :], amenities, param,
                  income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[1, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets, param_incremental_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets,
+                 damages_table, damages_protec_table, interval_table_fathom
                  )
 
             #  Informal housing
@@ -414,13 +422,14 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
              simulated_people[2, :, :],
              housing_supply[2, :],
              dwelling_size[2, :],
-             R_mat[2, :, :], mask_self_protec) = eqout.compute_outputs(
+             R_mat[2, :, :], mask_self_protec[2, :]) = eqout.compute_outputs(
                  'informal', utility[index_iteration, :], amenities, param,
                  income_net_of_commuting_costs, fraction_capital_destroyed, fraction_capital_destroyed_protec,
                  grid, income_class_by_housing_type, options, housing_limit,
                  agricultural_rent, interest_rate, coeff_land[2, :],
                  minimum_housing_supply, construction_param, housing_in,
-                 param_pockets, param_backyards_pockets, param_incremental_pockets
+                 param_pockets, param_backyards_pockets, param_incremental_pockets,
+                 damages_table, damages_protec_table, interval_table_fathom
                  )
 
             # Compute error and adjust utility
@@ -543,6 +552,9 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
     rent_matrix_export[:, :, selected_pixels == 0] = np.nan
     initial_state_rent_matrix = copy.deepcopy(rent_matrix_export)
 
+    mask_self_protec_export = np.zeros(len(grid_temp.dist))
+    mask_self_protec_export[selected_pixels] = mask_self_protec[2,:]
+
     # Other outputs
     initial_state_utility = utility[index_iteration, :]
     # Housing capital value per unit of available land: see math appendix
@@ -567,4 +579,4 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
             initial_state_capital_land,
             initial_state_average_income,
             initial_state_limit_city,
-            mask_self_protec)
+            mask_self_protec_export)

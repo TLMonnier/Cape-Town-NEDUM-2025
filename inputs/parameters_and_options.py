@@ -486,6 +486,7 @@ def import_param(path_precalc_inp, options):
     # the error in the computed number of households per income bracket falls
     # below some precision level, or when the number of iterations reaches some
     # threshold (to limit processing time)
+    
     param["max_iter"] = 1000
     param["precision"] = 0.001
 

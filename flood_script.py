@@ -2,11 +2,16 @@
 # ## SIMPLIFIED SCRIPT FOR JUE REVISION ###
 # #########################################
 
+# %%
+
 # RE-RUN CALIBRATION!!!
 
 # WE THEN FOCUS ON COMPARATIVE STATICS FROM MAIN EQUILIBRIUM SCRIPTS
 
 # ## We import standard Python libraries
+
+import importlib
+
 import numpy as np
 import pandas as pd
 # import os
@@ -22,6 +27,7 @@ import outputs.export_outputs as outexp
 # import equilibrium.run_simulations as eqsim
 # import equilibrium.functions_dynamic as eqdyn
 
+import equilibrium.sub.compute_outputs as eqout
 
 # # Preamble
 
@@ -77,16 +83,20 @@ options["incremental_housing"] = 0
 
 # ## Output name
 
+#NB: add an option for who bears the structural costs in backyards?
+
 options["agents_anticipate_floods"] = 1
 
-options["climate_change"] = 0
+options["climate_change"] = 1
 
-options["risk_misperc"] = 0
+options["risk_misperc"] = 1
 
 # NB: need to compute homogeneous tax ex post wrt damage estimates
 # options["subsid_insur"] = 0
 
-options["self_protec"] = 0
+options["self_protec"] = 1
+
+options["risk_avers"] = 1
 
 name = ('simul_AF' + str(options["agents_anticipate_floods"]) + '_CC' + str(options["climate_change"])
         + '_RM' + str(options["risk_misperc"]) + '_SP' + str(options["self_protec"]))
@@ -249,7 +259,8 @@ if options["agents_anticipate_floods"] == 1:
      structural_damages_medium_houses, structural_damages_large_houses,
      content_damages, structural_damages_type1, structural_damages_type2,
      structural_damages_type3a, structural_damages_type3b,
-     structural_damages_type4a, structural_damages_type4b
+     structural_damages_type4a, structural_damages_type4b,
+     damages_table, damages_protec_table, interval_table_fathom
      ) = inpdt.import_full_floods_data(options, param, path_folder)
 
 # Else, we set those outputs as zero
@@ -304,6 +315,9 @@ elif options["agents_anticipate_floods"] == 0:
 
 # REDO CALIBRATION TO BETTER FIT HOUSING TYPES???
 
+# importlib.reload(eqout)
+param["max_iter"] = 100
+
 # ##Equilibrium function
 (initial_state_utility,
  initial_state_error,
@@ -321,6 +335,7 @@ elif options["agents_anticipate_floods"] == 0:
  mask_self_protec) = eqcmp.compute_equilibrium(
      fraction_capital_destroyed,
      fraction_capital_destroyed_protec,
+     damages_table, damages_protec_table, interval_table_fathom,
      amenities,
      param,
      housing_limit,
@@ -422,6 +437,9 @@ np.save(path_simul + '/initial_state_average_income_' + name + '.npy',
 np.save(path_simul + '/initial_state_limit_city_' + name + '.npy',
         initial_state_limit_city)
 
+np.save(path_simul + '/mask_self_protec_' + name + '.npy',
+        mask_self_protec)
+
 # np.save(path_simul + '/simulation_households_center_' + name + '.npy',
 #         simulation_households_center)
 # np.save(path_simul + '/simulation_households_housing_type_' + name + '.npy',
@@ -444,216 +462,3 @@ np.save(path_simul + '/initial_state_limit_city_' + name + '.npy',
 #         simulation_T)
 # np.save(path_simul + '/simulation_capital_land_' + name + '.npy',
 #         simulation_capital_land)
-
-
-# TAKE CARE TO MUTABLE OBJECTS!
-
-# backyard_hsupply = initial_state_housing_supply[1,:].copy()
-# backyard_hsupply = backyard_hsupply/1000000
-
-# formal_backyard_pop = initial_state_households_housing_types[1,:].copy()
-# formal_backyard_pop[backyard_hsupply<2] = 0
-
-# informal_backyard_pop = initial_state_households_housing_types[1,:].copy()
-# informal_backyard_pop[backyard_hsupply>=2] = 0
-
-# print(np.nansum(formal_backyard_pop))
-# print(np.nansum(informal_backyard_pop))
-# print(backyard_data)
-
-
-df = outexp.valid_housing_supply(
-    grid, initial_state_capital_land,
-    path_output_plots, path_output_tables)
-
-# ##Household density
-simul_nb_households_tot = np.nansum(initial_state_households_housing_types, 0)
-
-# Grid cell = 500x500m = 25 Ha
-simul_HHdens_HA = simul_nb_households_tot/25
-
-simul_HHdens_HA_discrete = np.zeros(len(simul_HHdens_HA))
-simul_HHdens_HA_discrete[(simul_HHdens_HA > 0)
-                              & (simul_HHdens_HA <= 10)] = 1
-simul_HHdens_HA_discrete[(simul_HHdens_HA > 10)
-                              & (simul_HHdens_HA <= 20)] = 2
-simul_HHdens_HA_discrete[(simul_HHdens_HA > 20)
-                              & (simul_HHdens_HA <= 50)] = 3
-simul_HHdens_HA_discrete[(simul_HHdens_HA > 50)
-                              & (simul_HHdens_HA <= 100)] = 4
-simul_HHdens_HA_discrete[(simul_HHdens_HA > 100)
-                              & (simul_HHdens_HA <= 200)] = 5
-simul_HHdens_HA_discrete[simul_HHdens_HA > 200] = 6
-
-simul_HHdens_HA_discrete_map = outexp.discrete_map(
-    simul_HHdens_HA_discrete, grid, geo_grid, path_output_plots,
-    'simul_HHdens_HA_discrete_map',
-    "Nb of HHs per Ha (WP scale)", path_output_tables)
-
-
-# ## (Perpetual) land price (/m² of available land) in formal sector
-
-# NB: do not worry about housing price per se
-
-# Note that several housing types may co-exist within one cell (but there is
-# one dominant income group for each housing type)
-
-landprice_formal_simul = (
-    (initial_state_rent[0, :] * param["coeff_A"])
-    ** (1 / param["coeff_a"])
-    * param["coeff_a"]
-    * (param["coeff_b"] / (interest_rate + param["depreciation_rate"]))
-    ** (param["coeff_b"] / param["coeff_a"])
-    / interest_rate
-    )
-
-rent_formal_simul = initial_state_rent[0, :]
-
-simul_nb_households_formal = initial_state_households_housing_types[0, :]
-landprice_formal_simul[simul_nb_households_formal == 0] = 0
-rent_formal_simul[simul_nb_households_formal == 0] = 0
-
-simul_formal_landprice_discrete = np.zeros(len(landprice_formal_simul))
-simul_formal_landprice_discrete[(landprice_formal_simul > 0)
-                                    & (landprice_formal_simul <= 500)] = 1
-simul_formal_landprice_discrete[(landprice_formal_simul > 500)
-                                    & (landprice_formal_simul <= 1000)] = 2
-simul_formal_landprice_discrete[(landprice_formal_simul > 1000)
-                                    & (landprice_formal_simul <= 1500)] = 3
-simul_formal_landprice_discrete[(landprice_formal_simul > 1500)
-                                    & (landprice_formal_simul <= 2000)] = 4
-simul_formal_landprice_discrete[(landprice_formal_simul > 2000)
-                                    & (landprice_formal_simul <= 3000)] = 5
-simul_formal_landprice_discrete[(landprice_formal_simul > 3000)
-                                    & (landprice_formal_simul <= 4000)] = 6
-simul_formal_landprice_discrete[(landprice_formal_simul > 4000)
-                                    & (landprice_formal_simul <= 5000)] = 7
-simul_formal_landprice_discrete[(landprice_formal_simul > 5000)
-                                    & (landprice_formal_simul <= 6000)] = 8
-simul_formal_landprice_discrete[landprice_formal_simul > 6000] = 9
-
-# simul_formal_rent_discrete = np.zeros(len(rent_formal_simul))
-# simul_formal_rent_discrete[(rent_formal_simul > 0)
-#                                     & (rent_formal_simul <= 500)] = 1
-# simul_formal_rent_discrete[(rent_formal_simul > 500)
-#                                     & (rent_formal_simul <= 1000)] = 2
-# simul_formal_rent_discrete[(rent_formal_simul > 1000)
-#                                     & (rent_formal_simul <= 1500)] = 3
-# simul_formal_rent_discrete[(rent_formal_simul > 1500)
-#                                     & (rent_formal_simul <= 2000)] = 4
-# simul_formal_rent_discrete[(rent_formal_simul > 2000)
-#                                     & (rent_formal_simul <= 3000)] = 5
-# simul_formal_rent_discrete[(rent_formal_simul > 3000)
-#                                     & (rent_formal_simul <= 4000)] = 6
-# simul_formal_rent_discrete[(rent_formal_simul > 4000)
-#                                     & (rent_formal_simul <= 5000)] = 7
-# simul_formal_rent_discrete[(rent_formal_simul > 5000)
-#                                     & (rent_formal_simul <= 6000)] = 8
-# simul_formal_rent_discrete[rent_formal_simul > 6000] = 9
-
-simul_formal_landprice_discrete_map = outexp.discrete_map(
-    simul_formal_landprice_discrete, grid, geo_grid, path_output_plots,
-    'simul_formal_landprice_discrete_map',
-    "Formal land price per m² (WP scale)", path_output_tables)
-
-# simul_formal_rent_discrete_map = outexp.discrete_map(
-#     simul_formal_rent_discrete, grid, geo_grid, path_output_plots,
-#     'simul_formal_rent_discrete_map',
-#     "Formal annual rent per m² (WP scale)", path_output_tables)
-
-
-# TODO: what about FAR regulations?
-
-# TEST FOR WELFARE DECOMPOSITON: what to save?
-
-## Preamble
-
-formal_size = initial_state_dwelling_size[0, :]
-backyard_size = initial_state_dwelling_size[1, :]
-informal_size = initial_state_dwelling_size[2, :]
-rdp_size = initial_state_dwelling_size[3, :]
-
-formal_rent = initial_state_rent[0, :]
-backyard_rent = initial_state_rent[1, :]
-informal_rent = initial_state_rent[2, :]
-rdp_rent = initial_state_rent[3, :]
-
-backyard_supply = initial_state_housing_supply[1,:]/1000000
-disam_backyard = param["backyard_pockets"]
-disam_backyard[backyard_supply==2] = np.nanmean(param["incremental_pockets"])
-disam_informal = param["informal_pockets"]
-
-## Theoretical values before allocation (not as homogeneous as should be?)
-
-utility_temp_formal = (
-    (income_net_of_commuting_costs - formal_size[None, :]*formal_rent[None, :])**param["alpha"]
-    * (formal_size[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :]
-    )
-
-utility_temp_backyard = (
-    (income_net_of_commuting_costs - backyard_size[None, :]*backyard_rent[None, :])**param["alpha"]
-    * (backyard_size[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_backyard[None, :]
-    )
-
-utility_temp_informal = (
-    (income_net_of_commuting_costs - informal_size[None, :]*informal_rent[None, :]
-     - param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))**param["alpha"]
-    * (informal_size[None, :] - param["q0"])**param["beta"]
-    * amenities[None, :] * disam_informal[None, :]
-    )
-
-# Size definition? Also limits in hsupply/land availability?
-# May create inconsistency with baseline levels? Should not measure? Or separately...
-# What about construction costs for backyards!
-backyard_supply[np.isnan(backyard_supply)] = 0
-backyard_rent[np.isnan(backyard_rent)] = 0
-
-informal_cost = (
-    (interest_rate + param["depreciation_rate"]) * param["informal_structure_value"]
-    * backyard_supply * param["backyard_size"] / param["shack_size"])
-incremental_cost = (
-    (interest_rate + param["depreciation_rate"]) * param["subsidized_structure_value"]
-    * backyard_supply * param["backyard_size"] / param["RDP_size"])
-backyard_cost = informal_cost
-backyard_cost[backyard_supply==2] = incremental_cost[backyard_supply==2]
-
-utility_temp_rdp = (
-    (income_net_of_commuting_costs
-     + backyard_supply[None, :]*param["backyard_size"]*backyard_rent[None, :]
-     - param["subsidized_structure_value"] * param["depreciation_rate"]
-     - backyard_cost)**param["alpha"]
-    * (param["RDP_size"] + param["backyard_size"] - param["q0"]
-       - np.nanmin(backyard_supply[None, :],1)*param["backyard_size"])**param["beta"]
-    * amenities[None, :]
-    )
-
-## Allocation: can apply mask to old variables for extensive margin?
-
-agg_alloc_grid = initial_state_households>0
-
-utility_temp_mat = np.array([utility_temp_formal, utility_temp_backyard, utility_temp_informal, utility_temp_rdp])
-utility_temp_mat = utility_temp_mat*agg_alloc_grid
-utility_temp_mat[utility_temp_mat==0] = np.nan
-
-# Slight variations from min (equilibrium value) to max irrelevant except for
-# RDP beneficiaries in poor income group (up to between rich and midrich, but
-# more like midpoor on average)
-
-# Averages including RDP for the poor!!!
-avg_utility_poor = np.nansum(utility_temp_mat[:,0,:]*initial_state_households[:,0,:])/np.nansum(initial_state_households[:,0,:])
-avg_utility_midpoor = np.nansum(utility_temp_mat[:,1,:]*initial_state_households[:,1,:])/np.nansum(initial_state_households[:,1,:])
-avg_utility_midrich = np.nansum(utility_temp_mat[:,2,:]*initial_state_households[:,2,:])/np.nansum(initial_state_households[:,2,:])
-avg_utility_rich = np.nansum(utility_temp_mat[:,3,:]*initial_state_households[:,3,:])/np.nansum(initial_state_households[:,3,:])
-
-# Now deal with decomposition of interest (do averages ex post?)
-# Note that both values and worker allocation change in counterfactuals
-
-# Need to write matrix form with possibility of changing each component?
-# Also per housing type?
-
-# Allocation and values need to change at the same time for each component!
-
-# test = np.where(np.isnan(utility_temp_mat) & agg_alloc_grid==1)
-

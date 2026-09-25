@@ -23,7 +23,8 @@ def compute_outputs(housing_type,
                     housing_in,
                     param_pockets,
                     param_backyards_pockets,
-                    param_incremental_pockets):
+                    param_incremental_pockets,
+                    damages_table, damages_protec_table, interval_table_fathom):
     """
     Compute equilibrium outputs from theoretical formulas.
 
@@ -123,10 +124,12 @@ def compute_outputs(housing_type,
     """
     # %% Dwelling size in selected pixels per (endogenous) housing type
 
+    mask_self_protec = np.zeros(len(amenities))
+
     if housing_type == 'formal':
 
         dwelling_size = eqsol.compute_dwelling_size_formal(
-            utility, amenities, param, income_net_of_commuting_costs,
+            utility, amenities, param, options, income_net_of_commuting_costs,
             fraction_capital_destroyed)
 
         # Here, we introduce the minimum lot size
@@ -532,35 +535,89 @@ def compute_outputs(housing_type,
 
     elif housing_type == 'informal':
 
-        dom_net_inc = np.empty(len(which_group))
-        dom_net_inc[:] = np.nan
-        for i in range(0, len(which_group)):
-            dom_net_inc[i] = income_net_of_commuting_costs[int(which_group[i]), i]
+        if options["self_protec"]==1:
 
-        dom_net_inc_protec = np.empty(len(which_group_protec))
-        dom_net_inc_protec[:] = np.nan
-        for i in range(0, len(which_group_protec)):
-            dom_net_inc_protec[i] = income_net_of_commuting_costs[int(which_group_protec[i]), i]
+            dom_net_inc = np.empty(len(which_group))
+            dom_net_inc[:] = np.nan
+            for i in range(0, len(which_group)):
+                dom_net_inc[i] = income_net_of_commuting_costs[int(which_group[i]), i]
 
-        # How to implement protection choice?
+            dom_net_inc_protec = np.empty(len(which_group_protec))
+            dom_net_inc_protec[:] = np.nan
+            for i in range(0, len(which_group_protec)):
+                dom_net_inc_protec[i] = income_net_of_commuting_costs[int(which_group_protec[i]), i]
 
-        z = ((dom_net_inc
-              - (dwelling_size*R
-                + param["informal_structure_value"]
-                * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed.structure_informal_settlements)
-                ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed.contents_informal)
-                )
+            if options["risk_avers"]==0:
 
-        z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
-              - (dwelling_size*R_protec
-                + param["informal_structure_value"]
-                * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed_protec.structure_informal_settlements)
-                ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed_protec.contents_informal)
-                )
+                # How to implement protection choice?
+                # Does everyone take it?
 
-        R[z_protec>z] = R_protec[z_protec>z]
+                z = ((dom_net_inc
+                    - (dwelling_size*R
+                        + param["informal_structure_value"]
+                        * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed.structure_informal_settlements)
+                        ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed.contents_informal)
+                        )
 
-        mask_self_protec = (z_protec > z)
+                z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
+                    - (dwelling_size*R_protec
+                        + param["informal_structure_value"]
+                        * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed_protec.structure_informal_settlements)
+                        ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed_protec.contents_informal)
+                        )
+
+                R[z_protec>z] = R_protec[z_protec>z]
+
+                mask_self_protec = (z_protec > z)
+
+            elif options["risk_avers"]==1:
+
+                # Define new rents and dom_net_inc before completing!!!
+
+                z_noflood_noinsur = (
+                    dom_net_inc
+                    - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
+                    )
+
+                z_noflood_insur = (
+                    dom_net_inc-param["sandbag_course_cost"]
+                    - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
+                    )
+
+                # damages_table, damages_protec_table, interval_table_fathom
+
+                z_flood_noinsur_list = np.zeros(11,len(z_noflood_noinsur))
+                z_flood_insur_list = np.zeros(11,len(z_noflood_noinsur))
+
+                for i in range(11):
+                    z_flood_noinsur_list[i,:] = (
+                        (dom_net_inc
+                        - (dwelling_size*R
+                            + param["informal_structure_value"]
+                            * (interest_rate + param["depreciation_rate"] + damages_table["structure_informal_settlements"][i,:])
+                            ))/(1+param["fraction_z_dwellings"]*damages_table["contents_informal"][i,:])
+                            )
+
+                    z_flood_insur_list[i,:] = (
+                        (dom_net_inc_protec-param["sandbag_course_cost"]
+                        - (dwelling_size*R
+                            + param["informal_structure_value"]
+                            * (interest_rate + param["depreciation_rate"] + damages_protec_table["structure_informal_settlements"][i,:])
+                            ))/(1+param["fraction_z_dwellings"]*damages_protec_table["contents_informal"][i,:])
+                            )
+
+                #NB: probabilities already sum to one and incorporate the zero (yearly) events
+
+                compar_noinsur = np.nansum(interval_table_fathom[:,None]*z_flood_noinsur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+                compar_insur = np.nansum(interval_table_fathom[:,None]*z_flood_insur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+
+                R[compar_insur>compar_noinsur] = R[compar_insur>compar_noinsur]
+
+                mask_self_protec = (compar_insur>compar_noinsur)
+
+
+        elif options["self_protec"]==0:
+            mask_self_protec = np.zeros(len(which_group))
 
         # With CRRA?
 
