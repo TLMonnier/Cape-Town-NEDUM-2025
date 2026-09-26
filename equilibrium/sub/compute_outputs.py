@@ -448,8 +448,8 @@ def compute_outputs(housing_type,
                 )
 
             # Take care to dimensions!
-            R_mat_CRRA = np.zeros(11, 4, len(amenities))
-            R_mat_protec_CRRA = np.zeros(11, 4, len(amenities))
+            R_mat_CRRA = np.zeros((11, 4, len(amenities)))
+            R_mat_protec_CRRA = np.zeros((11, 4, len(amenities)))
 
             for i in range(11):
                 R_mat_CRRA[i,:,:] = (
@@ -515,8 +515,8 @@ def compute_outputs(housing_type,
         # Yields directly the selected income group for each location
         which_group_protec = np.nanargmax(R_mat_protec, 0)
 
-        which_group_CRRA = np.zeros(11,len(amenities))
-        which_group_protec_CRRA = np.zeros(11,len(amenities))
+        which_group_CRRA = np.zeros((11,len(amenities)))
+        which_group_protec_CRRA = np.zeros((11,len(amenities)))
         for i in range(11):
             which_group_CRRA[i,:] = np.nanargmax(R_mat_CRRA[i,:,:], 0)
             which_group_protec_CRRA[i,:] = np.nanargmax(R_mat_protec_CRRA[i,:,:], 0)
@@ -531,17 +531,17 @@ def compute_outputs(housing_type,
             R_protec[i] = R_mat_protec[int(which_group_protec[i]), i]
         #     dwelling_size_temp_protec[i] = dwelling_size[int(which_group_protec[i]), i]
     
-        R_CRRA = np.zeros(11, len(which_group_protec))
+        R_CRRA = np.zeros((11, len(which_group_protec)))
         # R_CRRA[i,:] = np.empty(11, (len(which_group_CRRA[i,:])))
         # R_CRRA[i,:] = np.nan
         for i in range(11):
             for j in range(0, len(which_group_CRRA[i,:])):
-                R_CRRA[i,j] = R_mat_CRRA[i, int(which_group_CRRA[j]), j]
+                R_CRRA[i,j] = R_mat_CRRA[i, int(which_group_CRRA[i,j]), j]
 
-        R_protec_CRRA = np.zeros(11, len(which_group_protec))
+        R_protec_CRRA = np.zeros((11, len(which_group_protec)))
         for i in range(11):
             for j in range(0, len(which_group_protec_CRRA[i,:])):
-                R_protec_CRRA[i,j] = R_mat_protec_CRRA[i, int(which_group_protec_CRRA[j]), j]
+                R_protec_CRRA[i,j] = R_mat_protec_CRRA[i, int(which_group_protec_CRRA[i,j]), j]
 
     # We clean the results just in case
     R_mat[R_mat < 0] = 0
@@ -652,42 +652,35 @@ def compute_outputs(housing_type,
 
                 # damages_table, damages_protec_table, interval_table_fathom
 
-                z_flood_noinsur_list = np.zeros(11,len(z_noflood_noinsur))
-                z_flood_insur_list = np.zeros(11,len(z_noflood_noinsur))
+                # dom_net_inc_CRRA[i,j] = income_net_of_commuting_costs[which_group_CRRA[i,j], j]
+                dom_net_inc_CRRA = np.take_along_axis(
+                    income_net_of_commuting_costs,
+                    np.asarray(which_group_CRRA).astype(int), axis=0)
 
-                dom_net_inc_CRRA = np.empty(np.shape(which_group_CRRA))
-                dom_net_inc_CRRA = np.nan
-                for i in range(11):
-                    for j in range(0, len(amenities)):
-                        dom_net_inc_CRRA[i,j] = income_net_of_commuting_costs[int(which_group_CRRA[j]), j]
+                dom_net_inc_protec_CRRA = np.take_along_axis(
+                    income_net_of_commuting_costs,
+                    np.asarray(which_group_protec_CRRA).astype(int), axis=0)
 
-                dom_net_inc_protec_CRRA = np.empty(np.shape(which_group_protec_CRRA))
-                dom_net_inc_protec_CRRA = np.nan
-                for i in range(11):
-                    for j in range(0, len(amenities)):
-                        dom_net_inc_protec_CRRA[i,j] = income_net_of_commuting_costs[int(which_group_protec_CRRA[j]), j]
+                z_flood_noinsur_list = (
+                    (dom_net_inc_CRRA
+                    - (dwelling_size*R_CRRA
+                        + param["informal_structure_value"]
+                        * (interest_rate + param["depreciation_rate"] + damages_table["structure_informal_settlements"])
+                        ))/(1+param["fraction_z_dwellings"]*damages_table["contents_informal"])
+                        )
 
-                for i in range(11):
-                    z_flood_noinsur_list[i,:] = (
-                        (dom_net_inc_CRRA[i,:]
-                        - (dwelling_size*R_CRRA[i,:]
-                            + param["informal_structure_value"]
-                            * (interest_rate + param["depreciation_rate"] + damages_table["structure_informal_settlements"][i,:])
-                            ))/(1+param["fraction_z_dwellings"]*damages_table["contents_informal"][i,:])
-                            )
-
-                    z_flood_insur_list[i,:] = (
-                        (dom_net_inc_protec_CRRA[i,:]-param["sandbag_course_cost"]
-                        - (dwelling_size*R_protec_CRRA[i,:]
-                            + param["informal_structure_value"]
-                            * (interest_rate + param["depreciation_rate"] + damages_protec_table["structure_informal_settlements"][i,:])
-                            ))/(1+param["fraction_z_dwellings"]*damages_protec_table["contents_informal"][i,:])
-                            )
+                z_flood_insur_list = (
+                    (dom_net_inc_protec_CRRA-param["sandbag_course_cost"]
+                    - (dwelling_size*R_protec_CRRA
+                        + param["informal_structure_value"]
+                        * (interest_rate + param["depreciation_rate"] + damages_protec_table["structure_informal_settlements"])
+                        ))/(1+param["fraction_z_dwellings"]*damages_protec_table["contents_informal"])
+                        )
 
                 #NB: probabilities already sum to one and incorporate the zero (yearly) events
 
-                compar_noinsur = np.nansum(interval_table_fathom[:,None]*z_flood_noinsur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
-                compar_insur = np.nansum(interval_table_fathom[:,None]*z_flood_insur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+                compar_noinsur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_noinsur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+                compar_insur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_insur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
 
                 # What to do about this rent? Will it be used as such? Need to collapse, but how?
                 # Just take the already defined aggregate rents without CRRA breakdown?

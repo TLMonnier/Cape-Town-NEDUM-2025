@@ -96,6 +96,8 @@ options["risk_misperc"] = 1
 
 options["self_protec"] = 1
 
+# NB: take care to ex post utility reconstruction? Test it
+# Works but slower
 options["risk_avers"] = 1
 
 name = ('simul_AF' + str(options["agents_anticipate_floods"]) + '_CC' + str(options["climate_change"])
@@ -315,8 +317,12 @@ elif options["agents_anticipate_floods"] == 0:
 
 # REDO CALIBRATION TO BETTER FIT HOUSING TYPES???
 
+# %%
+
+#NB: error size pbs with risk aversion!!!???
+
 # importlib.reload(eqout)
-param["max_iter"] = 100
+param["max_iter"] = 250
 
 # ##Equilibrium function
 (initial_state_utility,
@@ -462,3 +468,4 @@ np.save(path_simul + '/mask_self_protec_' + name + '.npy',
 #         simulation_T)
 # np.save(path_simul + '/simulation_capital_land_' + name + '.npy',
 #         simulation_capital_land)
+# %%

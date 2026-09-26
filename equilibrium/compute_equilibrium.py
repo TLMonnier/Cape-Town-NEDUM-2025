@@ -198,6 +198,12 @@ def compute_equilibrium(fraction_capital_destroyed, fraction_capital_destroyed_p
         selected_pixels, :]
     fraction_capital_destroyed_protec = fraction_capital_destroyed_protec.iloc[
         selected_pixels, :]
+
+    for key in damages_table:
+        damages_table[key] = damages_table[key][:, selected_pixels]
+    for key in damages_protec_table:
+        damages_protec_table[key] = damages_protec_table[key][:, selected_pixels]
+
     param_pockets = param["informal_pockets"][selected_pixels]
     param_backyards_pockets = param["backyard_pockets"][selected_pixels]
     param_incremental_pockets = param["incremental_pockets"][selected_pixels]
