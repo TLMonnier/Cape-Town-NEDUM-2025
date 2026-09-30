@@ -87,21 +87,38 @@ options["incremental_housing"] = 0
 
 options["agents_anticipate_floods"] = 1
 
-options["climate_change"] = 1
+options["climate_change"] = 0
 
-options["risk_misperc"] = 1
+# Should increase take-up rate when relieved
+options["risk_misperc"] = 0
 
 # NB: need to compute homogeneous tax ex post wrt damage estimates
+# Do only for two richest income groups? Pb for rent determination...
+# Negative lump sum transfer computed on prior benchmark...
+# If prices go down, may have some damage shift for housing type shift within income group 3...
+# Can always check ex post...
 # options["subsid_insur"] = 0
 
 options["self_protec"] = 1
 
-# NB: take care to ex post utility reconstruction? Test it
-# Works but slower
-options["risk_avers"] = 1
+# NB: just have to set sandbag cost to zero (no need to recompute equilibrium for subsidized insurance)
+# Can be combined with tax on the rich (no need to worry about feedback loop)
+# Do loops with several taxes to plot what is necessary to cover!!
+# Marginal spatial spillovers? (Incorporate tax rate!)
 
-name = ('simul_AF' + str(options["agents_anticipate_floods"]) + '_CC' + str(options["climate_change"])
-        + '_RM' + str(options["risk_misperc"]) + '_SP' + str(options["self_protec"]))
+# To avoid income re-sorting, maybe just run the regular algorithm with modified R_protec instead...
+options["subsid_protec"] = 0
+
+options["subsid_insur"] = 0
+
+# NB: take care to ex post utility reconstruction? Test it
+# Works but slower: need to debug
+options["risk_avers"] = 0
+
+# NB: Within an income group, bid rent is always lower for (paid) protection than no protection.
+# If it is profitable for a dominant income group to protect, what happens if the new bid rent falls below the unprotected
+# bid rent of the second highest bidding income group?
+# Is there a pb of strategic interaction?
 
 # COMPUTE COMPENSATION COST EX-POST!
 
@@ -135,11 +152,30 @@ param["risk_internaliz"] = 0.36
 # NB: get inspiration from redevelopment choice?
 # NB: add an option to allow it to be susidized
 # NB: check ex post if we recover take-up rates aligned with Visser et al.
-param["sandbag_course_cost"] = 1500 # correcting for inflation
+
+# Median is too costly (at least without risk aversion)
+# Range varies between 1200 and 1800 according to ChatGPT...
+# Let us assume they get the soil for free??? Still too high, so target low range of sandbag cost
+# param["sandbag_course_cost"] = 1500 # correcting for inflation
 # param["sandbag_course_cost"] = 3150
 
+# Target take-up rate from Visser but with riska aversion? (Between 18% and 37%)
+# Check ChatGPT on lower bounds...
+param["sandbag_course_cost"] = 0
+
 # Matters for self-protection decision???
+# NB: have to change comparison signs when higher than one???
 param["CRRA"] = 0.2772
+
+# Should only change income sorting at the margin, with potentially zero effect on damage reallocation?
+# But then, "optimal" parameter depends on each simulation?? Need to plot...
+param["tax_level"] = 1000
+
+# 
+
+name = ('simul_AF' + str(options["agents_anticipate_floods"]) + '_CC' + str(options["climate_change"])
+        + '_RM' + str(options["risk_misperc"]) + '_SP' + str(options["self_protec"]) + '_PS' + str(options["subsid_protec"])
+        + '_SI' + str(options["subsid_insur"]) + '_RA' + str(options["risk_avers"]) + '_T' + str(param["tax_level"]))
 
 # Measure who subscribes?
 
@@ -322,7 +358,7 @@ elif options["agents_anticipate_floods"] == 0:
 #NB: error size pbs with risk aversion!!!???
 
 # importlib.reload(eqout)
-param["max_iter"] = 250
+param["max_iter"] = 200
 
 # ##Equilibrium function
 (initial_state_utility,

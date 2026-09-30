@@ -125,6 +125,7 @@ def compute_outputs(housing_type,
     # %% Dwelling size in selected pixels per (endogenous) housing type
 
     mask_self_protec = np.zeros(len(amenities))
+    mask_self_protec[:] = np.nan
 
     if housing_type == 'formal':
 
@@ -411,7 +412,52 @@ def compute_outputs(housing_type,
                         )[None, :] * param["informal_structure_value"]))
                 )
 
+            # R_mat[R_mat_protec>R_mat] = R_mat_protec[R_mat_protec>R_mat]
+
             # NB: we do not define CRRA here??
+
+            # # Take care to dimensions!
+            # R_mat_CRRA = np.zeros((11, 4, len(amenities)))
+            # R_mat_CRRA[:,:,:] = np.nan
+            # R_mat_protec_CRRA = np.zeros((11, 4, len(amenities)))
+            # R_mat_protec_CRRA[:,:,:] = np.nan
+
+            # # NB: only in this case are some agents willing to pay more for protection
+
+            # for i in range(11):
+                # R_mat_CRRA[i,:,:] = (
+                    # (1 / param["shack_size"])
+                    # * (income_net_of_commuting_costs
+                        # - ((1 + np.array(damages_table["contents_informal"])[
+                            # i, None, :] * param["fraction_z_dwellings"])
+                            # * ((utility[:, None] / (amenities[None, :]
+                                                    # * param_pockets[None, :]
+                                                    # * ((dwelling_size - param["q0"])
+                                                    # ** param["beta"])))
+                            # ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        # * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                            # damages_table["structure_informal_settlements"]
+                            # )[i, None, :] * param["informal_structure_value"]))
+                    # )
+
+                # R_mat_protec_CRRA[i,:,:] = (
+                    # (1 / param["shack_size"])
+                    # * (income_net_of_commuting_costs-param["sandbag_course_cost"]
+                        # - ((1 + np.array(damages_protec_table["contents_informal"])[
+                            # i, None, :] * param["fraction_z_dwellings"])
+                            # * ((utility[:, None] / (amenities[None, :]
+                                                    # * param_pockets[None, :]
+                                                    # * ((dwelling_size - param["q0"])
+                                                    # ** param["beta"])))
+                            # ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        # * (interest_rate + param["depreciation_rate"]))
+                        # - (np.array(
+                            # damages_protec_table["structure_informal_settlements"]
+                            # )[i, None, :] * param["informal_structure_value"]))
+                    # )
 
         elif options["risk_misperc"] == 1:
             R_mat = (
@@ -447,60 +493,66 @@ def compute_outputs(housing_type,
                         )[None, :] * param["informal_structure_value"]))
                 )
 
-            # Take care to dimensions!
-            R_mat_CRRA = np.zeros((11, 4, len(amenities)))
-            R_mat_protec_CRRA = np.zeros((11, 4, len(amenities)))
+            # # Take care to dimensions!
+            # R_mat_CRRA = np.zeros((11, 4, len(amenities)))
+            # R_mat_CRRA[:,:,:] = np.nan
+            # R_mat_protec_CRRA = np.zeros((11, 4, len(amenities)))
+            # R_mat_protec_CRRA[:,:,:] = np.nan
 
-            for i in range(11):
-                R_mat_CRRA[i,:,:] = (
-                    (1 / param["shack_size"])
-                    * (income_net_of_commuting_costs-param["sandbag_course_cost"]
-                        - ((1 + param["risk_internaliz"]*np.array(damages_table["contents_informal"])[
-                            i, None, :] * param["fraction_z_dwellings"])
-                            * ((utility[:, None] / (amenities[None, :]
-                                                    * param_pockets[None, :]
-                                                    * ((dwelling_size - param["q0"])
-                                                    ** param["beta"])))
-                            ** (1 / param["alpha"])))
-                        - (param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"]))
-                        - (param["risk_internaliz"]*np.array(
-                            damages_table["structure_informal_settlements"]
-                            )[i, None, :] * param["informal_structure_value"]))
-                    )
+            # for i in range(11):
+                # R_mat_CRRA[i,:,:] = (
+                    # (1 / param["shack_size"])
+                    # * (income_net_of_commuting_costs
+                        # - ((1 + param["risk_internaliz"]*np.array(damages_table["contents_informal"])[
+                            # i, None, :] * param["fraction_z_dwellings"])
+                            # * ((utility[:, None] / (amenities[None, :]
+                                                    # * param_pockets[None, :]
+                                                    # * ((dwelling_size - param["q0"])
+                                                    # ** param["beta"])))
+                            # ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        # * (interest_rate + param["depreciation_rate"]))
+                        # - (param["risk_internaliz"]*np.array(
+                            # damages_table["structure_informal_settlements"]
+                            # )[i, None, :] * param["informal_structure_value"]))
+                    # )
 
-                R_mat_protec_CRRA[i,:,:] = (
-                    (1 / param["shack_size"])
-                    * (income_net_of_commuting_costs-param["sandbag_course_cost"]
-                        - ((1 + param["risk_internaliz"]*np.array(damages_protec_table["contents_informal"])[
-                            i, None, :] * param["fraction_z_dwellings"])
-                            * ((utility[:, None] / (amenities[None, :]
-                                                    * param_pockets[None, :]
-                                                    * ((dwelling_size - param["q0"])
-                                                    ** param["beta"])))
-                            ** (1 / param["alpha"])))
-                        - (param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"]))
-                        - (param["risk_internaliz"]*np.array(
-                            damages_protec_table["structure_informal_settlements"]
-                            )[i, None, :] * param["informal_structure_value"]))
-                    )
+                # R_mat_protec_CRRA[i,:,:] = (
+                    # (1 / param["shack_size"])
+                    # * (income_net_of_commuting_costs-param["sandbag_course_cost"]
+                        # - ((1 + param["risk_internaliz"]*np.array(damages_protec_table["contents_informal"])[
+                            # i, None, :] * param["fraction_z_dwellings"])
+                            # * ((utility[:, None] / (amenities[None, :]
+                                                    # * param_pockets[None, :]
+                                                    # * ((dwelling_size - param["q0"])
+                                                    # ** param["beta"])))
+                            # ** (1 / param["alpha"])))
+                        # - (param["informal_structure_value"]
+                        # * (interest_rate + param["depreciation_rate"]))
+                        # - (param["risk_internaliz"]*np.array(
+                            # damages_protec_table["structure_informal_settlements"]
+                            # )[i, None, :] * param["informal_structure_value"]))
+                    # )
 
         R_mat[income_class_by_housing_type.settlement == 0, :] = 0
         R_mat_protec[income_class_by_housing_type.settlement == 0, :] = 0
 
-        R_mat_CRRA[:, income_class_by_housing_type.settlement == 0, :] = 0
-        R_mat_protec_CRRA[:, income_class_by_housing_type.settlement == 0, :] = 0
+        # R_mat_CRRA[:, income_class_by_housing_type.settlement == 0, :] = 0
+        # R_mat_protec_CRRA[:, income_class_by_housing_type.settlement == 0, :] = 0
+
+        # We clean the results before comparing (as done below)
+        R_mat[R_mat < 0] = 0
+        R_mat[np.isnan(R_mat)] = 0
 
         # We clean the results just in case
         R_mat_protec[R_mat_protec < 0] = 0
         R_mat_protec[np.isnan(R_mat_protec)] = 0
 
-        R_mat_CRRA[R_mat_CRRA < 0] = 0
-        R_mat_CRRA[np.isnan(R_mat_CRRA)] = 0
+        # R_mat_CRRA[R_mat_CRRA < 0] = 0
+        # R_mat_CRRA[np.isnan(R_mat_CRRA)] = 0
 
-        R_mat_protec_CRRA[R_mat_protec_CRRA < 0] = 0
-        R_mat_protec_CRRA[np.isnan(R_mat_protec_CRRA)] = 0
+        # R_mat_protec_CRRA[R_mat_protec_CRRA < 0] = 0
+        # R_mat_protec_CRRA[np.isnan(R_mat_protec_CRRA)] = 0
     
         # # We select highest bidder (income group) in each location
         # proba_protec = (R_mat_protec == np.nanmax(R_mat_protec, 0))
@@ -512,36 +564,129 @@ def compute_outputs(housing_type,
         #          & (R_mat_protec > 0))
         # proba_protec = proba_protec * limit_protec
     
+        # Need to mark protection choice?
+        if options["self_protec"]==1:
+
+            # self_protec_mat = R_mat_protec>R_mat
+            # # What is several groups would like to protect?
+            # self_protec_mat = np.nansum(self_protec_mat, 0)
+            # #Good enough?
+            # which_group_mat = np.zeros(len(self_protec_mat))
+            # which_group_mat[:] = np.nan
+            # which_group_mat = np.nanargmax(self_protec_mat, 0)
+
+            # R_mat_orig = np.copy(R_mat)
+            # R_max_orig = np.nanmax(R_mat_orig, 0)
+            # R_mat[R_mat_protec>R_mat] = R_mat_protec[R_mat_protec>R_mat]
+            # R_max = np.nanmax(R_mat, 0)
+            # mask_self_protec = (R_max>R_max_orig)
+
+            # Protection is chosen wherever it raises the bid rent of an
+            # income group: the surplus from protection is capitalized into
+            # rents, as utility is pinned down at equilibrium level
+
+            if options["risk_avers"] == 0:
+                protec_mat = (R_mat_protec > R_mat)
+
+            elif options["risk_avers"] == 1:
+                # Same comparison on risk-averse bid rents, that are not
+                # state-contingent: rents are paid before flood realization
+                if options["risk_misperc"] == 0:
+                    perceived_share = 1
+                elif options["risk_misperc"] == 1:
+                    perceived_share = param["risk_internaliz"]
+
+                # Composite good consumption that yields target utility
+                z_target = ((utility[:, None]
+                             / (amenities[None, :] * param_pockets[None, :]
+                                * ((dwelling_size - param["q0"])
+                                   ** param["beta"])))
+                            ** (1 / param["alpha"]))
+
+                R_mat_CRRA = compute_bid_rent_informal_CRRA(
+                    income_net_of_commuting_costs, z_target, 0,
+                    perceived_share * np.array(
+                        damages_table["contents_informal"]),
+                    perceived_share * np.array(
+                        damages_table["structure_informal_settlements"]),
+                    interval_table_fathom, param, interest_rate)
+                R_mat_protec_CRRA = compute_bid_rent_informal_CRRA(
+                    income_net_of_commuting_costs, z_target,
+                    param["sandbag_course_cost"],
+                    perceived_share * np.array(
+                        damages_protec_table["contents_informal"]),
+                    perceived_share * np.array(
+                        damages_protec_table["structure_informal_settlements"]),
+                    interval_table_fathom, param, interest_rate)
+
+                R_mat_CRRA[income_class_by_housing_type.settlement == 0, :] = 0
+                R_mat_protec_CRRA[
+                    income_class_by_housing_type.settlement == 0, :] = 0
+                R_mat_CRRA[R_mat_CRRA < 0] = 0
+                R_mat_CRRA[np.isnan(R_mat_CRRA)] = 0
+                R_mat_protec_CRRA[R_mat_protec_CRRA < 0] = 0
+                R_mat_protec_CRRA[np.isnan(R_mat_protec_CRRA)] = 0
+
+                protec_mat = (R_mat_protec_CRRA > R_mat_CRRA)
+
+            # R_mat_orig = np.copy(R_mat)
+            # R_max_orig = np.nanmax(R_mat_orig, 0)
+            # R_mat[protec_mat] = R_mat_protec[protec_mat]
+            # R_max = np.nanmax(R_mat, 0)
+            # mask_self_protec = (R_max>R_max_orig)
+
+            # Equilibrium rents remain the (risk-neutral) expected-damage
+            # ones: CRRA only drives the protection choice
+            R_mat[protec_mat] = R_mat_protec[protec_mat]
+
+            # Protection status of the highest bidder in each location
+            # Really?
+            which_group_protec = np.nanargmax(R_mat, 0)
+            pixels = np.arange(R_mat.shape[1])
+            mask_self_protec = (protec_mat[which_group_protec, pixels]
+                                & (R_mat[which_group_protec, pixels] > 0))
+
+        # FOR CRRA?
+
         # Yields directly the selected income group for each location
-        which_group_protec = np.nanargmax(R_mat_protec, 0)
+        # which_group = np.nanargmax(R_mat, 0)
 
-        which_group_CRRA = np.zeros((11,len(amenities)))
-        which_group_protec_CRRA = np.zeros((11,len(amenities)))
-        for i in range(11):
-            which_group_CRRA[i,:] = np.nanargmax(R_mat_CRRA[i,:,:], 0)
-            which_group_protec_CRRA[i,:] = np.nanargmax(R_mat_protec_CRRA[i,:,:], 0)
-    
-        # Then we recover rent and dwelling size associated with the selected
-        # income group in each location
-        R_protec = np.empty(len(which_group_protec))
-        R_protec[:] = np.nan
-        # dwelling_size_temp_protec = np.empty(len(which_group_protec))
-        # dwelling_size_temp_protec[:] = np.nan
-        for i in range(0, len(which_group_protec)):
-            R_protec[i] = R_mat_protec[int(which_group_protec[i]), i]
-        #     dwelling_size_temp_protec[i] = dwelling_size[int(which_group_protec[i]), i]
-    
-        R_CRRA = np.zeros((11, len(which_group_protec)))
-        # R_CRRA[i,:] = np.empty(11, (len(which_group_CRRA[i,:])))
-        # R_CRRA[i,:] = np.nan
-        for i in range(11):
-            for j in range(0, len(which_group_CRRA[i,:])):
-                R_CRRA[i,j] = R_mat_CRRA[i, int(which_group_CRRA[i,j]), j]
+        # which_group_CRRA = np.zeros((11,len(amenities)))
+        # which_group_CRRA[:,:] = np.nan
+        # which_group_protec_CRRA = np.zeros((11,len(amenities)))
+        # which_group_protec_CRRA[:,:] = np.nan
+        # for i in range(11):
+            # which_group_CRRA[i,:] = np.nanargmax(R_mat_CRRA[i,:,:], 0)
+            # which_group_protec_CRRA[i,:] = np.nanargmax(R_mat_protec_CRRA[i,:,:], 0)
 
-        R_protec_CRRA = np.zeros((11, len(which_group_protec)))
-        for i in range(11):
-            for j in range(0, len(which_group_protec_CRRA[i,:])):
-                R_protec_CRRA[i,j] = R_mat_protec_CRRA[i, int(which_group_protec_CRRA[i,j]), j]
+        # # WE STICK TO BASELINE INCOME SORTING FOR PROTECTION COMPARISONS?
+        # # BUT IS IT STILL DOMINANT IF CHOOSING TO PROTECT?
+
+        # # Then we recover rent and dwelling size associated with the selected
+        # # income group in each location
+        # # R_protec = np.empty(len(which_group))
+        # # R_protec[:] = np.nan
+        # # # dwelling_size_temp_protec = np.empty(len(which_group_protec))
+        # # # dwelling_size_temp_protec[:] = np.nan
+        # # for i in range(0, len(which_group)):
+        # #     R_protec[i] = R_mat_protec[int(which_group[i]), i]
+        # # #   R_protec[i] = R_mat_protec[int(which_group_protec[i]), i]
+        # # #     dwelling_size_temp_protec[i] = dwelling_size[int(which_group_protec[i]), i]
+    
+        # # R_CRRA[i,:] = np.empty(11, (len(which_group_CRRA[i,:])))
+        # # R_CRRA[i,:] = np.nan
+        # R_CRRA = np.zeros((11, len(which_group)))
+        # R_CRRA[:,:] = np.nan
+        # for i in range(11):
+            # for j in range(0, len(which_group_CRRA[i,:])):
+                # R_CRRA[i,j] = R_mat_CRRA[i, int(which_group_CRRA[i,j]), j]
+
+        # R_protec_CRRA = np.zeros((11, len(which_group)))
+        # R_protec_CRRA[:,:] = np.nan
+        # for i in range(11):
+            # for j in range(0, len(which_group_protec_CRRA[i,:])):
+                # R_protec_CRRA[i,j] = R_mat_protec_CRRA[i, int(which_group_CRRA[i,j]), j]
+                # # R_protec_CRRA[i,j] = R_mat_protec_CRRA[i, int(which_group_protec_CRRA[i,j]), j]
 
     # We clean the results just in case
     R_mat[R_mat < 0] = 0
@@ -557,11 +702,19 @@ def compute_outputs(housing_type,
              & (R_mat > 0))
     proba = proba * limit
 
+    #NEED TO REDEFINE EX POST?
+
     # Yields directly the selected income group for each location
+    # When not already defined in informal
     which_group = np.nanargmax(R_mat, 0)
 
+    # PROTECTION SHOULD NOT AFFECT INCOME SORTING!
+    # FOR NOW, NEED TO CHECK EX POST
+
     # Then we recover rent and dwelling size associated with the selected
-    # income group in each location
+    # income group in each location 
+
+    # Should be equal to R_max?
     R = np.empty(len(which_group))
     R[:] = np.nan
     dwelling_size_temp = np.empty(len(which_group))
@@ -601,101 +754,156 @@ def compute_outputs(housing_type,
 
     elif housing_type == 'informal':
 
-        if options["self_protec"]==1:
+        # if options["self_protec"]==1:
 
-            dom_net_inc = np.empty(len(which_group))
-            dom_net_inc[:] = np.nan
-            for i in range(0, len(which_group)):
-                dom_net_inc[i] = income_net_of_commuting_costs[int(which_group[i]), i]
+            # # This is before deciding income group and protection choice?
+            # # Income group should not change? What about soritng effects ex post?
+            # # Only a pb for CRRA? Still need to check in final version
 
-            dom_net_inc_protec = np.empty(len(which_group_protec))
-            dom_net_inc_protec[:] = np.nan
-            for i in range(0, len(which_group_protec)):
-                dom_net_inc_protec[i] = income_net_of_commuting_costs[int(which_group_protec[i]), i]
+            # # dom_net_inc = np.empty(len(which_group))
+            # # dom_net_inc[:] = np.nan
+            # # for i in range(0, len(which_group)):
+            # #     dom_net_inc[i] = income_net_of_commuting_costs[int(which_group[i]), i]
 
-            if options["risk_avers"]==0:
+            # # dom_net_inc_protec = np.empty(len(which_group_protec))
+            # # dom_net_inc_protec[:] = np.nan
+            # # for i in range(0, len(which_group_protec)):
+            # #     dom_net_inc_protec[i] = income_net_of_commuting_costs[int(which_group_protec[i]), i]
 
-                # How to implement protection choice?
-                # Does everyone take it?
+            # # if options["risk_avers"]==0:
 
-                z = ((dom_net_inc
-                    - (dwelling_size*R
-                        + param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed.structure_informal_settlements)
-                        ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed.contents_informal)
-                        )
+            # #     # How to implement protection choice?
+            # #     # Does everyone take it?
 
-                z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
-                    - (dwelling_size*R_protec
-                        + param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed_protec.structure_informal_settlements)
-                        ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed_protec.contents_informal)
-                        )
+            # #     # What about risk misperception??
+            # #     if options["risk_misperc"] == 0:
+            # #         z = ((dom_net_inc
+            # #             - (dwelling_size*R
+            # #                 + param["informal_structure_value"]
+            # #                 * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed.structure_informal_settlements)
+            # #                 ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed.contents_informal)
+            # #                 )
 
-                R[z_protec>z] = R_protec[z_protec>z]
+            # #         z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
+            # #             - (dwelling_size*R_protec
+            # #                 + param["informal_structure_value"]
+            # #                 * (interest_rate + param["depreciation_rate"] + fraction_capital_destroyed_protec.structure_informal_settlements)
+            # #                 ))/(1+param["fraction_z_dwellings"]*fraction_capital_destroyed_protec.contents_informal)
+            # #                 )
+            # #     elif options["risk_misperc"] == 1:
+            # #         z = ((dom_net_inc
+            # #             - (dwelling_size*R
+            # #                 + param["informal_structure_value"]
+            # #                 * (interest_rate + param["depreciation_rate"] + param["risk_internaliz"]*fraction_capital_destroyed.structure_informal_settlements)
+            # #                 ))/(1+param["fraction_z_dwellings"]*param["risk_internaliz"]*fraction_capital_destroyed.contents_informal)
+            # #                 )
 
-                mask_self_protec = (z_protec > z)
+            # #         z_protec = ((dom_net_inc_protec-param["sandbag_course_cost"]
+            # #             - (dwelling_size*R_protec
+            # #                 + param["informal_structure_value"]
+            # #                 * (interest_rate + param["depreciation_rate"] + param["risk_internaliz"]*fraction_capital_destroyed_protec.structure_informal_settlements)
+            # #                 ))/(1+param["fraction_z_dwellings"]*param["risk_internaliz"]*fraction_capital_destroyed_protec.contents_informal)
+            # #                 )
 
-            elif options["risk_avers"]==1:
+            # #     R[z_protec>z] = R_protec[z_protec>z]
 
-                # Define new rents and dom_net_inc before completing!!!
+            # #     mask_self_protec = (z_protec > z)
 
-                z_noflood_noinsur = (
-                    dom_net_inc
-                    - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
-                    )
+            # if options["risk_avers"]==1:
 
-                z_noflood_insur = (
-                    dom_net_inc-param["sandbag_course_cost"]
-                    - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
-                    )
+                # # Define new rents and dom_net_inc before completing!!!
 
-                # damages_table, damages_protec_table, interval_table_fathom
+                # # z_noflood_noinsur = (
+                # #     dom_net_inc
+                # #     - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
+                # #     )
 
-                # dom_net_inc_CRRA[i,j] = income_net_of_commuting_costs[which_group_CRRA[i,j], j]
-                dom_net_inc_CRRA = np.take_along_axis(
-                    income_net_of_commuting_costs,
-                    np.asarray(which_group_CRRA).astype(int), axis=0)
+                # # z_noflood_insur = (
+                # #     dom_net_inc-param["sandbag_course_cost"]
+                # #     - (dwelling_size*R + param["informal_structure_value"] * (interest_rate + param["depreciation_rate"]))
+                # #     )
 
-                dom_net_inc_protec_CRRA = np.take_along_axis(
-                    income_net_of_commuting_costs,
-                    np.asarray(which_group_protec_CRRA).astype(int), axis=0)
+                # # damages_table, damages_protec_table, interval_table_fathom
 
-                z_flood_noinsur_list = (
-                    (dom_net_inc_CRRA
-                    - (dwelling_size*R_CRRA
-                        + param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"] + damages_table["structure_informal_settlements"])
-                        ))/(1+param["fraction_z_dwellings"]*damages_table["contents_informal"])
-                        )
+                # # dom_net_inc_CRRA[i,j] = income_net_of_commuting_costs[which_group_CRRA[i,j], j]
 
-                z_flood_insur_list = (
-                    (dom_net_inc_protec_CRRA-param["sandbag_course_cost"]
-                    - (dwelling_size*R_protec_CRRA
-                        + param["informal_structure_value"]
-                        * (interest_rate + param["depreciation_rate"] + damages_protec_table["structure_informal_settlements"])
-                        ))/(1+param["fraction_z_dwellings"]*damages_protec_table["contents_informal"])
-                        )
+                # # Here, in a few cases, income group 1 bids more than income group 0 when allowing for protection
+                # # But would they decide to take the protection in utility terms??
+                # # In fact, the richer income group underbids!!!
 
-                #NB: probabilities already sum to one and incorporate the zero (yearly) events
+                # dom_net_inc_CRRA = np.take_along_axis(
+                    # income_net_of_commuting_costs,
+                    # np.asarray(which_group_CRRA).astype(int), axis=0)
 
-                compar_noinsur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_noinsur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
-                compar_insur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_insur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+                # dom_net_inc_protec_CRRA = np.take_along_axis(
+                    # income_net_of_commuting_costs,
+                    # np.asarray(which_group_protec_CRRA).astype(int), axis=0)
 
-                # What to do about this rent? Will it be used as such? Need to collapse, but how?
-                # Just take the already defined aggregate rents without CRRA breakdown?
-                # Still need to redefine?
+                # # Is strategy still working when dominant income group change?
+                # if options["risk_misperc"] == 0:
+                    # z_flood_noinsur_list = (
+                        # (dom_net_inc_CRRA
+                        # - (dwelling_size*R_CRRA
+                            # + param["informal_structure_value"]
+                            # * (interest_rate + param["depreciation_rate"] + damages_table["structure_informal_settlements"])
+                            # ))/(1+param["fraction_z_dwellings"]*damages_table["contents_informal"])
+                            # )
+                    # z_flood_insur_list = (
+                        # (dom_net_inc_protec_CRRA-param["sandbag_course_cost"]
+                        # - (dwelling_size*R_protec_CRRA
+                            # + param["informal_structure_value"]
+                            # * (interest_rate + param["depreciation_rate"] + damages_protec_table["structure_informal_settlements"])
+                            # ))/(1+param["fraction_z_dwellings"]*damages_protec_table["contents_informal"])
+                            # )
 
-                # for i in range(11):
-                #     R_CRRA[i,:][compar_insur>compar_noinsur] = R_protec_CRRA[i,:][compar_insur>compar_noinsur]
+                # elif options["risk_misperc"] == 1:
+                    # z_flood_noinsur_list = (
+                        # (dom_net_inc_CRRA
+                        # - (dwelling_size*R_CRRA
+                            # + param["informal_structure_value"]
+                            # * (interest_rate + param["depreciation_rate"] + param["risk_internaliz"]*damages_table["structure_informal_settlements"])
+                            # ))/(1+param["fraction_z_dwellings"]*param["risk_internaliz"]*damages_table["contents_informal"])
+                            # )
+                    # z_flood_insur_list = (
+                        # (dom_net_inc_protec_CRRA-param["sandbag_course_cost"]
+                        # - (dwelling_size*R_protec_CRRA
+                            # + param["informal_structure_value"]
+                            # * (interest_rate + param["depreciation_rate"] + param["risk_internaliz"]*damages_protec_table["structure_informal_settlements"])
+                            # ))/(1+param["fraction_z_dwellings"]*param["risk_internaliz"]*damages_protec_table["contents_informal"])
+                            # )
 
-                R[compar_insur>compar_noinsur] = R_protec[compar_insur>compar_noinsur]
+                # #NB: probabilities already sum to one and incorporate the zero (yearly) events
 
-                mask_self_protec = (compar_insur>compar_noinsur)
+                # compar_noinsur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_noinsur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+                # compar_insur = np.nansum(np.array(interval_table_fathom)[:,None]*z_flood_insur_list**(param["alpha"]*(1-param["CRRA"])), axis=0)
+
+                # # What to do about this rent? Will it be used as such? Need to collapse, but how?
+                # # Just take the already defined aggregate rents without CRRA breakdown?
+                # # Still need to redefine?
+
+                # # for i in range(11):
+                # #     R_CRRA[i,:][compar_insur>compar_noinsur] = R_protec_CRRA[i,:][compar_insur>compar_noinsur]
+
+                # # R[compar_insur>compar_noinsur] = R_protec[compar_insur>compar_noinsur]
+
+                # mask_self_protec = (compar_insur>compar_noinsur)
+
+                # # Need to be before income competition? Pb of definition with dominant income group...
+                # R_max_protec = np.nanmax(R_mat_protec, 0)
+                # R_max_orig[mask_self_protec] = R_max_protec[mask_self_protec]
+
+                # # R_mat_orig = np.copy(R_mat)
+                # # R_max_orig = np.nanmax(R_mat_orig, 0)
+                # # R_mat[R_mat_protec>R_mat] = R_mat_protec[R_mat_protec>R_mat]
+                # # R_max = np.nanmax(R_mat, 0)
+                # # mask_self_protec = (R_max>R_max_orig)
+
+                # # limit?
 
 
-        elif options["self_protec"]==0:
+        if options["self_protec"]==0:
             mask_self_protec = np.zeros(len(which_group))
+            mask_self_protec[:] = np.nan
 
         # With CRRA?
 
@@ -733,3 +941,97 @@ def compute_outputs(housing_type,
 
     return (job_simul, R, people_init, people_center, housing_supply,
             dwelling_size, R_mat, mask_self_protec)
+
+# R_mat_CRRA = compute_bid_rent_informal_CRRA(
+#     income_net_of_commuting_costs, z_target, 0,
+#     perceived_share * np.array(
+#         damages_table["contents_informal"]),
+#     perceived_share * np.array(
+#         damages_table["structure_informal_settlements"]),
+#     interval_table_fathom, param, interest_rate)
+
+def compute_bid_rent_informal_CRRA(income_net_of_commuting_costs, z_target,
+                                   protection_cost, damages_contents,
+                                   damages_structure, proba_states, param,
+                                   interest_rate, n_iter=60):
+    """
+    Compute risk-averse bid rents in informal settlements.
+
+    The bid rent R is paid before flood realization, hence is not
+    state-contingent. It solves, for each income group and grid cell:
+        sum_i p_i * z_i(R)**(alpha*(1-CRRA)) = z_target**(alpha*(1-CRRA)),
+    where z_i(R) is composite good consumption in flood state i:
+        z_i(R) = (y - protection_cost - q*R - s*(r + d) - delta_s_i*s)
+                 / (1 + f*delta_c_i)
+    and z_target the (certain) consumption that yields the equilibrium
+    utility level. Other utility components (amenities, dwelling size) do
+    not vary across states and cancel out. The solution lies between the
+    lowest and highest state-contingent bid rents, and is found by bisection.
+
+    Parameters
+    ----------
+    income_net_of_commuting_costs : ndarray(float64, ndim=2)
+        Expected annual income net of commuting costs, by income group (4)
+        and grid cell
+    z_target : ndarray(float64, ndim=2)
+        Composite good consumption yielding target utility, by income group
+        (4) and grid cell
+    protection_cost : float64
+        Annual cost of self-protection (0 without protection)
+    damages_contents : ndarray(float64, ndim=2)
+        (Perceived) fraction of contents destroyed, by flood state (11) and
+        grid cell
+    damages_structure : ndarray(float64, ndim=2)
+        (Perceived) fraction of structures destroyed, by flood state (11) and
+        grid cell
+    proba_states : list
+        Probability of each flood state (11), summing to one
+    param : dict
+        Dictionary of default parameters
+    interest_rate : float64
+        Real interest rate for the overall economy
+    n_iter : int
+        Number of bisection steps
+
+    Returns
+    -------
+    R_mat_CRRA : ndarray(float64, ndim=2)
+        Risk-averse bid rents (in rands/m²), by income group (4) and grid cell
+
+    """
+    expo = param["alpha"] * (1 - param["CRRA"])
+    if expo == 0:
+        raise ValueError("CRRA = 1 (log utility) is not handled")
+
+    q = param["shack_size"]
+    s = param["informal_structure_value"]
+    proba_states = np.array(proba_states)[:, None, None]
+
+    # Dimensions: flood states x income groups x grid cells
+    denom = (1 + param["fraction_z_dwellings"] * damages_contents)[:, None, :]
+    net_income = (
+        (income_net_of_commuting_costs - protection_cost
+         - s * (interest_rate + param["depreciation_rate"]))[None, :, :]
+        - (damages_structure * s)[:, None, :])
+
+    # State-contingent bid rents bracket the solution
+    R_state = (net_income - denom * z_target[None, :, :]) / q
+    R_low = np.min(R_state, 0)
+    R_high = np.max(R_state, 0)
+    target = z_target ** expo
+
+    with np.errstate(divide='ignore', invalid='ignore', over='ignore'):
+        for _ in range(n_iter):
+            R_mid = (R_low + R_high) / 2
+            z = np.maximum((net_income - q * R_mid[None, :, :]) / denom, 0)
+            expected = np.sum(proba_states * z ** expo, 0)
+            # Rent is too low if expected utility exceeds target: for
+            # CRRA > 1, expo < 0 and utility is decreasing in z**expo
+            if expo > 0:
+                too_low = (expected > target)
+            else:
+                too_low = (expected < target)
+            R_low = np.where(too_low, R_mid, R_low)
+            R_high = np.where(too_low, R_high, R_mid)
+
+    return (R_low + R_high) / 2
