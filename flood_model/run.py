@@ -14,14 +14,20 @@ import data
 import floods
 import solver
 
+FLAGS = {"af": "agents_anticipate_floods", "cc": "climate_change",
+         "co": "coastal", "rm": "risk_misperc", "sp": "self_protec"}
+
 
 def run_model(options=None, param=None, refresh_cache=False, verbose=True):
-    """Return (outputs dict, converged flag, full param dict, damages)."""
+    """Return (outputs dict, converged flag, full param dict, damages).
+
+    options and param override config.OPTIONS and config.PARAM."""
     options = {**config.OPTIONS, **(options or {})}
     p, inputs = data.prepare_inputs({**config.PARAM, **(param or {})},
                                     refresh_cache)
     damages = floods.compute_damages(inputs, options, p)
-    outputs, converged = solver.solve(p, inputs, damages, options, verbose)
+    markets = solver.Markets(p, inputs, damages, options)
+    outputs, converged = solver.solve(markets, verbose)
     return outputs, converged, p, damages
 
 
@@ -44,22 +50,22 @@ def save(outputs, options, tag="", folder=config.OUTPUT, damages=None):
     return name
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    for flag, key in [("af", "agents_anticipate_floods"),
-                      ("cc", "climate_change"), ("co", "coastal"),
-                      ("rm", "risk_misperc"), ("sp", "self_protec"),
-                      ("ra", "risk_avers")]:
+def build_parser(description=__doc__):
+    """Command-line options: flood options and main parameters."""
+    parser = argparse.ArgumentParser(description=description)
+    for flag, key in FLAGS.items():
         parser.add_argument("--" + flag, dest=key, type=int, choices=(0, 1),
                             default=config.OPTIONS[key])
-    for key in ("risk_internaliz", "sandbag_course_cost", "CRRA",
-                "risk_increase"):
+    for key in ("risk_internaliz", "sandbag_course_cost", "risk_increase"):
         parser.add_argument("--" + key, type=float, default=config.PARAM[key])
     parser.add_argument("--max_iter", type=int, default=config.PARAM["max_iter"])
     parser.add_argument("--refresh_cache", action="store_true",
                         help="re-read raw input files")
-    args = vars(parser.parse_args())
+    return parser
 
+
+def main():
+    args = vars(build_parser().parse_args())
     options = {k: args.pop(k) for k in config.OPTIONS}
     refresh = args.pop("refresh_cache")
     start = time.time()

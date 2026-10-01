@@ -1,0 +1,1331 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%          %%%
+%%%   Preamble   %%%
+%%%          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+
+%%% packages
+%\usepackage{endfloat}
+%\usepackage[colorlinks=true, allcolors=blue, backref=page]{hyperref}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{amssymb, amsfonts, amsmath}
+\usepackage{bm}
+\usepackage{mathtools}
+
+%\usepackage[margin=1in]{geometry} % full-width
+%  \topskip    =  20pt
+%  \parskip    =  10pt
+%  \parindent   =  0 pt
+%  \baselineskip  =  15pt
+
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=20mm,
+ }
+ %\usepackage[top=3.3cm,bottom=3.3cm,left=3.4 cm,right=3.4 cm]{geometry}
+
+\usepackage{titling}
+\setlength{\droptitle}{-3em}  % This is your set screw
+
+\usepackage{float}
+\usepackage[capposition=top]{floatrow}
+\usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage{placeins}
+\usepackage{setspace}        % line spacing
+  \onehalfspacing
+\usepackage{adjustbox}       % resizing
+\usepackage[justification=centering]{caption}        % to reset the cations etc 
+\usepackage{rotating}        % for the sidewaystable
+  %\numberwithin{table}{section}  % reset the Table numbering for each section
+\usepackage{booktabs}        % neatly formatting lines
+\usepackage{longtable}
+\usepackage{dcolumn}        % aligning decimals
+  \newcolumntype{d}[1]{D{.}{.}{#1}}
+  
+%\usepackage{natbib}         % bibliography
+%  \bibliographystyle{plainnat}
+\usepackage[round]{natbib}
+
+\usepackage{comment}
+%\usepackage[capposition=top]{floatrow}
+%\usepackage{caption}
+\newcommand\fnote[1]{\captionsetup{justification=raggedright,singlelinecheck=false}\caption*{#1}}
+%\usepackage{subcaption}
+\usepackage{varwidth}
+\DeclareCaptionFormat{myformat}{%
+ % #1: label (e.g. ''Table 1'')
+ % #2: separator (e.g. '': '')
+ % #3: caption text
+ \begin{varwidth}{\linewidth}%
+  \centering
+  #1#2#3%
+ \end{varwidth}%
+}
+%\captionsetup{format=myformat}
+
+\newcommand{\fonte}[1]{\captionsetup{skip=0.5ex,position=b}\caption*{\textit{Notes:} {#1}}}
+
+\newcommand{\sym}[1]{\rlap{#1}} % for the stars
+  
+\usepackage{graphicx} 
+
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[titletoc]{appendix}
+\usepackage{pdfpages}
+\usepackage{xr-hyper}
+\usepackage{dirtytalk}
+\usepackage{epigraph}
+\setlength\epigraphwidth{\textwidth}
+\setlength\epigraphrule{0pt}
+\usepackage{parskip}
+%\setlength{\parindent}{5ex}
+\setlength\parindent{0pt}
+\usepackage{indentfirst}
+\usepackage{ragged2e}
+\graphicspath{ {./figs/}}
+\setcounter{tocdepth}{3}
+\usepackage[flushleft]{threeparttable}
+\usepackage{titlesec}
+%\setcounter{secnumdepth}{4}
+\usepackage{comment}
+
+\usepackage{array}
+\usepackage{bbm}
+\usepackage{colortbl}
+
+\usepackage{microtype}
+%\hyphenchar\font=-1
+%\righthyphenmin=62
+%\lefthyphenmin=62
+%\usepackage[none]{hyphenat}
+%\hyphenpenalty=10000
+%\exhyphenpenalty=10000
+
+%\titleformat{\subsubsection}[runin]
+% {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\usepackage{authblk}
+
+\usepackage{makecell}
+
+\usepackage[en-US]{datetime2} % Load package with preferred language
+
+% Define a custom style that only prints month and year
+\DTMnewdatestyle{monthyear}{%
+  \renewcommand{\DTMdisplaydate}[4]{%
+    \DTMenglishmonthname{##2} ##1}% ##2 is month, ##1 is year
+  \renewcommand{\DTMDisplaydate}{\DTMdisplaydate}%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%          %%%
+%%%   Front page   %%%
+%%%          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{Can the Urban Poor Avoid Flood Risks?\\ The Case of Cape Town, South Africa\thanks{We thank the City of Cape Town for its support and facilitation of access to the data used in this paper. We are especially grateful to Amrish Bisoon, Hugh Cole, Paul Court, Robert McGaffin, Elmarie Nel, Jodie Posen, Kristoff Potgieter, Carol Wright, and all participants to the World Bank technical assistance organized as part of the Resilience Pillar of the Cities Support Program led by the National Treasury of the Government of South Africa. We are also indebted to Haroon Bhorat, Lukasz Grzybowski, Andrew Kerr, Martine Visser, and other people at the University of Cape Town for their valuable feedback. We would also like to thank Jun Goto, Seiro Ito, Kelsey Jack, Minoru Osawa, and Sen Xue for their comments. Funding from the Swiss State Secretariat for Economic Affairs is gratefully acknowledged.}}
+
+% Replace website by mailto and add clcikable latest version
+
+%Charlotte Liotta
+%Liotta: Universitat Autònoma de Barcelona, ICTA, \href{mailto:charlotte.liotta@uab.cat}{charlotte.liotta@uab.cat}
+
+\author{Paolo Avner, Charlotte Liotta, Thomas Monnier, Claus Rabe, Harris Selod\thanks{Avner: World Bank, GFDRR, \href{mailto:pavner@worldbank.org}{pavner@worldbank.org}; Liotta: Universitat Autònoma de Barcelona, ICTA, \href{mailto:charlotte.liotta@uab.cat}{charlotte.liotta@uab.cat}; Monnier: Hitotsubashi University, Institute for Advanced Study, \href{mailto:thomas.monnier@r.hit-u.ac.jp}{thomas.monnier@r.hit-u.ac.jp}; Rabe: Palmer Development Group, \href{mailto:claus@pdg.co.za}{claus@pdg.co.za}; Selod: World Bank, DEC, \href{mailto:hselod@worldbank.org}{hselod@worldbank.org}}}
+
+\DTMsetdatestyle{monthyear}
+
+\date{\today\\ \href{https://tlmonnier.github.io/files/Monnier_InformalFloods.pdf}{\textit{Click here for the latest version}}}
+
+%\monthyeardate\today
+
+% Keywords & JEL?
+
+
+
+\maketitle
+
+\begin{abstract}
+
+\noindent In low- and middle-income country cities, poor households often reside in hazardous locations, including flood-prone areas. This can be due to poor information about flood risks or acceptance of these risks in the face of lower housing prices. Poor households are also more vulnerable to floods than richer households given the low-quality housing they occupy. Does information on flood risks help households make better location and housing choices? To what extent will these choices be revised with increased flood risks due to climate change? To answer these questions, we build a polycentric urban economics model with heterogeneous income groups, formal and informal housing, and flood risks. The model is calibrated to Cape Town (South Africa) and simulations are run to assess the impact of flood risks on land values and income segregation within the city, distinguishing between the effects of three types of floods (fluvial, pluvial, and coastal). Although total damages from floods are greater for rich households, they represent a larger relative share of poor households’ incomes. Better information encourages the partial adaptation of poor households mainly through relocation, and especially in the face of fluvial risks, reducing up to 40\% of expected damages. Added risks from climate change undo these gains by roughly 10 percentage points.
+\bigskip
+
+\noindent \textbf{Keywords}: floods, climate change, adaptation, resilience, informal housing
+
+\noindent \textbf{JEL Classification}: Q51, Q54, R14, R31
+
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%          %%%
+%%%   BODY     %%%
+%%%          %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+
+\section{Introduction}
+
+In low- and middle-income countries, urban growth can be accompanied by greater vulnerability of poor households who tend to settle in flood-prone areas. The World Bank estimates that 1.8 billion people currently live in flood-prone areas, including 600 million people in cities \citep{worldbank2026flood}. The phenomenon is on the rise in all regions of the world as informal settlement growth is occurring at a higher rate in flood-prone than in flood-safe areas \citep{Rentschler2023Global1985}. In South African cities, up to 19 percent of the population could be exposed to flood risks by 2050 \citep{worldbank2022southafrica}.
+
+In this paper, we propose the first urban simulation model that simultaneously accounts for all three types of flood risks (fluvial, pluvial, and coastal). Accounting for the whole range of flood risks makes it possible to assess how they differentially impact cities, and is key to designing better targeted policy responses.
+
+As our model ambitions to offer a realistic representation of a developing country city, it is important to account for key features such as income heterogeneity and the coexistence of formal and informal housing (including both squatter settlements and structures informally erected in the backyard of public housing units). Building on a previous version of the model developed for Cape Town, South Africa \citep{Pfeiffer2025AssessingHousing}, we overlay a discrete two-dimensional version of the standard urban monocentric model \citep{Fujita1989UrbanSize, Lin2024CitiesLevel} on a grid of pixels that capture the city's geographic features. We then simulate the construction decisions of developers along with the housing and location choices of households who compete spatially to access multiple employment centers. At the same time, we account for land-use and building regulations, transport networks, natural constraints, and exogenous amenities. A simplified version of this modeling approach has proven effective in predicting urban spatial structures across the world \citep{Liotta2022TestingCities}.
+
+%Empirically, \citet{Liotta2022TestingCities} - using a global sample of 192 cities - show that the standard urban economic model, despite its simplicity, has a strong predictive power in terms of population density, rent variations, and urban extent. However, they also show that the standard model performs less well in cities with high levels of residential informality, strong regulations and planning, as well as specific amenities. As we account for those elements, there is additional motive to rely on the structure of this model.
+
+We add flood risks to the framework by considering the probability of flood occurrence in each grid cell, and the corresponding damages caused to housing structures and contents, taking into account the lower quality of informal buildings. This focuses on the most immediate channels through which flood risks affect city patterns over the long term \citep{Merz2010AssessmentDamage,Pharoah2014Built-inAfrica,Mosimann2018AContents}.\footnote{In this paper, we do not focus on damages to infrastructure \citep{Hallegatte2019Lifelines:Opportunity}, indirect effects on health \citep{Picarelli2017CholeraSalaam, Paterson2018HealthDisasters} or public services \citep{Hammond2015UrbanReview, Allaire2018Socio-economicLiterature}.} Agents may internalize these risks if they consider the expected annual damages (based on probabilistic flood maps) as it affects the depreciation of their housing capital and the quantity of goods they consume \citep{Huizinga2017GlobalGuidelines}. This extends the framework in \citet{Avner2022FloodEqual} by incorporating the impact of flood damages in both housing supply and demand.
+
+%, compared with infrastructure disruptions for instance?
+
+We further distinguish between fluvial, pluvial, and coastal floods. Typically, fluvial floods are water overflows from rivers, whereas pluvial floods designate surface water floods or flash floods, caused by extreme rainfall independently of an overflowing water body. Coastal floods encompass storm surges, periodic tides, and gradual sea-level rise. In our model, flood risks do not only affect population and structures through their direct exposure to floods, but also through spatial equilibrium effects (i.e., given endogenous housing prices and spatial sorting of income groups across the city).
+
+Our analysis is based on the comparison of various simulations of the model. To assess the role of information on flood damages, we compare equilibria under scenarios with and without flood risk anticipation. To assess the impact of climate change, we then compare equilibria with flood risk anticipation under a scenario where flood risks remain at their current level and another scenario where flood risks are amplified. We find that although total damages from floods are greater for rich households (who consume more housing), they represent a larger relative share of poor households’ incomes (who therefore tend to react more strongly to flood risks). Better information on flood risks encourages their relocation outside flood-prone zones and lowers their willingness to pay for exposed housing. However, because affordable flood-safe areas may also be located far from job centers, the poor do not entirely move away from flood risks. This underlines a fundamental trade-off poor households face between accessing economic opportunities and accepting exposure to flood risks. When households are informed about flood risks and when these risks increase, most of the changes in equilibrium involve households avoiding localized fluvial flood zones that face severe destruction risks. On the contrary, pluvial flood zones are typically more widespread, with lower destruction risks. This also explains why, in the face of climate change, poor households are willing and able to reduce most of the adverse consequences of fluvial, but not of pluvial floods. Coastal flood risks mostly affect richer households who are less willing to adapt, all the more so as these risks are less severe than fluvial/pluvial risks.
+
+%In the case of Buenos Aires, Argentina, \citet{Avner2017BusesAires} explore the environmental impact of different policy scenarios that could cushion the impact of fare increases if public transport subsidies were to be lowered or removed. At the global scale, \citet{Liotta2023EnvironmentalCities} compare the impacts of four representative urban climate policies: a bus rapid transit program, a fuel tax, a fuel efficiency improvement, and an urban growth boundary.
+
+This paper fits in a tradition of land use and transport integrated models (LUTI) applied to the evaluation of urban climate policies in various economic contexts. For instance, in the context of Paris, France, \citet{Viguie2012Trade-offsPolicies} look at trade-offs and interactions between urban policies, including a policy that prohibits new buildings in flood-prone areas (flood-risk zoning). In the context of Cape Town, \citet{Liotta2024ClimateIncomes} study the impact of a fuel tax on spatial inequalities. They find that the poorest households, living in informal settlements or in subsidized housing, have few or no ways to adapt to increases in fuel prices by changing housing type, adjusting their location or housing consumption, or shifting transportation modes. In the wake of the above literature, the current paper focuses on adaptation to climate change and studies more specifically the impact of flood awareness policies on spatial inequalities, a perspective that was previously overlooked.\footnote{See \citet{carleton_chapter_2024} for a systematic review of climate change adaptation policies.}
+
+%The authors argue that complementary policies improving labor market matching, making public transportation more affordable, or subsidizing housing closer to employment centers are needed to make climate policies socially acceptable.
+
+% They find that flood zoning and greenbelt policies can be made more acceptable to the public if combined with transportation policies.
+%They find that the replacement of the transit subsidy by a lump-sum transfer is globally welfare-improving but leads to higher GHG emissions, and may have harsh redistributive impacts for captive transit users in some areas, with changes in land and housing prices partially mitigating this effect.
+%They find that all policies except UGB increase welfare and are effective in reducing GHG emissions. They also point to high heterogeneity across cities and highlight that there is no one-size-fits-all optimal policy to mitigate urban transport emissions.
+
+%\citet{Avner2014CarbonInfrastructure} study the impacts of a carbon tax and find that reducing commuting-related emissions is only welfare-improving under lower tax levels overall and dense public transportation networks.
+
+%\citet{Viguie2014DownscalingParis} find that the main drivers of urban sprawl and climate and flood vulnerability appear to be local demographic growth and local policies, and not global factors such as energy and transport prices. A direct consequence is that very strict urban policies – including reconstruction – would become necessary to control emissions from urban transportation if technologies (global factors driving most of transport-related greenhouse gas emissions) reveal unable to do so.
+
+%Alternatively, \citet{Yin2018AppraisingStudy} study the rebound effects associated with ride-sharing and find that they end up dividing the GHG emission savings by a factor ranging from 2 to 3. \citet{Coulombel2019SubstantialFrance} further disentangle between a route choice effect, a modal shift effect, a distance effect, and a relocation effect: they find that the observed rebound mostly comes from the modal shift effect, supplemented as ride-sharing develops by the distance effect. This has direct consequences as to the efficiency of complementary policies such as improving public transit, reducing road capacity or increasing the cost of car travel.
+
+% Low-income households living in formal housing also remain impacted by the tax over the long term due to complex effects driven by the competition with richer households on the housing market.
+
+%Contrary to the so-called “Quantitative Spatial Economics” literature \citep{Redding2017QuantitativeEconomics}, we do not endogenize employment locations, to the extent that we do not allow firms to compete with households for land. There are two main reasons for that. First, the (relative) numerical simplicity of the model allows us to deal with several dimensions of heterogeneity within an extremely granular setting. Second, survey data and expert opinion do not lead us to consider flood risks as a major potential shifter for job center distribution across the city. Since this is the focus of the current version, we therefore keep this distribution as fixed to focus on the direct mechanism described above. Then, our approach also comes with benefits of its own: we are able to model an endogenous city edge through the agricultural land (which is empirically relevant in a developing city context), and to simulate more realistic spatial sorting patterns through continuous (as opposed to unit) demand for housing, which is taken as a necessity good (see \citet{Gaigne2022WhoSorting}). 
+
+%\citep{Balboni2025InCities}
+
+%Also note that such capital depreciation approach differs from the existing literature on sea-level rise \citep{Desmet2021EvaluatingFlooding,Kocornik-Mina2020FloodedCities,Lin2024CitiesLevel}, which models flood damages through loss of available land. We believe that our approach is better suited to the study of (more general) extreme flood events that impact the value of land but do not lead to its permanent abandonment. This echoes our focus on within-city commuting rather than cross-city migrations (which we take as exogenous). Finally, note that all those studies abstract from modelling the economic cost of human life, which is likely to be non-negligible but is also hard to measure and subject to behavioral biases: in any case, incorporating such margin is only likely to reinforce our findings on spatial sorting.
+
+% RISK MODELING, ETC
+
+% COMPETITION FOR LAND IN QSE? PRODUCTIVITY RESIDUALS?
+
+Our approach also relates to the``quantitative spatial model'' (QSM) literature that emerged over the past decade \citep{Redding2017QuantitativeEconomics} and is increasingly applied to emerging country contexts \citep{Sturm2023HowCountries}. Apart from the fact that we allow for an endogenous city fringe (which should be accounted for in contexts of sprawling and growing cities as in South Africa), the main conceptual difference with the QSM approach is that we consider job locations and wages as exogenous. We do not consider this simplification to be a strong limitation for our purpose given that floods generally do not lead to massive displacements of economic activity over the long term at the local level \citep{Kocornik-Mina2020FloodedCities}.\footnote{Choosing between the two modeling approaches involves accepting either exogenous location-specific productivity differences, which capture the structural residuals left unexplained by QSMs, or exogenous wages in each employment center, as in our approach. For an example of a QSM approach to Cape Town land use, see \citet{cole2025cities}.} Besides, it allows for a more tractable model, with typically more dimensions of heterogeneity and a more granular geography. To the best of our knowledge, our model is also the first to allow for a realistic urban simulation that integrates all types of flood risks within an internal city structure. Although some quantitative spatial models address part of these risks \citep{desmet,Balboni2025InCities, balboni_pakistan, jia}, these models focus on firms rather than on households. The rest of the literature on spatial flood adaptation in housing markets deals mostly with reactive (as opposed to anticipatory) behavior in response to flood events and focuses exclusively on formal housing in reduced form \citep{Ortega2018RisingMarket, Muller2019HurricaneRisk, Ellen2024HeterogeneitySandy}.
+
+%A notable exception is \citet{Varela2023SurgeFlooding}, which uses a residential segregation model to explain heterogeneous price recoveries following a hurricane. 
+% Furthermore, they consider sea-level rise only and do not account for other components of coastal risks such as tides and storm surges. The structural economic literature on fluvial and pluvial risks appears to be less extensive, likely due to the periodic rather than persistent nature of these phenomena, which makes them difficult to model and analyze.
+
+% While it focuses on relocation and price adjustments, an additional strand of literature adds information/insurance/protection to the mix... Is reactionary behaviour irrelevant over the long term?
+
+% Outline
+The outline of the paper is as follows: Section \ref{sec:context} presents stylized facts regarding flood risks in Cape Town. Section \ref{sec:data} describes the data. Section \ref{sec:model} details the model and Section \ref{sec:estimation} explains how it is estimated. Section \ref{sec:results} presents the results for our two sets of simulation comparisons: the first one introduces information on flood risks, and the second one the effects of climate change. Section \ref{sec-discuss} introduces the next steps and Section \ref{sec:conclusion} concludes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Context \label{sec:context}}
+
+% HHs or people? Seems OK ith 3-4 people households!
+Cape Town, a sprawling city of four million inhabitants is located on a broad, sandy plain connecting the mountainous Cape peninsula to the mainland. It is among the cities most affected by fluvial and pluvial flood risks in Sub-Saharan Africa, with 160,000 households directly exposed to flood risks and average annual damages estimated at almost \$16.4 million \citep{Gonzales2023LivingAfrica}. Damages from coastal floods are less important in absolute terms (around \$370,000 annually), but could sharply increase and affect more people with climate change and sea-level rise \citep{Hallegatte2013FutureCities}. For reference, we show a map of Cape Town's major flood plains in Figure \ref{flood_plains}.
+
+
+\begin{figure}[htbp!]
+    \centering
+    \caption{Cape Town's major flood plains}
+    \label{flood_plains}
+
+    \begin{minipage}{0.7\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{figures/flood_plains.png}
+
+        \vspace{0.3em}
+        {\footnotesize \emph{Source:} City of Cape Town}
+    \end{minipage}
+\end{figure}
+
+A large fraction of the population resides in the Cape Flats, a predominantly low-lying area of about 25x25km where approximately 200,000 poor households (15-20\% of the population) live in informal settlements. The hydrology of the Cape Flats renders poor households living in informal settlements vulnerable to both fluvial and pluvial flooding. Fluvial flooding is episodic, typically more intense, and localized along Cape Town’s four perennial rivers and stormwater channels. Pluvial flooding, on the other hand, is persistent and widespread across the Cape Flats area: the vast network of seasonal rivers, streams, and wetlands transecting the area is inundated for a few weeks annually during the rainy winter season. From there, drainage is encumbered by flat terrain and a water table lying between 1-3m from the surface in the dry summer months, but rises by between 1-2m during winter, causing ``rising water'' or ``seepage'' in topographic depressions. The impact of hydrology on households is aggravated by inadequate drainage infrastructure, which leads to localized ponding. Figure \ref{flood_prone_zones} shows a more detailed map of the Cape Flats and their exposure to floods in flood-prone depressions (green areas) and flood-prone riverines (blue areas). It also shows the location of informal settlements (dark grey and black areas) in proximity of these zones.
+
+
+\begin{figure}[htbp!]
+    \centering
+    \caption{Flood-prone zones in the Cape Flats}
+    \label{flood_prone_zones}
+
+    \begin{minipage}{0.75\textwidth}
+        \centering
+        \includegraphics[width=\textwidth,keepaspectratio]{figures/flood_prone_zones.png}
+
+        %\vspace{0.3em}
+        {\footnotesize \emph{Source:} City of Cape Town}
+    \end{minipage}
+\end{figure}
+
+
+The magnitude of the flood impacts on poor households is determined both by nature and by human behavior. The main human cause of impact is the massive, informal occupation of large areas of flood-prone wetlands and detention ponds by poor households who build vulnerable structures from corrugated iron sheets. The propensity for households to locate in flood-prone areas is not incidental, but attributable to the fact that formal development is prohibited in flood-prone areas, leaving vacant remnants of land throughout the Cape Flats area. Furthermore, South African courts have pronounced that local authorities are not allowed to evict illegal land occupants from erected structures unless alternative accommodation is provided. Land occupation events typically occur in the run-up to winter since local authorities are reluctant to evict residents during winter on humanitarian grounds. In the remainder of this paper, we will consider that tolerated informal settlement zones are exogenously given.\footnote{See \citet{Pfeiffer2025AssessingHousing} for a discussion of this assumption.}
+
+%As an illustration, Figure \ref{land_occup_event} shows the expansion of an informal settlement in a flood-prone area of the Cape Flats. It shows two Google Earth images taken three months apart, indicating the extent of 200-year stormwater lines, floodplains, and isolated depressions.
+% \begin{figure}[h]
+%   \centering
+%   \caption{Land occupation event in Makhaza, Khayelitsha (Cape Flats)}
+%   \label{land_occup_event}
+%   \includegraphics[width=\textwidth,keepaspectratio]{figures/land_occup_event.jpg}
+%   %\fnote{\scriptsize{\textit{Source:} Authors, using data provided by the City of Cape Town}}
+% \end{figure}
+
+With population growth and given these ongoing spatial dynamics, the number of informal households in flood-prone areas has been multiplied by 6 from 1995 to 2020, while population density in these areas has increased by roughly 50\% (based on aerial imagery). In what follows, we uncover the economic mechanisms behind such development, and assess how flood damages are likely to evolve following adaptation to better information and climate change. 
+
+%With population growth and given these ongoing spatial dynamics, the extent of informal settlements in flood-prone areas has increased from 17 ha in 1995 to 147 ha in 2020, and the corresponding number of vulnerable households from roughly 2,500 to 15,000 (based on aerial imagery). In what follows, we uncover the economic mechanisms behind such development, and assess how flood damages are likely to evolve following adaptation to better information and climate change. 
+
+%Based on a desktop analysis of aerial imagery, Figure \ref{informal_vulnerable_barplot} below shows the increase in the number of informal dwellings in informal settlements vulnerable to flooding.
+% \begin{figure}[h]
+%   \centering
+%   \caption{Informal dwellings in informal settlements vulnerable to flooding}
+%   \label{informal_vulnerable_barplot}
+%   \includegraphics[width=\textwidth,keepaspectratio]{figures/informal_vulnerable_barplot.jpg}
+%   %\fnote{\scriptsize{\textit{Source:} Authors}}
+% \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Data \label{sec:data}}
+
+This section starts by presenting the data we use to estimate the model, and how we process it.
+
+\paragraph{Grid}
+
+We use a grid of 500x500m resolution that encompasses the whole urban area and corresponds to the grid that the City of Cape Town uses for planning purposes. All other datasets are either spatially aggregated or disaggregated to fit the grid.
+
+\paragraph{Flood data}
+
+\begin{figure}[htbp!]
+  \centering
+  \caption{Expected capital depreciation rate due to floods (for housing contents only)\\ and increase induced by climate change}
+  \label{map_flood_content_deprec_change}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/fract_K_destr_change.jpg}
+  \fnote{\scriptsize{\textit{Note:} The map on the left shows the values at the benchmark. The map on the right shows the incremental change (in absolute terms) when considering climate change.}}
+\end{figure}
+
+We use the FATHOM \citep{Sampson2015AModel} and the \citet{Deltares2021PlanetaryMaps} data, two global spatial datasets of flood hazards. They provide flood water extent and depth for respectively pluvial/fluvial and coastal hazard scenarios, expressed as ``return periods'', which indicate the likely frequency of occurrence (i.e., once every number of years) for each flood event category. When overlapping, we consider the maximum flood depth across flood types as water would typically flow to other areas instead of piling up. The data are at a 3 arc-second (approximately 90m) resolution.
+
+%For reference, the climate conditions used to produce the flood maps are the ones prevailing in 2018, which we assume to be roughly in line with the ones prevailing at our baseline year (2011).
+Because our geographic units are 30 times larger than the units used in the raw flood maps, the flood data that we use is sufficiently granular to capture flood impacts at the grid cell level. Note however that we use the ``undefended'' versions of the datasets, i.e. the ones that do not account for infrastructure and other potential protection investments affecting flood hazards. This is because the global data is not precise enough to properly account for their spatial distribution at the local level. An exception we make is for the presence of drainage systems, which we assume to be linked with formal concrete housing structures: such dwelling units will not be affected by the least severe (but more frequent) flood events. %We intend to prioritize the simulation of other protective investments in future work, as they are of utmost policy relevance. [XXXX ADD THIS TO THE CONCLUSION]
+
+In every grid cell, the flood data is converted into an expected fraction of capital destroyed, collapsing all return periods into a single annualized value. To do so, we borrow ``structural'' damage functions by housing type from \citet{Englhardt2019EnhancementAreas} that convert flood depth into building destruction shares. We also consider damages in terms of ``contents'', expressed as the fraction of (semi-)durable goods that households consume and that is vulnerable to floods. To obtain the expected fraction of contents destroyed, we use the flood depth-damage function proposed by \citet{DeVilliers2007StandardConditions}.
+
+% \begin{figure}[htbp!]
+%   \centering
+%   \caption{}
+%   \label{map_flood_content_deprec}
+%   \includegraphics[width=\textwidth,keepaspectratio]{figures/map_fract_K_destroyed.jpg}
+%     % \begin{tablenotes}
+%     % \footnotesize{
+%     %      \item \emph{Source:} Authors}
+%     %     \end{tablenotes}
+% \end{figure}
+
+Finally, we consider how climate change might affect flood hazards. For coastal flood risks, we rely on specific flood maps provided by Deltares, that are based upon the IPCC’s RCP 8.5 scenario projected onto the year 2050. Since the FATHOM data does not come with similar maps for pluvial/fluvial flood risks, as a proof of concept, we simply multiply all annual probabilities by 2 (i.e., we divide return periods by 2). This increase, although arbitrary, is of the same order of magnitude as the one observed for coastal flood risks. It should be noted that those scenarios are generally thought of as being relatively pessimistic.
+
+To illustrate how we account for flood risks, we represent in Figure \ref{map_flood_content_deprec_change} the spatial distribution of the content depreciation rate (which does not vary across housing types), and how it incrementally changes  with increased flood risks due to climate change (see Section \ref{sec:model} for more details on structure and content depreciation rates). As expected, flood exposure follows the coastline (for coastal flood risks), waterways (for fluvial flood risks), and topological depression areas (for pluvial flood risks) in inhabited areas. The added risks from climate change are not negligible, reaching more than 10 percentage points in most exposed zones. Note that these maps only represent intermediate inputs, as equilibrium damages will depend on households' housing and location choices.
+
+% +DO IT WITH ALL HOUSING TYPES FOR STRUCTURES
+
+% \begin{figure}[htbp!]
+%   \centering
+%   \caption{}
+%   \label{map_flood_content_deprec_cchange_compar}
+%   \includegraphics[width=\textwidth,keepaspectratio]{figures/map_fract_K_destroyed_compar.jpg}
+%   %%\fnote{\scriptsize{\textit{Source:} Authors' simulations}}
+% \end{figure}
+
+% \begin{figure}[htbp!]
+%   \centering
+%   \caption{Test}
+%   \label{spatial_contents_deprec_cchange_compar}
+%   \includegraphics[width=\textwidth,keepaspectratio]{figures/spatial_contents_deprec_cchange_compar.jpg}
+%   %%\fnote{\scriptsize{\textit{Source:} Authors' simulations}}
+% \end{figure}
+
+\paragraph{Socioeconomic data}
+
+% ADD OWN VISUALIZATION IN APPENDIX
+The spatial distribution of the population is taken from the 2011 National Census. As explained in Section \ref{sec:model} below, we consider four housing types, namely formal private housing ($FP$), formal subsidized housing ($FS$), informal settlements ($IS$), and informal backyards ($IB$). We also define four income groups of interest by choosing income-group thresholds such that only the lowest income group is eligible for subsidized housing programs, and so that the two highest income groups are not observed to reside informally (but are nevertheless distinguished to account for high income heterogeneity).\footnote{These groups reflect skill heterogeneity within the population. Workers employed in the same locations but belonging to different groups will therefore obtain a different wage.}
+
+We use the City of Cape Town's transport model to retrieve transport times and distances between residence and job locations for each transport mode, along with the estimated number of households per employment center and income group. The monetary transport costs are retrieved from additional external sources. We also use aggregate statistics on residence-workplace distances in Cape Town, derived from Cape Town’s 2013 Transport Survey, to complete the estimation of households' expected income net of commuting costs (see Section \ref{sec:estimation}).
+
+Land availability is pre-determined for each housing type in each grid cell. Areas of subsidized housing are identified from the cadastre of the City of Cape Town. The area available for backyard housing is estimated as the yard size of these units (as in the context of Cape Town, most of so-called informal ``backyarding'' occurs in such precincts). Informal settlement areas are obtained from the characterization of enumeration areas (census blocks) in the 2011 Census: in the context of Cape Town, they correspond to peripheral, publicly-owned land originally reserved for future roads, social facilities, or public housing. It therefore makes sense to consider them as being exogenously given as we do. Their boundaries reflect the tolerance of authorities for these locations. Land available for formal private development corresponds to all land that is not constrained for housing construction (including exogenous commercial floor space). Additional height restrictions apply across the city.
+
+The amenities that we consider include natural amenities (such as slope and proximity to the ocean) as well as urban amenities (such as the proximity to the historical center). We extract them from the City of Cape Town's open data portal, and consider them to be exogenous.\footnote{In theory, this leads to a worse fit than recovering amenities as model residuals (as in QSMs). However, in our case, we find that this does not lead to strong underfitting.} Finally, we use property prices extracted from the City of Cape Town’s geocoded dataset on property transactions for 2011, as well as data on dwelling sizes made available to us by the City of Cape Town. These will serve to estimate the parameters of the housing production technology used by formal private developers.
+% Confusion between raw land and housing in code price data?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Model \label{sec:model}}
+% CD version?
+% CHECK CONSISTENCY WITH PREVIOUS VERSION
+
+\subsection{Main assumptions}
+
+We build on the model presented in \citet{Pfeiffer2025AssessingHousing} and augment it with flood risks to define our benchmark. As in their framework, we consider that each grid cell in the city is indexed with a vector of coordinates $x=(x_1,x_2)$ and has an exogenous quantity of available land for residential development per housing type $h = FP,FS,IS,IB$, $L_h(x)$, where $FP$ refers to formal private housing, $FS$ refers to formal subsidized housing, $IS$ refers to informal settlements (i.e., traditional squatter settlements), and $IB$ refers to informal backyard structures. We further split the population into four income groups (ranked from poorer to richer): only income group $1$ has access to $FS$ housing while income groups $3$ and $4$ are never observed to live in $IS$ or $IB$ housing.
+
+In addition, each location is characterized by an exogenous amenity index $A(x)$ (centered around one), and an exogenous informal disamenity index $B_h$ (comprised between zero and one) associated with informal housing types $h = IS,IB$. As both indices will enter the utility function of residents as multiplicative terms, the lower their value, the greater the disamenity associated with location or informal housing. Note that informal neighborhoods do not only differ from formal ones by (horizontally dense) residential land use and (poorer) construction quality, but also in terms of public service (lower) coverage and (higher) subsidies. This will implicity affect the housing demand elasticity across housing types through the term $B_h$.
+
+In this framework, households compete with one another for locations and housing types, anticipating their probability to work in the different employment centers given transport costs, wages and each income group's probability of being employed. This is inclusive of informality in the labour market, and the probability to be unemployed is also accounted for. Equilibrium will be defined ``ex ante'', i.e. before  worker's specific employment centers are known, but accounting for the probability to be working in each one of them.
+
+\paragraph{Households}
+
+Households choose their consumption of composite good $z$ and housing quantity $q$, along with their residential location $x$ and housing type $h$, by maximizing Stone-Geary preferences:
+\begin{equation}
+\label{eq:utility}
+    U(z,q,x,h) = z^\alpha (q-q_0)^{1-\alpha}A(x)B_h
+\end{equation}
+where $0<\alpha<1$ is the composite good elasticity (or budget share), $1 - \alpha$ is the surplus housing elasticity, and $q_0>0$ is the basic housing need.
+
+In doing so, they face the following budget constraint, which is specific to each income group $i=1,..,4$:
+% \begin{multline}
+% \label{eq:budget_constraint}
+%    \tilde{y}_i(x) + \mathbbm{1}_{\{h=FS\}} \mu(x)YR_{IB}(x)\\ = \left(1 + \gamma \rho^{content}(x)\right)z + q_{h}R_{h}(x) + \mathbbm{1}_{\{h \neq FP\}} \left( \rho + \rho_{h}^{struct}(x) + \mathbbm{1}_{\{h \neq FS\}} \delta \right)v_{h}    
+% \end{multline}
+
+\begin{multline}
+\label{eq:budget_constraint}
+   \tilde{y}_i(x) + \mathbbm{1}_{\{h=FS\}} \mu(x)Y \left (R_{IB}(x) - \frac{(\rho + \rho_{IB}^{struct}(x) +\delta)v_{I}}{q_{I}} \right )\\ = \left(1 + \gamma \rho^{content}(x)\right)z + q_{h}R_{h}(x) + \mathbbm{1}_{\{h = IS,FS\}} \left( \rho + \rho_{h}^{struct}(x) \right)v_{h} + \mathbbm{1}_{\{h = IS\}} \delta v_{h}    
+\end{multline}
+
+In equation (\ref{eq:budget_constraint}), the left-hand side measures revenues, and the right-hand side breaks down expenses. On the left-hand side, $\tilde{y}_i(x)$ is the expected income net of commuting costs for a household of income group $i$ living in location $x$: since households choose their residential location before finding a job, they consider the likelihood that they will find employment (or not) in the different job centers, along with the associated commuting costs from each residential location and the (exogenous) income they would obtain given their income group at each specific workplace.\footnote{This ``ex ante'' setting can also be rationalized by considering that the equilibrium captures a steady-state representation of a life-cycle process in which households lose and change jobs (albeit not residential locations) over time. }
+
+When living in formal subsidized housing ($\mathbbm{1}_{\{h=FS\}}$), households benefit from a backyard of fixed size $Y$ and have the additional possibility to rent out an endogenous fraction $\mu(x)$ of that backyard at the endogenous market rent $R_{IB}(x)$ (as in \citet{Brueckner2019Backyarding:Africa}), which adds up to their wage income. Since they also provide the housing structures to backyarders, they need to cover the construction and maintenance costs of these structures. Mathematically, maintenance costs are defined as the fraction $\rho + \rho_h^{struct}(x)$ of building replacement costs $v_h$. $\rho$ stands for standard capital depreciation rate whereas $\rho_h^{struct}(x)$ stands for the local capital depreciation rate due to flood risks in housing type $h$. Construction costs are defined as a fraction $\delta$ of $v_h$, where $\delta$ stands for the interest rate paid on a loan contracted to finance construction.\footnote{The whole term can also be interpreted as a flow cost of construction since poor households may not have access to financial markets and incrementally build their housing structures.} In the specific case of informal backyards, the replacement cost per m² is the same as for informal settlements: we therefore divide the calibrated value $v_I$ for informal settlements by their fixed size $q_I$ and multiply it by the size of backyard space provided $\mu(x)Y$ to recover the actual cost borne out by public housing beneficiaries.
+
+%Mathematically, as regards maintenance costs, households in formal subsidized housing, informal settlements, and informal backyards ($\mathbbm{1}_{\{h \neq FP\}}$) all have to pay a fraction $\rho + \rho_h^{struct}(x)$ of building replacement costs $v_h$ (remember that these housing structures have a fixed size for $h \neq FP$). In addition, dwellers in informal settlements and in informal backyard structures ($h \neq FS$) pay a fraction $\delta$ of this amount. This capture the costs of financing construction, i.e. the interest rate paid on a loan contracted to cover construction costs.\footnote{It can also be interpreted as a flow cost of construction since poor households may not have access to financial markets and incrementally build their structures.}
+
+On the right-hand side of equation (\ref{eq:budget_constraint}), households need to pay for composite good $z$ (whose price is normalized to one). $\gamma$ is the fraction of (semi-)durable goods that is exposed to floods and that depreciates at rate $\rho^{content}(x)$. This corresponds to the expected fraction of capital destroyed in each location due to floods as shown in Figure \ref{map_flood_content_deprec_change}. 
+
+Households also need to pay for housing quantity $q_{h}$ at the endogenous annual rent $R_{h}(x)$. Regarding housing quantities, although housing consumption is a choice variable for $h=FP$, it is fixed for $h=FS,IS,IB$ given that formal subsidized housing and informal housing structures are both standardized in South Africa. Regarding ``rents'', note that our setting captures different situations across housing submarkets: without loss of generality, formal private residents are assimilated to tenants who rent their housing from developers who themselves previously bought land from absentee landlords (see the ``housing supply'' subsection below). Whereas ``backyarders'' pay rent to the beneficiaries of formal subsidized housing, informal settlement dwellers pay a fee to a squatter settlement organizer who extracts a rent-like payment from them (see \citet{Brueckner2009ACountries} and \citet{Marx2019ThereSlum}). All these rents are endogenous and will be determined in equilibrium. Regarding beneficiaries of formal subsidized housing ($h=FS$), We assume that they pay a zero rent to the government. In practice, this simplification contributes to making public housing offers preferable over any other housing option in our equilibrium simulations. This implies that the whole stock of formal subsidized housing is provided to a fraction of income group 1 households (without any vacancy) until other eligible households are rationed out.\footnote{Note that, due to such rationing, beneficiaries of formal subsidized housing will have greater equilibrium utility than non-beneficiaries within income group 1.} 
+
+The last term on the right-hand side of equation (\ref{eq:budget_constraint}) captures construction and maintenance costs of housing structures given expected damages from floods. For formal private housing, construction and maintenance costs are borne by  developers and thus only indirectly enter the budget constraint of households through housing prices (see the ``housing supply'' subsection below). For informal backyard housing, as we have just seen, these costs are borne by formal subsidized housing beneficiaries who provide backyard structures (and will also impact housing prices). These beneficiaries also need to cover their own maintenance costs (but construction costs are borne by the local government). Only informal settlement dwellers need to cover their own maintenance and construction costs.
+
+%\footnote{This differs from \citet{Pfeiffer2025AssessingHousing} where beneficiaries of formal subsidized housing act as micro-developers and, as such, provide the structures to informal backyarders.}
+
+%[XXXX I AM REMOVING THE WHOLE PARAGRAPH, WHICH IS PARTLY IRRELEVANT AND CONFUSING. SEE WHAT I ADDED ABOVE] In the model, we assimilate formal private residents to tenants who rent their housing from owner-developers who themselves buy the land from absentee landlords. This is without loss of generality when assuming no arbitrage between owning and renting, since the total price of housing (or land) [XXX REMOVE OR LAND] can be recovered as the infinite sum of discounted future rents (and conversely) [XXX REMOVE AND CONVERSELY]. However, this affects whether construction and maintenance costs enter the demand- or the supply-side of the housing market, since we assume they are covered by owner-developers. Again, this is without loss of generality in competitive markets, since the standard tax incidence equivalence result holds. Because we assimilate informal dwellers to owner-developers (which is aligned with anecdotal evidence from the field), and subsidized housing dwellers to owner-occupiers (buying for free from public developers), only they will directly pay for the costs of maintenance (and construction in the case of informal dwellers). Also note that, in the case of informal settlements, absentee landlords can be assimilated to illegitimate squatter-coordinators on public land, who extract a rent-like payment from informal dwellers \citep{Marx2019ThereSlum}.
+
+
+\paragraph{Developers}
+
+We focus on the housing supply per unit of available land. Since informal units cannot be built vertically, it is equal to one for $h=IS$ and $\mu(x)$ for $h=IB$. Moreover, since the supply of (standardized) public housing is exogenous, we abstract from modeling what drives the (political) decision to build houses for $h=FS$. We are left with having to explain the choices of formal private developers.
+
+We assume that formal private developers produce housing with capital and land using a Cobb-Douglas production function with constant returns to scale. Given the very flat gradient of built density in Cape Town (implying an elasticity of substitution between land and capital that would be close to one in a CES specification), we consider that using Cobb-Douglas is a realistic approximation (also see \citet{Epple2010AHousing} and \citet{Combes2021TheFrance}). With this assumption, the produced quantity of formal private housing per unit of land is:
+\begin{equation}
+\label{eq_init_hsupply}
+    s_{FP}(k) = \kappa k^{1-a}
+\end{equation}
+where $\kappa$ is a scale factor, $k = \frac{K}{L_{FP}}$ is the endogenous amount of capital per unit of land available for private development, $0<a<1$ is the elasticity of formal housing production with respect to land, and $1-a$ is the capital elasticity.
+
+Formal private developers maximize a profit function (per unit of available land) defined as:
+\begin{equation}
+\label{eq_dev_profit}
+    \Pi(x,k) = R_{FP}(x)s_{FP}(k) - \left(\rho + \rho_{FP}^{struct}(x) + \delta \right)k - \delta P(x)
+\end{equation}
+
+In equation (\ref{eq_dev_profit}), developers contract a debt over an infinite amount of time to buy unbuilt land from absentee landlords at unit price $P(x)$ and pay an interest $\delta$ on this debt in our static setting.\footnote{In our setting, the price $P(x)$ can be recovered as a function of (endogenous) housing market rent $R_{FP}(x)$ from a zero-profit condition: $P(x) = \frac{\kappa^\frac{1}{a}a(1-a)^\frac{1-a}{a}}{\delta(\rho+\delta)^\frac{1-a}{a}} R_{FP}(x)^\frac{1}{a}$.} They also borrow capital at rate $\delta$ (paying a cost $\delta k$ of borrowed capital per unit of developed land) to produce housing according to equation (\ref{eq_init_hsupply}), which they rent out at unit rent $R_{FP}(x)$. Additionally, since they own the structures, they need to cover for both the standard capital depreciation rate $\rho$, and the expected fraction of capital destroyed due to floods, $\rho_{FP}^{struct}(x)$.
+
+%As mentioned before, developers buy land from absentee landlords. To do so, they contract an infinite debt that they repay at interest rate $\delta$ every period: this is to avoid time dependence in a static model, and is without loss of generality if we assume no arbitrage between owning and renting of raw land. Note that the price of a raw unit of land, $P(x)$, can be recovered as a function of (endogenous) housing market rent $R_{FP}(x)$ from a zero-profit condition ($P(x) = \frac{\kappa^\frac{1}{a}a(1-a)^\frac{1-a}{a}}{\delta(\rho+\delta)^\frac{1-a}{a}} R_{FP}(x)^\frac{1}{a}$). Then, developers may rent out a quantity $s_{FP}(k)$ of housing they build at rent $R_{FP}(x)$, but need to cover for the cost of capital $k$, again at rate $\delta$. Additionally, since they own the structures, they need to cover for both the standard capital depreciation rate $\rho$, and the expected fraction of capital destroyed due to floods, $\rho_{FP}^{struct}(x)$.
+
+
+\subsection{Housing demand \label{sec:eq_dwelling_size}} 
+
+The size of dwellings is fixed for $h=FS,IS,IB$. For the formal private market, maximizing utility (\ref{eq:utility}) under constraint (\ref{eq:budget_constraint}) and plugging back the solution $Q^*(x,i)$ into (\ref{eq:utility}) implicitly defines the optimal housing consumption in location $x$ for income group $i$ conditional on utility $u$ as the solution to:
+\begin{equation}
+\label{eq:implicit_dwelling_size}
+    u= \left(\frac{\alpha \tilde{y}_i(x)}{1 + \gamma \rho_{FP}^{content}(x)}\right)^\alpha \frac{Q^*(x,i)-q_0}{(Q^*(x,i) - \alpha q_0)^\alpha} A(x)
+\end{equation}
+
+We denote this solution $Q^*(x,i \mid u)$. Further imposing that developers do not rent out housing units below a legal threshold $q_{min}>q_0$, the dwelling size for $h=FP$ is thus $Q_{FP}(x,i,u) = max \left[ q_{min},Q^*(x,i \mid u) \right]$.
+
+\subsection{Market rent}
+
+Plugging back $Q_{FP}(x,i,u)$ into the first-order optimality condition for formal private households (not shown), we obtain the bid rent for a unit of housing type $h=FP$, which corresponds to the maximum amount a household of income-group $i$ would be willing to pay for a unit of formal private housing in location $x$ to attain utility $u$:
+\begin{equation}
+    \psi_i^{FP}(x,u) = \frac{(1-\alpha)\tilde{y}_i(x)}{Q_{FP}(x,i,u) - \alpha q_0} 
+\end{equation}
+
+By doing the same for households living in informal housing, with fixed dwelling size $q_I$ and replacement cost $v_I$, we obtain the following bid rents for $h=IS,IB$:
+\begin{equation}
+    \psi_i^{IS}(x,u) = \frac{1}{q_I}\left(\tilde{y}_i(x) - \left(\rho + \delta + \rho_{IS}^{struct}(x)\right)v_I - \left(1 + \gamma \rho_{IS}^{content}(x)\right)\left[\frac{u}{(q_I-q_0)^{1-\alpha}A(x)B_{IS}}\right]^\frac{1}{\alpha}\right)
+\end{equation}
+\begin{equation}
+    \psi_i^{IB}(x,u) = \frac{1}{q_I}\left(\tilde{y}_i(x) - \left(1 + \gamma \rho_{IB}^{content}(x)\right)\left[\frac{u}{(q_I-q_0)^{1-\alpha}A(x)B_{IB}}\right]^\frac{1}{\alpha}\right)
+\end{equation}
+
+%Assuming that households bid their true willingness to pay and that there are no strategic interactions,
+
+In equilibrium, housing will be allocated to the highest bidding income group in each grid cell where housing of a given type $h=FP,IS,IB$ is available. The upper envelope of bid rents will define the equilibrium market rent $R_h(x)$ across space for $h=FP,IS,IB$. Remember that the rent is considered to be zero for $h=FS$.
+
+\subsection{Housing supply}
+
+In the formal private sector, profit maximization of developers with respect to capital (per unit of land) in equation (\ref{eq_dev_profit}) defines the optimal quantity of invested capital. Plugging this value back into equation (\ref{eq_init_hsupply}) yields:
+\begin{equation}
+\label{eq_hsupply}
+    s_{FP}(x) = \kappa^{\frac{1}{a}} \left(\frac{(1-a)R_{FP}(x)}{\rho + \rho_{FP}^{struct}(x) + \delta}\right)^{\frac{1-a}{a}}
+\end{equation}
+
+In the informal backyard sector, utility maximization of (the poorest) households living in formal subsidized housing with respect to the fraction of backyard space that is rented out yields:
+
+\begin{equation}
+    \mu(x) = \alpha \frac{q_{FS}-q_{0}}{Y} - (1-\alpha) \frac{\widetilde{y_{1}}(x) - \left(\rho + \rho_{FS}^{struct}(x)\right) v_{FS}}{Y\left[R_{IB}(x) - (\rho + \rho_{IB}^{struct}(x) + \delta)\frac{v_{I}}{q_{I}}\right]}
+\end{equation}
+
+As mentioned previously, the housing supply per unit of available land is exogenously given for $FS$ housing and is equal to one in (exogenously given) $IS$ plots.
+
+\subsection{Population distribution \label{sec:eq_pop_dist}}
+
+For the highest bidding income group besides formal subsidized housing recipients (i.e., for $h=FP,IS,IB$), we divide the equilibrium housing supply (per unit of available land) by the optimal dwelling size, and multiply it by the amount of available land to obtain the number of households in each grid cell for each housing type. We obtain:
+\begin{equation}
+\label{eq_nb_hh}
+    N_i^h(x) = \frac{s_h(x)L_h(x)}{Q_h(x,i,u)}
+\end{equation}
+%where the numerator is exogenous and $i=1$ for $h=FS$.
+
+The formula also applies for $h=FS$ with $i=1$ since only income-group 1 households are eligible for formal subsidized housing.
+
+%This is a direct consequence of housing market clearing. Note that labour market clearing is already embedded in the definition of $\tilde{y}_i(x)$ (see Section \ref{sec:estimation}). [XXXXX I REMOVED THIS REMARK AS I FIND IT UNNECESSARY AND POTENTIALLY CONFUSING]
+
+\subsection{Determination of the equilibrium}
+
+Following subsections \ref{sec:eq_dwelling_size}-\ref{sec:eq_pop_dist}, we define an equilibrium as a set $\left\{ u_i,R_h(x),s_h(x),N_i^h(x) \right\}$ for all $i$, $h$, and $x$ where these functions are defined, and where the following constraints hold:
+\begin{itemize}
+    \item[(i)] $u_i^h(x)=u_i$ for all $x \in X_{\setminus FS}$ (set of locations occupied by households other than public housing beneficiaries) [\textit{Spatial equilibrium}]. This ensures that there is no profitable deviation in equilibrium: all members of a given income group are indifferent between available location-housing pairs (with the exception of public housing beneficiaries who all have a specific utility level resulting from the exogenous allocation of housing units).
+    \item[(ii)] $P(x) \geq P_A$ for $x \in X_{FP}$ (set of locations occupied by formal private housing dwellers) where $P_A$ is the price of raw agricultural land [\textit{City-edge constraint}]. This ensures that, at the city fringe, absentee landlords are indifferent between selling their land to a developer or engaging in agricultural activities, which endogenously defines city boundary locations.
+    \item[(iii)] $N_i=\sum\limits_h\sum\limits_xN_i^h(x)$ [\textit{Population clearing}].  This ensures that the city hosts all individuals in equilibrium (closed-city resolution).
+\end{itemize}
+
+Note that we opted for a ``closed-city'' resolution with endogenous utilities as opposed to an ``open-city'' resolution where utilities are exogenous but population is endogenous (see \citet{Fujita1989UrbanSize}). This is because we do not expect flood awareness policies (the focus of our paper) to generate a large migration response and because closed-city models can easily account for exogenous population change (which could largely reflect  the local government's tolerance for informal settlements).
+
+The numerical algorithm we use to solve for the equilibrium implements this definition. Starting from arbitrary utility levels for each income group, with the exception of public housing beneficiaries (condition (i)), we sequentially solve for the quantities determined in subsections \ref{sec:eq_dwelling_size}-\ref{sec:eq_pop_dist} and find the corresponding urban extent (condition (ii)). We then compute the error between the predicted populations $\sum\limits_h\sum\limits_xN_i^h(x)$ and the target populations $N_i$ taken from the data (condition (iii)). We then modify utility levels depending on the sign and size of the error terms: the larger the error, the more we increase utility, and conversely (note that $Q_h(x,i,u)$ is increasing in $u$ in equation (\ref{eq_nb_hh})). The process is iterated until the total absolute error falls below a predefined precision threshold.
+
+%This class of models corresponds to so-called ``closed-city'' models. Compared with ``open-city'' models where utilities are exogenous but total populations are endogenous, they do not allow the study of endogenous migration phenomena. We do not expect flood awareness policies to generate a large migration response and therefore opt for the the former. Still, this class of models can easily account for exogenous population growth and changes in the local government's tolerance for informal settlements (see \citet{Pfeiffer2025AssessingHousing}).
+
+%In future work, we intend to leverage the dynamic structure of the model in \citet{Pfeiffer2025AssessingHousing} to incorporate population growth scenarios from the City of Cape Town instead, along with a progressive extension of informal settlements (enabled by higher tolerance from the social planner) to host urban newcomers.
+
+Finally, we do not formally prove that the equilibrium exists and is unique. However, the fact that the algorithm converges towards the same results for 250 simulations starting from a wide range of initial values suggests that it does (see \citet{Gaigne2022WhoSorting} for a formal proof in a related setting).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Estimation and calibration\label{sec:estimation}}
+
+%In this section, we describe the estimation procedure for the exogenous parameters and variables in the model. We refer the reader to \citet{Pfeiffer2025AssessingHousing} for more detailed analyses of the estimation results (which slightly differ quantitatively, but not qualitatively) and general validation of the approach. %, as our focus in this paper is on the impact of flood risks more specifically.
+
+\subsection{Expected income net of commuting costs}
+% DISCUSS COMMTUING CHOICE ASSUMTPIONS
+
+We consider $C$ employment locations, indexed by $c=1,...,C$, offering wage $w_{ic}$ to members of income group $i$. The purpose of this subsection is to estimate the wage $w_{ic}$, and recover expected income net of commuting costs $\tilde{y}_{ic}$. Note that this quantity is estimated at the benchmark and does not change across counterfactuals. Our model should therefore be interpreted as a spatial equilibrium model of the housing market---without an endogenous labor market---but in which we nest a workplace choice model (see below). In this model, households choose a residential location anticipating they could potentially work in any of the job center but before finding a job in a specific job center. %We would like to assess how strong an assumption that is by looking at the effects of real flood events in future work.
+
+% NB: remark on QSE is really about job locations, not necessarily wages, and should be adressed in introduction!
+% Remaining questions on elasticities and infrastructure..
+
+\paragraph{Workplace choice model}
+
+% ARE MODES IMPORTANT? IS THIS A CONTRIBUTION?
+Given exogenous employment rates $\chi_i$ by income group, households consider expected income $y_{ic}=\chi_iw_{ic}$ in each job center  when choosing a residential location.\footnote{We treat households as individual workers, which allows us not to consider the more complex issue of joint household location decisions in the case of non-single-member households.} To commute between their residence and potential work locations, households further choose between $M$ potential modes of transportation, denoted by $m$. For each mode $m$, residential location $x$, job center $c$, and income group $i$, households of type $j$ face commuting cost:
+\begin{equation*}
+    t_{mj}(x,c,w_{ic}) = \underbrace{\chi_i \left(\tau_m(x,c) + \delta_m(x,c)w_{ic}\right)}_{\overline{t_{m}}(x,c,w_{ic})} + \epsilon_{mxcij}  
+\end{equation*}
+where $\tau_m(x,c)$ is the monetary transport cost and $\delta_m(x,c)$ is the opportunity cost associated with the fraction of time spent commuting, such that $\overline{t_{m}}(x,c,w_{ic})$ measures the total expected deterministic cost of commuting. $\epsilon_{mxcij}$ is a random component which follows a Gumbel minimum distribution of mean 0 and scale parameter $\frac{1}{\lambda}$. It accounts for heterogeneity in individual preferences for each origin-destination commuting pair and transport mode (see \citet{teulings2018land} for a similar approach). It is unobservable to households when making location choices.
+
+
+%It captures the fact that, all else equal, households may have idiosyncratic preferences that rationalize the coexistence of different individual choices within a given income group in equilibrium.[XXX SUPER UNCLEAR]
+
+Commuters pick the transport mode that minimizes their commuting cost. Due to the properties of the Gumbel minimum distribution (extreme value theory), this comes down to:
+\begin{equation*}
+    \underset{m}{min} \left(t_{mj}(x,c,w_{ic})\right) = -\frac{1}{\lambda}log \left(\sum_{m=1}^{M}exp\left[-\lambda \overline{t_{m}}(x,c,w_{ic}) \right]\right) + \eta_{xcij} 
+\end{equation*}
+where $\eta_{xcij}$ also follows a Gumbel minimum distribution with same underlying parameters.
+
+Note that households still have idiosyncratic preferences for residential-work location pairs once optimal modal choice is accounted for.
+
+For a given residential location $x$, households therefore choose a workplace $c$ that maximizes their expected income net of commuting costs, solving the program: $\underset{c}{max} \left[y_{ic} - \underset{m}{min} \left(t_{mj}(x,c,w_{ic})\right)\right]$. Since this corresponds to the latent variable formulation of a multinomial logit model (discrete choice theory), the expected income net of commuting costs $\tilde{y}_i(x) \equiv \mathbb{E}\left[ y_{ic} - \underset{m}{min} \left(t_{mj}(x,c,w_{ic})\right) \right]$ that enters the main housing choice model can be defined as:
+\begin{equation*}
+    \tilde{y}_{i}(x)={ \sum_{c=1}^{C}} \pi_{c\mid ix}\left[y_{ic}+\frac{1}{\lambda}\log\left({ \sum_{m=1}^{M}}\exp\left[-\lambda \overline{t_{m}}(x,c,w_{ic}) \right]\right)\right]
+\end{equation*}
+with:
+\begin{equation*}
+    \pi_{c\mid ix}=\frac{\exp\left[\lambda y_{ic}+\log\left({ \sum\limits_{m=1}^{M}}\exp\left[-\lambda\overline{t_{m}}(x,c,w_{ic})\right]\right)\right]}{{ \sum_{k=1}^{C}}\exp\left[\lambda y_{ik}+\log\left({ \sum\limits_{m=1}^{M}}\exp\left[-\lambda\overline{t_{m}}(x,c,w_{ic})\right]\right)\right]}
+\end{equation*}
+
+\paragraph{Commuting cost calibration}
+
+Based on the 2011 National Census, we consider employment rates $\chi_{i=1,...,4}=[0.57,0.97,0.96,0.97]$.
+
+We also assume that the monetary transport cost takes functional form $\tau_m(x,c) = T(F_m + d_{xc}V_m)$, where $F_m$ and $V_m$ are mode-specific fixed and variable cost components, and $d_{xc}$ is the distance (in km) between points $x$ and $c$ (from the City of Cape Town's Transport Model). In our simulations, we consider $C=185$ main job centers. $T$ is a constant equal to the average number of trips per year per household in full employment, that we set to $470$.
+
+We consider five transportation modes that are prevalent in Cape Town: train, bus, minibus/taxi, car, and walking. Walking is free. For the three public transportation modes we estimate the fixed and variable cost components by regressing transport cost statistics on residence-workplace distances taken from \citet{Roux2013ACountries}. Considering estimates for the average price of a car, and that materials roughly account for half of this value, we apply capital depreciation rate $\rho$ to this cost component to obtain the yearly vehicle fixed cost, that we divide by $T$. For the vehicle variable cost, we consider fuel prices and energy efficiency data from the International Energy Agency to obtain a price per km at the benchmark year. Table \ref{tab_monet_cost} summarizes the values we find for each mode:
+
+\begin{table}[htbp!]
+\centering
+\caption{Summary table of monetary transport cost parameters}
+\label{tab_monet_cost}
+\begin{tabular}{llll}
+\cline{1-3}
+\multicolumn{1}{c}{Mode} &
+\multicolumn{1}{c}{$F_m$} &
+\multicolumn{1}{c}{$V_m$}\\
+\cline{1-3}
+\multicolumn{1}{c}{Train} &
+\multicolumn{1}{c}{4.48} &
+\multicolumn{1}{c}{0.164}\\
+\multicolumn{1}{c}{Bus} &
+\multicolumn{1}{c}{4.32} &
+\multicolumn{1}{c}{0.785}\\
+\multicolumn{1}{c}{Minibus/taxi} &
+\multicolumn{1}{c}{6.24} &
+\multicolumn{1}{c}{0.522}\\
+\multicolumn{1}{c}{Car} &
+\multicolumn{1}{c}{10.00} &
+\multicolumn{1}{c}{1.157}\\
+\cline{1-3}
+\end{tabular}
+\fnote{\centering\scriptsize{\textit{Note:} OLS regression results.}}
+\end{table}
+% Error in code for price of fuel which is per liter and not per km? Fuel price or energy efficiency is not right? Maybe per baril
+% Here we used scenario 2 (probably too big when comparing with offical data) and added efficiency figures from the IEA (Merven not clear)
+% Maybe per gallon? We do divide by the value to make sense...
+
+As for the opportunity cost fraction of time spent commuting, $\delta_m(x,c)$, we assume that it is equal to the fraction of working time spent commuting, or that the opportunity cost of not working is equal to one. Here, we consider the labour supply elasticity as perfectly inelastic (8 hours a day), and rule out the possibility that workers may commute out of their leisure time.\footnote{This is not a strong assumption: in South African cities, workers commuting from far away reduce their working hours so as not to travel by night in order to reduce their exposure to crime.} The time spent commuting is directly given by the City of Cape Town's Transport Model, except for walking, which we assume to have a 4km/h speed.
+
+\paragraph{Estimation of $\lambda$ and $w_{ic}$}
+
+From the workplace choice model, we can derive the expected number of residents of income group $i$ choosing to work in $c$, denoted $W_{ic}$, provided that we know the number of residents of income group $i$ with their residence in $x$, denoted $N_{i}(x)$, in all locations $x$. This yields: 
+\begin{equation*}
+W_{ic}=\chi_i\sum_x\pi_{c \mid ix}N_i(x)\label{eq:origin-destination-1}
+\end{equation*}
+Note that summing this relation over job centers $c$ yields a labor market clearing condition.
+
+Since the values for $W_{ic}$ and $N_i(x)$ are respectively given by the City of Cape Town's Transport Model and the National Census, we first solve the above equation for $w_{ic}$, separately for discrete values of parameters $\lambda$. This is done numerically starting with average values $\overline{w_i}$ for $w_{ic}$ (captured in $\pi_{c \mid ix}$) on the right-hand side, and updating them iteratively until the target population is reached on the left-hand side. We then pick the $\{\lambda,w_{ic}\}$ pair that best fits the aggregate distribution of residence-workplace distances from Cape Town's Transport Survey: we select the pair identified by $\lambda = 13.96$.
+
+Going back to the workplace choice model, we can now calculate the value of expected income net of commuting costs $\tilde{y_i}(x)$.
+
+%
+
+\subsection{Housing production function parameters \label{sec:estim_hprod}}
+
+By plugging the value of formal private housing supply (per unit of available land) from equation (\ref{eq_nb_hh}) into the left-hand side of equation (\ref{eq_hsupply}), and considering that $R_{FP}(x)=\frac{(\delta P(x))^a(\rho+\delta)^{1-a}}{\kappa a^a(1-a)^{1-a}}$ (zero-profit condition), we obtain the following log-linear relation, that we estimate at the ``sub-place'' (census tract) level $s$ using the property transaction data:
+\begin{equation*}
+    log(N_s^{FP}) = \gamma_1 + \gamma_2 log(P_s) + \gamma_3 log(Q_s) + \gamma_4 log(L_s^{FP}) + \epsilon_s
+\end{equation*}
+where $\gamma_1 = log \left(\kappa (\frac{1-a}{a})^{1-a} \right)$, $\gamma_2 = 1-a$, $\gamma_3 = -1$, and $\gamma_4 = 1$.
+
+As this theoretical relation only holds for urban formal private housing, we exclude sub-places in the bottom quintile of property prices where more than 5\% of households are reported to live in informal housing, or which we classify as rural (i.e., large areas in the highest surface quintile, where less than 60\% of the land can be developed, or located more than 40km away from the CBD). We also exclude the poorest income group who may benefit from public housing options. Table \ref{tab_hprod_estim} shows the results.
+
+\begin{table}[htbp!]
+\centering
+\caption{Estimated coefficients from log-linear regression on property transaction data}
+\label{tab_hprod_estim}
+\begin{tabular}{llll}
+\cline{1-4}
+\multicolumn{1}{c}{$\widehat{\gamma_1}$}&
+\multicolumn{1}{c}{$\widehat{\gamma_2}$}&
+\multicolumn{1}{c}{$\widehat{\gamma_3}$}&
+\multicolumn{1}{c}{$\widehat{\gamma_4}$}\\
+\cline{1-4}
+\multicolumn{1}{c}{-3.763}&
+\multicolumn{1}{c}{0.242}&
+\multicolumn{1}{c}{-0.895}&
+\multicolumn{1}{c}{0.995}\\
+\multicolumn{1}{c}{(0.981)}&
+\multicolumn{1}{c}{(0.069)}&
+\multicolumn{1}{c}{(0.094)}&
+\multicolumn{1}{c}{(0.070)}\\
+\cline{1-4}
+\end{tabular}
+\fnote{\centering\scriptsize{\textit{Note:} OLS regression results. Standard errors in parentheses.}}
+\end{table}
+
+The fact that the estimated values for $\widehat{\gamma_3}$ and $\widehat{\gamma_4}$ are reasonably close to -1 and 1, respectively, suggests that the relation is indeed well identified. Solving for $a$ and $\kappa$ with the estimated values for $\widehat{\gamma_2}$ and $\widehat{\gamma_1}$, respectively, yields $a=0.758$ and $\kappa=0.031$.
+
+\subsection{Utility function parameters}
+
+\paragraph{Stone-Geary specification}
+
+% Not what is in the code?
+We set basic need in housing $q_0 = 4m^2$ to reflect the very minimum size of informal units from \citet{Rice2023RentingAfrica}. Then, we set the income elasticity of housing expenditure $1-\alpha=0.25$ following \citet{Finlay2022HousingSorting}, who estimate this term for more general non-homothetic preferences.
+
+\paragraph{Amenity index}
+
+As for the estimation of the amenity index $A(x)$, we leverage property price data for formal private housing and information on exogenous amenities from the City of Cape Town, defined at the sub-place (census tract) level $s$. Let us define the observed amenity index as:
+\begin{equation*}
+    A_s = \prod\limits_{n}(a_{n,s})^{\vartheta_n}\epsilon_{A,s}
+\end{equation*}
+where $a_{n,s}$ are exogenous amenity dummies from the data, $\vartheta_n$ are their respective elasticities, and $\epsilon_{A,s}$ is an error term.
+
+Taking housing rents from the data and inverting equation (\ref{eq:utility}) for formal private dwellers (essentially the two richest income groups, i.e. income groups 3 and 4) also yields the amenity index $A_s$ as a function of the dominant income group's utility level $u_{i(s)}$. We can therefore estimate the log-linearization of the above equation for discrete values of $u_{i(s)}$. We pick the value set that minimizes the error $\epsilon_{A,s}$, and use the estimated $\vartheta_n$ to recover the predicted value of $A(x)=\prod\limits_{n}(a_{n,x})^{\vartheta_n}$ at the grid cell level. Table \ref{tab_reg_amenities} shows the corresponding regression results.
+
+\begin{table}[htbp!]
+\centering
+\caption{Results of the log regression of predicted amenity index on exogenous amenities}
+\label{tab_reg_amenities}
+\begin{tabular}{ll}
+\cline{1-2}
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{$log(A_s)$}\\
+\cline{1-2}
+\multicolumn{1}{l}{Prox. to district park ($<$1km)}&
+\multicolumn{1}{c}{-0.051}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.043)}\\
+\multicolumn{1}{l}{Prox. to ocean ($<$2km)}&
+\multicolumn{1}{c}{0.063}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.041)}\\
+\multicolumn{1}{l}{Prox. to ocean ($<$4km)}&
+\multicolumn{1}{c}{0.011}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.046)}\\
+\multicolumn{1}{l}{Prox. to urban heritage site ($<$2km)}&
+\multicolumn{1}{c}{0.185}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.052)}\\
+\multicolumn{1}{l}{Within airport noise cone}&
+\multicolumn{1}{c}{-0.007}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.067)}\\
+\multicolumn{1}{l}{Slope (between 1 and 5\%)}&
+\multicolumn{1}{c}{0.144}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.034)}\\
+\multicolumn{1}{l}{Slope ($>$5\%)}&
+\multicolumn{1}{c}{0.121}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.049)}\\
+\multicolumn{1}{l}{Prox. to biosphere reserve ($<$2km)}&
+\multicolumn{1}{c}{0.098}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.038)}\\
+\multicolumn{1}{l}{Prox. to train station ($<$2km)}&
+\multicolumn{1}{c}{0.039}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.035)}\\
+\multicolumn{1}{l}{Constant}&
+\multicolumn{1}{c}{-0.458}\\
+\multicolumn{1}{c}{}&
+\multicolumn{1}{c}{(0.038)}\\
+\cline{1-2}
+\multicolumn{1}{l}{Obs.}&
+\multicolumn{1}{c}{307}\\
+\multicolumn{1}{l}{R²}&
+\multicolumn{1}{c}{0.160}\\
+\multicolumn{1}{l}{F-stat}&
+\multicolumn{1}{c}{6.268}\\
+\multicolumn{1}{l}{D.f.}&
+\multicolumn{1}{c}{297}\\
+\cline{1-2}
+\end{tabular}
+\fnote{\centering\scriptsize{\textit{Note:} OLS regression results. Standard errors in parentheses.}}
+\end{table}
+
+% R² is bad, need to improve!!!
+
+\paragraph{Informal disamenity index}
+
+The disutility parameters for informal housing types ($B_h$, $h=IS,IB$) are recovered as benchmark model residuals to match the total population living in informal housing units that is observed in the data.\footnote{This is akin to recovering amenity terms from model inversion in QSMs.} We find $B_{IS}=0.78$ and $B_{IB}=0.80$.
+
+Table \ref{tab_int_estim} summarizes the values and identification sources of all estimated parameters.
+
+\begin{table}[h]
+\begin{center}
+\caption{Estimated parameters}
+\label{tab_int_estim}
+\begin{tabular}{lll}
+\cline{1-3}
+\multicolumn{1}{c}{Parameter} &
+\multicolumn{1}{c}{Value} &
+\multicolumn{1}{c}{Source of identification}\\
+\cline{1-3}
+\multicolumn{1}{c}{$a$} &
+\multicolumn{1}{c}{0.758} &
+\multicolumn{1}{c}{\makecell{Predicted population according to housing\\ characteristics in the formal private sector}}\\
+\multicolumn{1}{c}{$\kappa$} &
+\multicolumn{1}{c}{0.031} &
+\multicolumn{1}{c}{\makecell{Predicted population according to housing\\ characteristics in the formal private sector}}\\
+\multicolumn{1}{c}{$\lambda$} &
+\multicolumn{1}{c}{13.96} &
+\multicolumn{1}{c}{Distribution of commuting pairs and distances}\\
+\multicolumn{1}{c}{$B_{IS}$} &
+\multicolumn{1}{c}{0.78} &
+\multicolumn{1}{c}{\makecell{Spatial distribution of informal settlements\\ (model inversion)}}\\
+\multicolumn{1}{c}{$B_{IB}$} &
+\multicolumn{1}{c}{0.80} &
+\multicolumn{1}{c}{\makecell{Spatial distribution of basic backyard structures\\ (model inversion)}}\\
+\cline{1-3}
+\end{tabular}
+\end{center}
+%\medskip{}
+{\scriptsize \textit{Note}: The table presents the exogenous parameters that are estimated based on the model predictions and input data, along with their value and the moments used to match the predictions with the data.}{\scriptsize\par}
+\end{table}
+
+\subsection{Externally calibrated parameters}
+
+Table \ref{tab_ext_calib} summarizes the values and data sources for additional model parameters that are externally calibrated.
+
+\begin{table}[h]
+\begin{center}
+\caption{Chosen parameters}
+\label{tab_ext_calib}
+\begin{tabular}{lll}
+\cline{1-3}
+\multicolumn{1}{c}{Parameter} &
+\multicolumn{1}{c}{Value} &
+\multicolumn{1}{c}{Data source}\\
+\cline{1-3}
+\multicolumn{1}{c}{$q_{FS}$} &
+\multicolumn{1}{c}{110 (m²)} &
+\multicolumn{1}{c}{HRSC Backyarding Report (2019)}\\
+\multicolumn{1}{c}{$Y$} &
+\multicolumn{1}{c}{70 (m²)} &
+\multicolumn{1}{c}{HRSC Backyarding Report (2019)}\\
+\multicolumn{1}{c}{$q_{I}$} &
+\multicolumn{1}{c}{14 (m²)} &
+\multicolumn{1}{c}{HRSC Backyarding Report (2019)}\\
+\multicolumn{1}{c}{$v_{I}$} &
+\multicolumn{1}{c}{3,000 (ZAR)} &
+\multicolumn{1}{c}{HRSC Backyarding Report (2019)}\\
+\multicolumn{1}{c}{$v_{FS}$} &
+\multicolumn{1}{c}{127,000 (ZAR)} &
+\multicolumn{1}{c}{HRSC Backyarding Report (2019)}\\
+\multicolumn{1}{c}{$\gamma$} &
+\multicolumn{1}{c}{0.27} &
+\multicolumn{1}{c}{Quantec (HH budget breakdown)}\\
+\multicolumn{1}{c}{$\rho$} &
+\multicolumn{1}{c}{0.025} &
+\multicolumn{1}{c}{\citet{Viguie2014DownscalingParis}}\\
+\multicolumn{1}{c}{$\delta$} &
+\multicolumn{1}{c}{0.043} &
+\multicolumn{1}{c}{World Development Indicator database (2016)}\\
+\multicolumn{1}{c}{$P_A$} &
+\multicolumn{1}{c}{807.2 (ZAR/m²)} &
+\multicolumn{1}{c}{Property transaction data (CoCT)}\\
+\multicolumn{1}{c}{$\beta$} &
+\multicolumn{1}{c}{0.25} &
+\multicolumn{1}{c}{\citet{Finlay2022HousingSorting}}\\
+\multicolumn{1}{c}{$q_0$} &
+\multicolumn{1}{c}{4 (m²)} &
+\multicolumn{1}{c}{\citet{Rice2023RentingAfrica}}\\
+\multicolumn{1}{c}{$q_{min}$} &
+\multicolumn{1}{c}{31.6 (m²)} &
+\multicolumn{1}{c}{Dwelling size data (CoCT)}\\
+\cline{1-3}
+\end{tabular}
+\end{center}
+%\medskip{}
+{\scriptsize \textit{Note}: The table presents the exogenous parameters that are directly taken from external sources, along with their value and their data source.}{\scriptsize\par}
+\end{table}
+
+$q_{min}$ is a legal requirement, whereas $q_{FS}$, $q_I$ and Y are estimates from the field. The fact that they are fixed values reflects the relative standardization of public housing schemes and of informal construction technologies. Although these are simplifications, we consider them as good first-order approximations.
+
+The replacement values of formal subsidized, $v_{FS}$, and informal buildings, $v_{I}$ (both in informal settlements and in the backyards of formal subsidized housing), are based on expert assessments of material costs, along with surveys of construction technologies used in the field. The share of composite good that is vulnerable to floods, $\gamma$, corresponds to the average budget share households spend on durable and semi-durable goods. These goods are not consumed immediately and are kept within the house.
+
+% Confusion between price and rent in data?
+The agricultural land price, $P_A$, corresponds to the highest decile in the property price data when selecting rural areas only. The capital depreciation rate, $\rho$, is 2.5 times higher than the one used by \citet{Viguie2014DownscalingParis} for Paris, which accounts for the overall lower construction quality in Cape Town. Finally, the interest rate, $\delta$, corresponds to the 4-year average up to the benchmark year (2011) in the World Development Indicator database, so as to smooth its volatility.
+
+% Do summary table?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% NB: Can we see remaining unmitigated damages as the cost of adaptation?
+
+\section{Simulations \label{sec:results}}
+
+In what follows, we run our benchmark model and conduct two scenario comparisons. In the first one, we compare our benchmark to a version of the model where agents do not anticipate flood risks.  In the second simulation comparison, we compare our benchmark (with perfect information on flood risks) to a version of the model where flood risks are updated to account for climate change.%Since we do not currently allow for protection investments in the model, these results should also be taken as an upper bound for the effect of climate change. We still see our simulations as a strong contribution to the existing flood damage literature, given the key local housing conditions that are featured in our approach.\footnote{We abstract from relocation frictions due to the legacy of Apartheid \citep{manysheva} as most of the population relocation we simulate occur within (rather than across) racially-dominated neighborhoods (in our case, mostly among the subpopulation self-identifying as Black African and living in the Cape Flats).} [XXXX REMOVE THE LAST SENTENCE AND THE FOOTNOTE] 
+
+%Observe households make their housing and location decisions ex ante (with or without anticipating expected damages) but before these damages occur.
+%Because damages materialize after the equilibrium is defined, ex post utility levels (i.e., after floods have materialized) do not satisfy the spatial equilibrium condition and are not unique for each income group.
+
+Observe that when households do not anticipate flood damages, equilibrium utilities are defined irrespectively of the realization of the likelihood and intensity of flood damages. This means that comparing equilibrium utilities with and without anticipation would be misleading. Instead, we compare expected damage values across simulations, both in absolute terms (to calculate aggregate economic losses) and in relative income terms (to proxy for individual welfare losses).
+
+%The comparison between the two simulations illustrates the impact of switching from a polar case where agents have no information about flood risks to another polar case where they have perfect information. \citet{Avner2019MoralWorld} and \citet{Liotta2023EfficiencyExploration} show that the latter case is equivalent to providing complete market- or -insurance.[XXXX DO WE NEED TO SAY THIS? IF SO, EXPLAIN THIS IN MORE DETAIL. WHAT INCOMPLETENESS VS COMPLETENESS? IS THIS ABOUT HETEROGENEITY OF INFORMATION ACROSS INCOME GROUPS? DEFINE SELF-INSURANCE? WHO PAYS FOR INSURANCE?] Given that we consider polar cases, our results should therefore be considered an upper bound on the impact of a policy aimed at improving information of flood risks.[XXX WE LOOK AT THE OPPOSITE DIRECTION...] We intend to more precisely calibrate agents' imperfect foresight and updating of their decisions following information shocks in future work \citep{Bakkensen2020SortingReform,Kousky2020FloodMarket,Hino2021TheValues}.[XXX UNCLEAR. UNNECESSARY? SHALL WE REMOVE THE LAST SENTENCE?]
+
+
+\subsection{The role of information}
+
+\paragraph{Aggregate damages}
+
+In Figure \ref{agg_anticip_damage_barplot}, we represent separately for each flood type the distribution of expected aggregate annual monetary damages across housing and damage types (in red for damages to structures and in blue for damages to contents) for our two simulations (in dark color for the equilibrium with anticipation, and in light color for the equilibrium without anticipation).
+
+\begin{figure}[h]
+  \centering
+  \caption{Aggregate flood damage estimates across flood types \\ with (w/) and without (w/o/) anticipation of flood risks}
+  \label{agg_anticip_damage_barplot}
+  \includegraphics[width=\textwidth,keepaspectratio]{figures/agg_anticip_damage_barplot.jpg}
+  \fnote{\scriptsize{\textit{Source:} Authors' simulations. Red is for damages to structures, blue for damages to contents, dark colors for the equilibrium with anticipation, and light colors for the equilibrium without anticipation. Dark color bars are overlaid over light color bars.}}
+\end{figure}
+
+Several comments are in order. First, damages for formal housing are consistently larger than for informal housing, although the latter is relatively more vulnerable to flooding (due to the building materials used and the locations of informal settlements in flood-prone zones). This is because the replacement cost of informal settlements and backyard structures is based on construction costs that are fairly low. Formal private housing, on the other hand, is built according to higher and more costly standards, and will typically use land more intensively. The replacement cost of formal subsidized housing structures lies somewhere in between. In addition,the poorest income group is bid away from the formal private segment in practice. The higher amount of income available for consumption in richer income groups hence explains the relative importance of content damages in this category.
+
+Second, as expected, damages are higher in the no-anticipation case than in the perfect-anticipation case. Anticipation also seems to play a relatively more important role in avoiding damages in the formal private housing sector. This is because it is the least constrained of the housing submarkets, either in terms of available locations, or given the less stringent restrictions on supply. Moreover, anticipation plays a contrasted role across flood types. This can be interpreted in terms of existing constraints: pluvial flood zones are typically more dispersed than fluvial or coastal flood zones, and are hence harder to avoid through relocation. As for coastal flood zones, they are typically more attractive, hence a higher willingness of households to stay in these locations and absorb the added expected cost, all the more so for rich households with a low marginal utility of income.
+
+Third, damages also significantly vary in magnitude across flood types. Table \ref{tab_agg_damage_info} summarizes aggregate damage estimates per flood type in our two simulations, with values converted from 2011 ZAR to 2021 USD using an inflation rate over the period of 64\% and an exchange rate of 14.78 ZAR/USD. Note that total damages are smaller than the sum of individual categories as we avoid double counts when flood zones overlap.
+
+\begin{table}[htbp!]
+\centering
+\caption{Summary table of aggregate damage estimates w/ and w/o/ anticipation}
+\label{tab_agg_damage_info}
+\begin{tabular}{lll}
+\cline{1-3}
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{Anticipation} &
+\multicolumn{1}{c}{No anticipation}\\
+\cline{1-3}
+\multicolumn{1}{l}{Fluvial} &
+\multicolumn{1}{c}{280M (ZAR, 2011)} &
+\multicolumn{1}{c}{570M (ZAR, 2011)}\\
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{\textit{31M (USD, 2021)}} &
+\multicolumn{1}{c}{\textit{63M (USD, 2021)}}\\
+\multicolumn{1}{l}{Pluvial} &
+\multicolumn{1}{c}{145M (ZAR, 2011)} &
+\multicolumn{1}{c}{165M (ZAR, 2011)}\\
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{\textit{16M (USD, 2021)}} &
+\multicolumn{1}{c}{\textit{18M (USD, 2021)}}\\
+\multicolumn{1}{l}{Coastal} &
+\multicolumn{1}{c}{50M (ZAR, 2011)} &
+\multicolumn{1}{c}{75M (ZAR, 2011)}\\
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{\textit{6M (USD, 2021)}} &
+\multicolumn{1}{c}{\textit{8M (USD, 2021)}}\\
+\cline{1-3}
+\multicolumn{1}{l}{Total} &
+\multicolumn{1}{c}{448M (ZAR, 2011)} &
+\multicolumn{1}{c}{750M (ZAR, 2011)}\\
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{\textit{49M (USD, 2021)}} &
+\multicolumn{1}{c}{\textit{83M (USD, 2021)}}\\
+\cline{1-3}
+\end{tabular}
+\fnote{\scriptsize{\textit{Source:} Authors' simulations. Each row gives the expected annual damages estimated for each flood type, with and without flood risk anticipation from agents in the model. The total estimates only account for the most severe flood type when flood zones overlap, so as to avoid double counting. South African rands (ZAR, 2011) are converted to US dollars (USD, 2021) using an inflation rate of 64\% from 2011 to 2021 and an exchange rate of 14.78 ZAR/USD in 2021.}}
+\end{table}
+
+For comparison, \citet{Gonzales2023LivingAfrica} estimate aggregate annual flood damages in Cape Town at around 16M USD (at 2021 values). The key difference between our results lies in the way the replacement cost of vulnerable assets is determined. In their paper, a standard capital building stock per unit of land is calibrated and yields flood damages based on depth-damage conversions. In our paper, the capital used in buildings is an endogenous outcome that can quickly rise in attractive areas (where land is used intensively), and we also take housing contents into consideration.\footnote{In fact, our total estimate for the capital used in the whole city is in line with that of the authors. The reason we find higher damages therefore boils down to a composition effect, as we are able to simulate how capital gets distributed across space, notably in flood-prone zones.}
+
+At any rate, our paper shows that material flood damages are high (potentially higher than previously thought), and that information is a key policy lever to reduce them, with a reduction potential of up to 41\% when looking at the difference between total damages in our two simulations.
+
+\paragraph{Absolute damage distribution}
+
+Figure \ref{spatial_flood_damage_anticip_compar} shows how flood damages spread out across the city in the no-anticipation case, and the absolute changes in damages compared with the benchmark anticipation case. The largest damage values are concentrated in populated areas along rivers near the city center and to the north, where large job centers are located. These are also areas where damage values change the most compared with the benchmark case, suggesting an important adaptation of households following an information shock.
+
+\begin{figure}[h]
+  \centering
+  \caption{Spatial absolute flood damage estimates w/ and w/o/ anticipation (ZAR, 2011)}
+  \label{spatial_flood_damage_anticip_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_flood_damage_anticip_compar.jpg}
+  \fnote{\scriptsize{\textit{Note:} The map on the left shows the values under no flood risk anticipation. The map on the right shows the change (in absolute terms) it represents compared with the benchmark (perfect anticipation).}}
+\end{figure}
+
+% Hard to follow without population map per housing type and income group?
+In relative damage terms (calculated as an equivalent share of expected income net of commuting costs, henceforth ``net income''), values would appear to be higher in the north than in the city center, and even more to the east, where poorer households live. As households of different types move across locations in the two simulations, it is not possible to properly estimate the changes in relative damages at the grid-cell level. Instead, we now turn to their aggregate distribution per income group to proxy how flood damages translate into welfare losses.
+
+%First, since the no-anticipation simulation is not at the equilibrium ex post, rents do not adapt with flood damages and it is therefore not possible to assess how aggregate utilities evolve between the two polar cases.
+
+\paragraph{Relative damage distribution}
+% DO IT WITH ALL FLOOD RISKS
+
+% ALSO NEED AGGREGATE BREAKDOWN ACROSS HTYPES AND INCGRPS?
+
+% Still a composition effect with job centers and commuting?
+Figure \ref{fluvial_flood_damage_distrib_anticip_all} represents the aggregate distribution of relative flood damages per income group. Since there is a high mass of households who do not live in flood-prone areas, the graphs only consider the subpopulation living in areas with a positive risk of floods. In the interest of space, we only show results for fluvial flood risks (since they are the most impactful in households' adaptive behavior).\footnote{Other results are available upon request.}
+
+
+%[XXX IN THE FIGURE, SINCE WE DO NOT HAVE A DECOMPOSITION, SHALL WE SAY ''equivalent share'' INSTEAD OF ''share''?]
+% YES BUT WILL DO LATER
+
+\begin{figure}[h]
+  \centering
+  \caption{Relative fluvial flood damage distribution by income group w/ and w/o/ anticipation}
+  \label{fluvial_flood_damage_distrib_anticip_all}
+  \includegraphics[width=1.05\textwidth,keepaspectratio]{figures/fluvial_flood_damage_distrib_anticip_all.jpg}
+  %\fnote{\scriptsize{\textit{Source:} Authors' simulations.}}
+  \fnote{\scriptsize{\textit{Source:} Authors' simulations. Each panel shows the distribution of expected fluvial flood damages across the population as a share of equivalent income net of commuting costs, separately for each income group. Blue bars stand for simulation results with flood risk anticipation, and red bars for simulation results without flood risk anticipation.}}
+\end{figure}
+
+We see that richer households are less likely to live in flood-prone zones, even in the no-anticipation case. This is because these zones typically are low-amenity areas located far from job centers. Interestingly, conditional on flood exposure, the tail of relative damage distributions does not necessarily become thinner as we consider richer households, even in the anticipation case. This is because, as marginal utility decreases with income, richer households become comparatively less sensitive to flood damages.
+
+As a side note, the long tail of relative damage values for the poorest income group (as seen on the horizontal axis) does not only reflect their low income levels, but also to the fact that replacement costs of formal subsidized housing are very high (compared with informal housing). In the model, we make the assumption that public housing providers would cover extreme destruction costs in case they become unaffordable to the beneficiaries.
+
+%In cases where formal subsidized housing becomes unsustainable (or simply less valuable than informal options), we make the assumption that the government would have to bail public housing beneficiaries out.[XXX CONTROVERSIAL STATEMENT. THERE IS A DISCUSSION THAT SUBSIDIZED HOUSING IS WORTH LESS THAN INFORMAL OPTIONS. BUT THIS DISCUSSION DOES NOT HOLD IF ONE CONSIDERS FREE MOBILITY AS IN OUR MODEL. I THINK WE ARE BETTER OFF AVOIDING THE DISCUSSION]
+
+To visualize more clearly the adaptation response, Table \ref{tab_rel_damage_info} summarizes average relative damage estimates per income group. The damage reduction generated by the information shock is equivalent to more than 4\% of net income for 20\% of the total population initially exposed to flood risks. This is thanks to households relocating to areas with lower flood risks (potentially leaving flood-prone zones entirely) and readjustments in the housing supply.
+%the result of an adaptive behavior on both the extensive (households moving to areas with lower flood risks, potentially leaving flood-prone zones entirely) and the intensive (households trading off goods and housing consumption) margins.
+
+% Would be more logical to have same benchmark population and include zeros in share calculation upon information shock
+
+%[XXX IN TABLE 6: INCOME OR INCOME EQUIVALENT]
+\begin{table}[htbp!]
+\centering
+\caption{Summary table of relative damage estimates w/ and w/o/ anticipation}
+\label{tab_rel_damage_info}
+\begin{tabular}{lll}
+\cline{1-3}
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{Anticipation} &
+\multicolumn{1}{c}{No anticipation}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 1}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{3.37\%} &
+\multicolumn{1}{c}{9.83\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{87,582} &
+\multicolumn{1}{c}{104,723}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{22\%} &
+\multicolumn{1}{c}{26\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. gain}} &
+\multicolumn{1}{c}{\textit{+7.01\%}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 2}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.60\%} &
+\multicolumn{1}{c}{2.57\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{30,363} &
+\multicolumn{1}{c}{32,789}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{18\%} &
+\multicolumn{1}{c}{19\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. gain}} &
+\multicolumn{1}{c}{\textit{+2.01\%}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 3}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{1.79\%} &
+\multicolumn{1}{c}{3.08\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{36,593} &
+\multicolumn{1}{c}{38,620}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{12\%} &
+\multicolumn{1}{c}{13\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. gain}} &
+\multicolumn{1}{c}{\textit{+1.38\%}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 4}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.76\%} &
+\multicolumn{1}{c}{1.59\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{21,192} &
+\multicolumn{1}{c}{22,624}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{13\%} &
+\multicolumn{1}{c}{14\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. gain}} &
+\multicolumn{1}{c}{\textit{+0.88\%}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{All}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{2.25\%} &
+\multicolumn{1}{c}{6.39\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{175,730} &
+\multicolumn{1}{c}{198,656}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{17\%} &
+\multicolumn{1}{c}{19\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. gain}} &
+\multicolumn{1}{c}{\textit{+4.40\%}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}}\\
+\cline{1-3}
+\end{tabular}
+\fnote{\scriptsize{\textit{Source:} Authors' simulations. Each panel gives, separately for each income group, expected flood damages as a share of equivalent net income, the corresponding exposed population and the group share it represents, across simulations with and without flood risk anticipation. An additional row gives the income equivalent gain obtained from damage reduction when introducing anticipation.}}
+\end{table}
+
+Looking at heterogeneity by income group, we find that the poorest income group makes up roughly half of the total exposed population. Households in this group are also more likely to live in flood-prone areas and face the largest expected damages relative to their net income. They therefore tend to gain the most from having information, with total income equivalent gains rising to 7\% for this group. As we saw, this is in spite of their choice set being more constrained. This leaves room for even further gains, for instance under more accommodating housing policies.
+
+Flood damages and policy responses therefore appear to be substantive, not only in absolute but also in relative terms, even though the household and housing types that are the most affected are not the same for absolute or relative damages. We now give more details on how adaptation takes place in practice.
+
+% Title?
+\paragraph{Population relocation}
+
+Figure \ref{spatial_pop_distrib_anticip_compar} shows the spatial population distribution in the non-anticipation case, and the corresponding changes (in absolute terms) compared with the benchmark anticipation case. As already mentioned, the population density is highest in informal settlement areas in the east (which exist alongside formal private housing units) and where public housing (hence informal backyard) units tend to also be located. Interestingly, these are the areas where there appears to be the most moves between the two simulations: poor households appear to be relatively mobile, even though they do not seem to move far from their original locations.
+
+\begin{figure}[h]
+  \centering
+  \caption{Spatial population distribution w/ and w/o/ anticipation}
+  \label{spatial_pop_distrib_anticip_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_pop_distrib_anticip_compar.jpg}
+  \fnote{\scriptsize{\textit{Note:} The map on the left shows the values under no flood risk anticipation. The map on the right shows the change (in absolute terms) it represents compared with the benchmark (perfect anticipation).}}
+\end{figure}
+
+\paragraph{Changes in rents}
+% What about inertia?
+
+Figure \ref{spatial_rent_anticip_compar} shows spatial changes in rents (in absolute terms) across the three endogenous housing submarkets in the model. As could be expected, rents generally increase with population as both variables capture the willingness to pay of households across the two simulations. Interestingly, they also change in places where there are no strong population changes, and even more so where we expect relatively poor households to live. This suggests that adaptation also occurs with households demanding lower rents to be compensated for the cost of living in flood-prone zones (or willing to pay more not to be bid away from safe places). This effect is stronger for vulnerable populations who are more sensitive to changes in income. Incidentally, falling rents can also reflect a shrinking housing supply that constrains households to consume less housing. This is the case in central valuable areas where flood damages are found to decrease.
+
+% Comment across htype? NOT THE RIGHT FIGURES?
+
+\begin{figure}[h]
+  \centering
+  \caption{Absolute change in spatial rent (rands/m²) per housing type \\ in the no-anticipation case (compared with perfect anticipation)}
+  \label{spatial_rent_anticip_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_rent_anticip_compar.jpg}
+  %\fnote{\scriptsize{\textit{Source:} Authors' simulations.}}
+    \fnote{\scriptsize{\textit{Note:} Each map represents by how many rands/m² the market rent would increase (in red) or decrease (in blue) in our simulation without flood risk anticipation (compared with perfect anticipation), separately for each housing type.}}
+\end{figure}
+
+% Effect of dwelling size?
+
+% Poor households are more reactive overall but (1) is it effective? (2) are they relatively more reactive on the intensive vs. extensive margin (compared with rich households)?
+
+All in all, poor households seem to be reactive to the information shock, with a relocation response that allows them to reduce their exposure to flood risks, and a market response that allows them to be partly compensated through changes in rents when they are able or willing to move away.
+
+%XXX IS THE TERM ''response'' THE SAME IN THE TWO PARTS OF THE SENTENCE? HOW MUCH STEMS FROM INDIVIDUAL CHOICES AND HOW MUCH STEMS FROM CHANGING MARKET CONDITIONS (THE SUM OF INDIVIDUAL BIDDING THAT DEFINES RENTS FOR INSTANCE)] %Let us now see what kind of behavior they adopt when it comes to climate change.
+
+We now turn to our simulations of climate change adaptation.
+
+% MAYBE need to add a paragraph on this insurance thing?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This is too anti-climatic, what to do?? FOCUS ON SIZE OF POPULATION!!!!
+\subsection{Climate change}
+
+% COULD DO REAL WF STATEMENT BUT RENTS ADAPT TOO WELL?
+
+\paragraph{Aggregate damages}
+
+As in the previous comparison, we start by representing in Figure \ref{flood_damage_barplot_cchange_compar} aggregate damages per flood type across our simulations, this time with and without climate change (but with flood risk anticipation in both instances). The largest change now occurs for pluvial flood risks, and not fluvial flood risks. The explanation is the same as before: since pluvial flood zones are more spread out, increased risks in these zones are harder to avoid. Here again, coastal flood zones fall in between as they tend to be high-amenity areas where (rich) households prefer to absorb added costs rather than changing location. Otherwise, the pattern is similar to the previous simulation comparison, with substantial increases in flood damages when introducing climate change.
+
+\begin{figure}[h]
+  \centering
+  \caption{Aggregate flood damage estimates across flood types w/ and w/o/ climate change}
+  \label{flood_damage_barplot_cchange_compar}
+  \includegraphics[width=\textwidth,keepaspectratio]{figures/flood_damage_barplot_cchange_compar.jpg}
+  %\fnote{\scriptsize{\textit{Source:} Authors' simulations.}}
+  \fnote{\scriptsize{\textit{Source:} Authors' simulations. Red is for damages to structures, blue for damages to contents, dark colors for the equilibrium without climate change, and light colors for the equilibrium with climate change. Dark color bars are overlaid over light color bars.}}
+\end{figure}
+
+We do not reproduce here the aggregate damage estimate table whose primary function was to compare our results with those of \citet{Gonzales2023LivingAfrica}, who do not consider climate change in their analysis.
+
+\paragraph{Absolute damage distribution}
+
+Figure \ref{spatial_flood_damage_cchange_compar} shows the spatial distribution of absolute damages in our benchmark case and their increase when taking climate change into account. We see that the change across scenarios is more widely spread (but also smaller per unit of land) than in the previous comparison (as pluvial flood risks are more spread out, but also less severe than fluvial ones).
+
+\begin{figure}[h]
+  \centering
+  \caption{Spatial absolute flood damage estimates w/ and w/o/ climate change (ZAR, 2011)}
+  \label{spatial_flood_damage_cchange_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_flood_damage_cchange_compar.jpg}
+  \fnote{\scriptsize{\textit{Note:} The map on the left shows the values at the benchmark (perfect anticipation). The map on the right shows the change (in absolute terms) when considering climate change.}}
+\end{figure}
+
+
+\paragraph{Relative damage distribution}
+
+%Contrary to the previous comparison, both scenarios are now equilibrium outcomes (ex post flood damages).[XXX I DON'T UNDERSTAND THE PREVIOUS SENTENCE] We can therefore directly compare the utility levels [XXX IS THIS AN OLD PARAGRAPH TO BE REMOVED?] of each income group (assuming cardinal utilities) to assess the welfare impacts of climate change in the model. We find very marginal (negative) effects: the poorest income group is almost not affected, the second poorest is 0.07\% worse off, and the two richest are 0.05\% worse off. We argue that this is mostly due to an effective adaptation of households with respect to fluvial flood risks, and lower pluvial flood risks in comparison.[XXX REMOVE THE PARAGRAPH?]
+
+%Note that the above outcomes are for a long-term static equilibrium where the housing market has completely absorbed the effect of climate change, and where exposed and non-exposed households are indifferent conditional on their income group. This says nothing of the adjustment in a dynamic setting.
+
+The relative damage distribution per income group is shown in Figure \ref{pluvial_flood_damage_distrib_cchange_all} for pluvial flood risks, since they are now the most impactful flood type across the two scenarios. Compared with fluvial flood damages shown in the previous section, there are now more exposed households, and the distribution tails are typically thinner and shorter. As expected, we see exposure shifting from low-damage brackets to high-damage brackets when introducing climate change. 
+
+\begin{figure}[h]
+  \centering
+  \caption{Relative pluvial flood damage distribution by income group under climate change}
+  \label{pluvial_flood_damage_distrib_cchange_all}
+  \includegraphics[width=1.05\textwidth,keepaspectratio]{figures/pluvial_flood_damage_distrib_cchange_all.jpg}
+  %\fnote{\scriptsize{\textit{Source:} Authors' simulations.}}
+  \fnote{\scriptsize{\textit{Source:} Authors' simulations. Each panel shows the distribution of expected pluvial flood damages across the population as a share of equivalent income net of commuting costs, separately for each income group. Blue bars stand for simulation results with climate change, and red bars for simulation results without climate change.}}
+\end{figure}
+
+Table \ref{tab_rel_damage_cchange} summarizes the results. As before, the poorest income group is the most affected, and this time tends to lose the most from the change. Overall, we estimate the relative damages from climate change to roughly 0.3\% of the equivalent net income for 90\% of the total population. Assuming the same exposed population benchmark as in the previous comparison, this would correspond to a loss of 1.7\%, which is less important in absolute terms but not negligible.
+
+\begin{table}[htbp!]
+\centering
+\caption{Summary table of relative damage w/ and w/o/ climate change}
+\label{tab_rel_damage_cchange}
+\begin{tabular}{lll}
+\cline{1-3}
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{Business as usual} &
+\multicolumn{1}{c}{Climate change}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 1}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.67\%} &
+\multicolumn{1}{c}{1.34\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{366,265} &
+\multicolumn{1}{c}{364,492}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{92\%} &
+\multicolumn{1}{c}{92\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. loss}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}} &
+\multicolumn{1}{c}{\textit{-0.67\%}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 2}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.12\%} &
+\multicolumn{1}{c}{0.23\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{166,655} &
+\multicolumn{1}{c}{166,511}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{97\%} &
+\multicolumn{1}{c}{97\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. loss}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}} &
+\multicolumn{1}{c}{\textit{-0.12\%}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 3}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.10\%} &
+\multicolumn{1}{c}{0.20\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{270,802} &
+\multicolumn{1}{c}{270,786}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{91\%} &
+\multicolumn{1}{c}{91\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. loss}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}} &
+\multicolumn{1}{c}{\textit{-0.10\%}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{Inc. group 4}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.07\%} &
+\multicolumn{1}{c}{0.13\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{128,747} &
+\multicolumn{1}{c}{128,642}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{79\%} &
+\multicolumn{1}{c}{79\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. loss}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}} &
+\multicolumn{1}{c}{\textit{-0.07\%}}\\
+\cline{1-3}
+\multicolumn{1}{l}{\textbf{All}} &
+\multicolumn{1}{c}{} &
+\multicolumn{1}{c}{}\\
+\multicolumn{1}{r}{$\quad$ Inc. equiv. damages} &
+\multicolumn{1}{c}{0.32\%} &
+\multicolumn{1}{c}{0.64\%}\\
+\multicolumn{1}{r}{$\quad$ Exposed pop.} &
+\multicolumn{1}{c}{932,469} &
+\multicolumn{1}{c}{930,431}\\
+\multicolumn{1}{r}{$\quad$ Group share} &
+\multicolumn{1}{c}{0.91\%} &
+\multicolumn{1}{c}{0.90\%}\\
+\multicolumn{1}{r}{$\quad$ \textit{Inc. equiv. loss}} &
+\multicolumn{1}{c}{\cellcolor{gray!25}} &
+\multicolumn{1}{c}{\textit{-0.32\%}}\\
+\cline{1-3}
+\end{tabular}
+\fnote{\scriptsize{\textit{Source:} Authors' simulations. Each panel gives, separately for each income group, expected flood damages as a share of equivalent net income, the corresponding exposed population and the group share it represents, across simulations without and with added flood risks from climate change. An additional row gives the income equivalent loss obtained from damage increase when introducing climate change.}}
+\end{table}
+
+Households therefore appear to be less able or willing to adapt to the consequences of climate change regarding pluvial, as opposed to fluvial flood risks. Let us now turn to population relocation to assess spatial adaptation strategies.
+
+\paragraph{Population relocation}
+
+Figure \ref{spatial_pop_distrib_cchange_compar} shows the spatial population distribution at the benchmark, and how it evolves following the climate change shock. The pattern is similar to that of the first simulation comparison as households are avoiding risks in fluvial flood zones.
+
+\begin{figure}[h]
+  \centering
+  \caption{Spatial population distribution w/ and w/o/ climate change}
+  \label{spatial_pop_distrib_cchange_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_pop_distrib_cchange_compar.jpg}
+  \fnote{\scriptsize{\textit{Note:} The map on the left shows the values at the benchmark (perfect anticipation). The map on the right shows the change (in absolute terms) when considering climate change.}}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \caption{Absolute change in spatial rent (rands/m²) per housing type \\ in the climate change case (compared with no climate change)}
+  \label{spatial_rent_cchange_compar}
+  \includegraphics[width=1.1\textwidth,keepaspectratio]{figures/spatial_rent_cchange_compar.jpg}
+  %\fnote{\scriptsize{\textit{Source:} Authors' simulations.}}
+    \fnote{\scriptsize{\textit{Note:} Each map represents by how many rands/m² the market rent would increase (in red) or decrease (in blue) in our simulation with climate change (compared with no climate change), separately for each housing type.}}
+\end{figure}
+
+
+\paragraph{Changes in rents}
+
+% COULD DO REAL WF STATEMENT BUT RENTS ADAPT TOO WELL?
+% Talk about income vs. substitution effect?
+
+Figure \ref{spatial_rent_cchange_compar} represents the spatial changes in rents across the three housing submarkets. In this case as well, there seems to be adjustments even when households do not change locations, reflecting their lower willingness to pay for exposed housing. Contrary to the previous simulation comparison, however, rents mostly fall across the city, with very few rent increases in equilibrium. It is also worth noting that most of the changes are now concentrated in informal housing, which is relatively more vulnerable to pluvial floods due to the absence of drainage systems that we incorporated in risk assessments for the formal housing segment (see Section \ref{sec:data}).
+
+All in all, households seem to be responsive to the increase in flood risks due to climate change, but such adaptation at the individual level hides substantial economic damages at the aggregate level.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Discussion and extensions [WORK IN PROGRESS]}
+\label{sec-discuss}
+
+The previous section made the case for public flood awareness policies for damage reduction. However, to be more realistic, our simulations would have to account for the level of (imperfect) private information at the disposal of poor households especially, and how costly it is for them to adapt their beliefs and behavior. 
+
+Besides, it remains to be seen how insurance policies or protective investments may allow them to mitigate the non-negligible share of damages that remains even under perfect information. In doing so, whether private or public efforts should be encouraged depends on the importance of moral hazard, the size of externalities, and the relative cost efficiency of service provision.
+
+To complete this paper, we therefore aim at answering these questions by further augmenting the model and making use of new survey evidence from the City of Cape Town. Our final goal is to provide concrete policy recommendations that may extend to disaster risk management more generally.
+
+%Considering the production side of the economy, it may be welfare-improving to invest in flood protection. In fact, the type of protection needed differs across flood types. Localized flood risks such as coastal or fluvial risks may be reduced by public investments (e.g., dikes, dams) or urban planning, with the objective of protecting certain neighborhoods. More widespread pluvial flood risks require more global investments in drainage systems and construction technology. Our model would allow to test the impact and feasibility of such schemes through land value capture. In fact, as poor households are already responding with private initiatives, especially in informal settlements (e.g., sandbags, barriers, pumps), local governments could potentially encourage the most effective actions, and our model could also help with their identification. The model might also be useful to study the complementarity or substitutability of private and public protection investments. These are main extensions we are considering for future work. [XXXX JE ME DEMANDE SI ON NE DEVRAIT PAS INDIQUER LE TITRE D'UN DERNIER SECTION ''Protective investents - TBC'' DANS L'OUTLINE POUR MONTRER QU'ON VA TRAVAILLER DESSUS D'ICI LA CONFERENCE.]
+
+% DO POLICY REKEVANCE
+
+\section{Conclusion \label{sec:conclusion}}
+
+In this paper, we presented a realistic urban simulation model for low- and middle-income countries, featuring income heterogeneity and informal housing. The key novelty is that we introduced housing damages from three types of flood risks (coastal, pluvial, and fluvial). We estimated the model in the context of the city of Cape Town, South Africa, one of the most exposed cities to pluvial and fluvial flooding in Sub-Saharan Africa. We then simulated the adaptation strategies of households (through relocation and the trade-off between housing and non-housing consumption) following an information shock under current flood risks. We also simulated adaptation strategies following revised flood risks stemming from climate change.
+
+We found that information is effective in helping poor households reduce the adverse consequences of flood risks, notably in the face of climate change notably, in spite of their restricted access to formal housing. In the process, we show that distinguishing between flood types is instrumental in understanding households' responses as households are differently affected by these risks and therefore respond differently. We aim at extending our framework to cover insurance and protective investments, and suggest the most efficient policy approach to disaster risk management.
+
+%However, their adaptation strategies may aggravate spatial inequalities and result in an overall deterioration of housing conditions. 
+
+
+
+% SCENARIOS FOR POP AND INFORMAL
+
+% LAND VALUE CAPTURE \citep{Viguie2014UrbanPotentials}
+
+% REDISTRIBUTION AND WELFARE?
+% RISK AVERSION AND MYOPIA?
+
+%%%
+
+\clearpage
+
+\bibliographystyle{abbrvnat}  % or abbrvnat for natbib support
+%\bibliographystyle{authordate1}
+\bibliography{refs.bib}
+
+
+\end{document}

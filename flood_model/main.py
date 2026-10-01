@@ -41,7 +41,7 @@ config, floods, data, solver, run = _modules
 
 # Flood options (0/1)
 options = dict(config.OPTIONS)
-# AF: households internalise expected flood damages
+# AF: agents internalise expected flood damages
 options["agents_anticipate_floods"] = 1
 # CC: fluvial/pluvial probabilities x param["risk_increase"], coastal
 # floods from sea-level-rise maps
@@ -49,24 +49,18 @@ options["climate_change"] = 0
 # CO: coastal floods (DELTARES) on top of fluvial and pluvial floods
 options["coastal"] = 1
 # RM: perceived damages = param["risk_internaliz"] x actual damages
-options["risk_misperc"] = 0
+options["risk_misperc"] = 1
 # SP: settlers may buy sandbag protection (floods <= 0.15m)
-options["self_protec"] = 0
-# RA: households maximise CRRA expected utility over flood states (bid
-# rents, protection, backyard supply); about 1 min instead of 2 s
-options["risk_avers"] = 0
+options["self_protec"] = 1
 
 # Parameters (any entry of config.PARAM can be overridden here)
 param = dict(config.PARAM)
 param["risk_internaliz"] = 0.36
 param["sandbag_course_cost"] = 0      # config default: 250
-param["CRRA"] = 0.2772
 param["risk_increase"] = 2
 param["max_iter"] = 1000
-# Solver returns the iterate with the lowest error; optional early stop
-# after `patience` non-improving iterations with flipping errors
+# Solver returns the iterate with the lowest error (False: last iterate)
 param["return_best"] = True
-param["patience"] = None
 
 # Suffix for output file names, to keep parameter variants apart
 # (names only encode options), e.g. "_SB0" for a zero sandbag cost
@@ -82,7 +76,8 @@ damages = floods.compute_damages(inputs, options, p)
 
 # %% Equilibrium
 
-outputs, converged = solver.solve(p, inputs, damages, options)
+markets = solver.Markets(p, inputs, damages, options)
+outputs, converged = solver.solve(markets)
 
 # %% Quick look
 
@@ -95,6 +90,15 @@ for t, label in enumerate(["formal", "backyard", "informal", "RDP"]):
           np.round(np.nansum(hh[t], 1)).astype(int))
 print(f"Protected settler households: {np.nansum(hh[2][:, protected]):,.0f}"
       f" ({protected.sum()} protected cells)")
+# Same among settlers exposed to floods only: cells with positive actual
+# expected damage to settlement structures or contents
+exposed = ((damages["expected"]["structure_informal_settlements"] > 0)
+           | (damages["expected"]["contents_informal"] > 0))
+settlers_exposed = np.nansum(hh[2][:, exposed])
+protected_exposed = np.nansum(hh[2][:, exposed & protected])
+print(f"Protected share of exposed settlers: "
+      f"{100 * protected_exposed / max(settlers_exposed, 1):.1f}% "
+      f"({protected_exposed:,.0f} of {settlers_exposed:,.0f} households)")
 
 # Flood type with the highest expected damage (damages["flood_type"] holds
 # one mask per damage series, also for state damages and protection)

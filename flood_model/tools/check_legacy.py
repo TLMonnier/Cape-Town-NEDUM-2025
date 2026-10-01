@@ -7,14 +7,15 @@ no coastal floods, flood types combined by the max of expected damages (legacy)
 instead of per return period, and the last iterate returned instead of the
 best one. The legacy code also gets config.TOTAL_FORMAL. With the default
 fixes (see CLAUDE.md), both codes then agree exactly (to machine precision
-under RM). Risk aversion (RA1) was reformulated and cannot be compared.
+under RM). The legacy code runs with risk_avers = 0: risk aversion lives in
+../flood_model_CRRA and has no legacy equivalent.
 "conv" is not a flood_model fix: it applies the damping the legacy solver
 intended (worse convergence), for experiments only.
 
 Usage (from any directory):
-    conda run -n nedum-2025 python flood_model/tools/check_legacy.py 10010
-    ... check_legacy.py 11010 --fixes pluvial      # subset of fixes
-CONFIG digits are the AF, CC, RM, SP, RA options.
+    conda run -n nedum-2025 python flood_model/tools/check_legacy.py 1001
+    ... check_legacy.py 1101 --fixes pluvial      # subset of fixes
+CONFIG digits are the AF, CC, RM, SP options.
 """
 import argparse
 import copy
@@ -43,10 +44,10 @@ import run  # noqa: E402
 def legacy_combine(by_type, proba):
     """Legacy combination of flood types: max of expected damages, and max
     of state damages, across types."""
-    states = [floods._states(d) for d in by_type]
-    expected = [floods._expected(proba, s) for s in states]
-    return (floods._max_over_types(states)[0],
-            floods._max_over_types(expected)[0],
+    states = [floods.state_damages(d) for d in by_type]
+    expected = [floods.expected_damage(proba, s) for s in states]
+    return (floods.max_over_types(states)[0],
+            floods.max_over_types(expected)[0],
             np.zeros(by_type[0].shape, dtype=np.int8))
 
 
@@ -83,10 +84,10 @@ def _run_legacy(options_new, fixes):
     options = inpprm.import_options()
     options.update(urban_edge=1, informal_land_constrained=1,
                    new_RDP_housing=0, amenity_upgrading=0, poor_subsidies=0,
-                   eviction=0, incremental_housing=0, **options_new)
+                   eviction=0, incremental_housing=0, risk_avers=0,
+                   **options_new)
     param = inpprm.import_param(precalc, options)
-    param.update(risk_internaliz=0.36, sandbag_course_cost=250, CRRA=0.2772,
-                 max_iter=200)
+    param.update(risk_internaliz=0.36, sandbag_course_cost=250, max_iter=200)
 
     # Same 2011 formal housing total as flood_model
     data_repl = [("    total_formal = 821028 - total_RDP\n",
@@ -190,15 +191,15 @@ def compare(new, ref):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("config", help="AF CC RM SP RA digits, e.g. 10010")
+    parser.add_argument("config", help="AF CC RM SP digits, e.g. 1001")
     parser.add_argument("--fixes", nargs="*", default=list(FIXES[:-1]),
                         choices=FIXES)
     args = parser.parse_args()
     keys = ["agents_anticipate_floods", "climate_change", "risk_misperc",
-            "self_protec", "risk_avers"]
+            "self_protec"]
+    if len(args.config) != len(keys):
+        sys.exit("CONFIG must have 4 digits (AF CC RM SP), e.g. 1001")
     options = {k: int(c) for k, c in zip(keys, args.config)}
-    if options["risk_avers"]:
-        sys.exit("Risk aversion (RA1) was reformulated: no legacy equivalent")
 
     print(f"Legacy run with fixes {args.fixes}...")
     ref = run_legacy(options, set(args.fixes))
