@@ -32,6 +32,7 @@ for _path in (BASE, HERE):
 # solver, so that CRRAMarkets subclasses the reloaded solver.Markets)
 _modules = []
 for _name, _dir in [("config", BASE), ("floods", BASE), ("data", BASE),
+                    ("accounting", BASE),
                     ("solver", BASE), ("run", BASE), ("crra", HERE),
                     ("run_crra", HERE)]:
     _mod = sys.modules.get(_name)
@@ -57,7 +58,8 @@ options["climate_change"] = 0
 options["coastal"] = 1
 # RM: perceived damages = param["risk_internaliz"] x actual damages
 options["risk_misperc"] = 0
-# SP: settlers may buy sandbag protection (floods <= 0.15m)
+# SP: number of sandbag levels settlers can build (0 to 3), each raising
+# the floor by param["sandbag_height"] at param["sandbag_course_cost"] a year
 options["self_protec"] = 0
 
 # Parameters (any entry of config.PARAM or crra.PARAM can be overridden)
@@ -90,7 +92,7 @@ outputs, converged = solver.solve(markets)
 # %% Quick look
 
 hh = outputs["households"]           # housing type x income group x cell
-protected = np.nan_to_num(outputs["mask_self_protec"]) == 1
+protected = np.nan_to_num(outputs["mask_self_protec"]) >= 1   # any level
 print("Utility by income group:", np.round(outputs["utility"], 1))
 print("Error by income group (%):", np.round(100 * outputs["error"], 2))
 for t, label in enumerate(["formal", "backyard", "informal", "RDP"]):

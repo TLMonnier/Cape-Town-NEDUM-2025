@@ -36,8 +36,9 @@ Household choices (developers stay risk neutral and keep using ρ):
 - IB tenants and IS settlers: the bid rent ψ solves CE[z_s(ψ)] = z_h(x, u),
   replacing (7)-(8), with z_s(R) = (net_s - q_I R) / (1 + γ D̄^content_s),
   net_s = ỹ for tenants and, for settlers,
-  net_s = ỹ - (ρ + δ) v_I - D̄^struct_s v_I (- the sandbag cost under SP).
-  Under SP, settlers protect if it raises their risk-averse bid.
+  net_s = ỹ - (ρ + δ) v_I - D̄^struct_s v_I (- k c_SP with k sandbag
+  levels under SP). Under SP, settlers choose the number of levels that
+  maximises their risk-averse bid.
 - RDP owners: the backyard share μ maximises E[V(U_s)] with
   U_s = φ(z_s) (q_FS - μ Y - q0)^(1-α) A(x), replacing (10), where
   z_s = ỹ_1 - (ρ + D̄^struct_FS,s) v_FS + μ Y (R - Z_s) and
@@ -62,6 +63,9 @@ import solver  # noqa: E402
 # Parameters added to config.PARAM
 PARAM = {
     "CRRA": 0.2772,                # θ, relative risk aversion
+    # RDP owners' utility floor (flood_model solver docstring): not
+    # implemented for risk-averse owners
+    "rdp_utility_floor": False,
 }
 OUTPUT = config.ROOT / "Output" / "flood_model_CRRA"
 
@@ -96,18 +100,30 @@ class CRRAMarkets(solver.Markets):
 
     def __init__(self, p, inputs, damages, options):
         super().__init__(p, inputs, damages, options)
-        # State damages D̄_s as perceived by agents, (11, cells)
-        k = solver.perception(options, p)
+        if p["rdp_utility_floor"]:
+            raise NotImplementedError("the RDP owners' utility floor is "
+                                      "only implemented for risk-neutral "
+                                      "agents (set rdp_utility_floor False)")
+        # State damages D̄_s as perceived by agents and borne net of
+        # insurance (SI1 reimburses a share s in every state), (11, cells):
+        # factors k or k (1 - s) as in solver.Markets.dmg
         sel = self.sel
         self.proba = damages["proba"]
-        self.states = {n: k * v[:, sel] for n, v in damages["states"].items()}
-        self.states_protec = {n: k * v[:, sel]
-                              for n, v in damages["states_protec"].items()}
-        # FP households: certainty-equivalent price of the composite good,
-        # c* = 1 / CE[1 / (1 + γ D̄^content_s)], instead of 1 + γ ρ^content
+        self.states = {n: self.perceived_factor(n) * v[:, sel]
+                       for n, v in damages["states"].items()}
+        # With `level` sandbag levels (states_protec[level], level >= 1)
+        self.states_protec = {
+            level: {n: self.perceived_factor(n) * v[:, sel]
+                    for n, v in d.items()}
+            for level, d in damages["states_protec"].items()}
+        # FP households of group i: certainty-equivalent price of the
+        # composite good, c*_i = 1 / CE[1 / (1 + γ (1 - s_i) D̄^content_s)],
+        # instead of 1 + γ (1 - s_i) ρ^content, (groups, cells)
         f = p["fraction_z_dwellings"]
-        self.formal_price = 1 / self.ce_consumption(
-            1 / (1 + f * self.states["contents_formal"]))
+        self.formal_price = np.array([
+            1 / self.ce_consumption(
+                1 / (1 + f * (1 - s) * self.states["contents_formal"]))
+            for s in self.coverage])
 
     # --- Expected CRRA utility over flood states ----------------------------
 
@@ -129,22 +145,22 @@ class CRRAMarkets(solver.Markets):
     def backyard_rent(self, z):
         return self.crra_bids("backyard", z)
 
-    def informal_rent(self, z, protected):
-        return self.crra_bids("informal", z, protected)
+    def informal_rent(self, z, level):
+        return self.crra_bids("informal", z, level)
 
-    def crra_bids(self, market, z_target, protected=False):
+    def crra_bids(self, market, z_target, level=0):
         """Risk-averse bid rents (groups, cells), solving
         CE[z_s(R)] = z_target.
 
         In flood state s, the composite good is
         z_s(R) = (net_s - q R) / (1 + γ D̄^content_s), with net_s = ỹ for
-        backyard tenants, and net_s = ỹ - cost - (ρ + δ) v_I - D̄^struct_s v_I
-        in settlements (cost: sandbags if protected). Only groups with
-        access and a positive highest state-contingent bid can bid a
-        positive rent.
+        backyard tenants, and net_s = ỹ - k c_SP - (ρ + δ) v_I
+        - D̄^struct_s v_I in settlements with k = `level` sandbag levels
+        (state damages net of protection). Only groups with access and a
+        positive highest state-contingent bid can bid a positive rent.
         """
         p = self.p
-        states = self.states_protec if protected else self.states
+        states = self.states_protec[level] if level else self.states
         g, c = np.nonzero(np.repeat(~self.no_access[market][:, None],
                                     len(self.cells), 1))
         price = (1 + p["fraction_z_dwellings"]
@@ -153,7 +169,7 @@ class CRRAMarkets(solver.Markets):
         if market == "informal":
             s = p["informal_structure_value"]
             net = ((self.y[g, c]
-                    - (p["sandbag_course_cost"] if protected else 0)
+                    - level * self.sandbag_price
                     - s * (p["interest_rate"] + p["depreciation_rate"]))[None]
                    - (states["structure_informal_settlements"][:, c] * s))
         zt = z_target[g, c]
@@ -200,7 +216,8 @@ class CRRAMarkets(solver.Markets):
 
     # --- Backyard supply by RDP owners --------------------------------------
 
-    def backyard_supply(self, R):
+    def backyard_supply(self, R, transfer=0):
+        # transfer: always 0 (no utility floor under risk aversion)
         return 1000000 * self._crra_backyard_share(R)
 
     def _crra_backyard_share(self, R):

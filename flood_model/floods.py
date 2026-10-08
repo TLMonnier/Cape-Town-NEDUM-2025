@@ -23,8 +23,15 @@ grid cell x:
    of the capital in the cell. Two corrections:
    - drainage (main.tex Section 3): frequent pluvial events do no damage in
      housing types served by stormwater drains (PLUVIAL_SAFE);
-   - sandbags (SP option): for protected settlers, events with
-     d_T(x) <= protec_depth do no damage.
+   - public protection (PP option, not in main.tex): every dwelling, of
+     every housing type, is protected up to H = public_protection_height
+     (45 cm) against every flood type, which lowers the water depth to
+     max(d_T(x) - H, 0) (H = 0 without PP);
+   - sandbags (SP option): settlers protected by k levels of sandbags
+     (k = 1, ..., options["self_protec"]) raise their floor by a further
+     h_k = k x sandbag_height (15, 30 or 45 cm), so that the water depth
+     inside the dwelling becomes max(d_T(x) - H - h_k, 0):
+         D_T^k(x) = p_T(x) f(max(d_T(x) - H - h_k, 0)).
 2. Flood types. In each event T, the most damaging flood type applies:
    D_T = max over types of D_T^type (water spills over to other areas rather
    than piling up). main.tex (outdated) says the maximum *depth* across
@@ -93,11 +100,13 @@ PLUVIAL_SAFE = {"formal": (5, 10, 20), "subsidized": (5, 10),
 
 # Damage series: name -> (damage function, housing type)
 SERIES = {
-    # ρ^content_h, h = FP, IB, IS (RDP owners' contents damages do not affect
-    # their choices, see solver.Markets.backyard_supply)
+    # ρ^content_h, h = FP, IB, IS, FS (RDP owners' contents damages do not
+    # affect their choices, see solver.Markets.backyard_supply; they enter
+    # damage accounting)
     "contents_formal": ("contents", "formal"),
     "contents_backyard": ("contents", "backyard"),
     "contents_informal": ("contents", "informal"),
+    "contents_subsidized": ("contents", "subsidized"),
     # ρ^struct_FP, borne by developers: one-floor dwellings up to
     # param["threshold"] m2, two floors above (not in main.tex)
     "structure_formal_1": ("type4a", "formal"),
@@ -112,6 +121,7 @@ SERIES = {
     "structure_formal_backyards": ("type3a", "backyard"),
 }
 # Series with sandbag protection (SP): only informal settlers can protect
+# (both their contents and their shack)
 PROTEC_SERIES = ("contents_informal", "structure_informal_settlements")
 
 
@@ -150,13 +160,14 @@ def flood_maps(inputs, options, param):
 
 
 def event_damages(depth, prop, damage_function, safe_rps=(),
-                  protec_depth=None):
-    """Event damages D_T(x) = p_T(x) f(d_T(x)), (return periods, cells),
-    for one flood type. Events with return periods in safe_rps, or with a
-    depth at most protec_depth (sandbags), do no damage."""
+                  floor_height=0):
+    """Event damages D_T(x) = p_T(x) f(max(d_T(x) - h, 0)), (return
+    periods, cells), for one flood type, with h the protection height
+    (public protection H plus sandbags h_k; 0 without protection). Events
+    with return periods in safe_rps do no damage."""
     prop = np.where(np.isin(RETURN_PERIODS, safe_rps)[:, None], 0, prop)
-    if protec_depth is not None:
-        prop = np.where(depth <= protec_depth, 0, prop)
+    if floor_height:
+        depth = np.maximum(depth - floor_height, 0)
     return prop * np.interp(depth, *damage_function)
 
 
@@ -197,33 +208,47 @@ def compute_damages(inputs, options, param):
     Output dict:
         expected: name -> (cells,) expected damage ρ(x)
         states: name -> (11, cells) state damages D̄_s(x)
-        expected_protec, states_protec: same with sandbag protection
-            (PROTEC_SERIES only)
+        expected_protec, states_protec: k -> same with k sandbag levels,
+            k = 1, ..., options["self_protec"] (PROTEC_SERIES only)
+    All damages include public protection under PP.
         proba: (11,) state probabilities π_s
         flood_type: index in FLOOD_TYPES of the flood type (NO_FLOOD if no
             damage), for each series:
-            expected[_protec]: dominant type of each cell (the type with the
-                highest expected damage on its own)
-            return_periods[_protec]: (10, cells) type selected in each event
+            expected[_protec<k>]: dominant type of each cell (the type with
+                the highest expected damage on its own)
+            return_periods[_protec<k>]: (10, cells) type selected in each
+                event
     """
+    if options["self_protec"] not in (0, 1, 2, 3):
+        raise ValueError("self_protec is the number of sandbag levels, "
+                         "0 to 3")
     depth, prop = flood_maps(inputs, options, param)
     proba = state_probabilities(options, param)
+    levels = range(1, options["self_protec"] + 1)
+    # PP: public protection height H, below sandbags
+    public = (param["public_protection_height"]
+              if options.get("public_protec") else 0)
     out = {"proba": proba, "expected": {}, "states": {},
-           "expected_protec": {}, "states_protec": {}}
-    out["flood_type"] = {k: {} for k in (
-        "expected", "return_periods",
-        "expected_protec", "return_periods_protec")}
+           "expected_protec": {k: {} for k in levels},
+           "states_protec": {k: {} for k in levels}}
+    out["flood_type"] = {f"{kind}{sfx}": {}
+                         for sfx in [""] + [f"_protec{k}" for k in levels]
+                         for kind in ("expected", "return_periods")}
     for name, (fun, htype) in SERIES.items():
-        for protec in (False, True) if name in PROTEC_SERIES else (False,):
-            sfx = "_protec" if protec else ""
+        for k in [0] + list(levels if name in PROTEC_SERIES else []):
             by_type = [event_damages(
                 depth[t], prop[t], DAMAGE_FUNCTIONS[fun],
                 PLUVIAL_SAFE[htype] if kind == "pluvial" else (),
-                param["protec_depth"] if protec else None)
+                public + k * param["sandbag_height"])
                 for t, kind in enumerate(FLOOD_TYPES[:len(depth)])]
-            (out["states" + sfx][name], out["expected" + sfx][name],
-             out["flood_type"]["return_periods" + sfx][name]
-             ) = combine_flood_types(by_type, proba)
+            states, expected, rp_type = combine_flood_types(by_type, proba)
+            if k == 0:
+                out["states"][name], out["expected"][name] = states, expected
+            else:
+                out["states_protec"][k][name] = states
+                out["expected_protec"][k][name] = expected
+            sfx = f"_protec{k}" if k else ""
+            out["flood_type"]["return_periods" + sfx][name] = rp_type
             out["flood_type"]["expected" + sfx][name] = max_over_types(
                 [expected_damage(proba, state_damages(d))
                  for d in by_type])[1]

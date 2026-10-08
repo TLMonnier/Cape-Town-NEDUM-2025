@@ -4,8 +4,9 @@ Runs the legacy flood_script.py pipeline in-process, by default with the bug
 fixes of flood_model applied in memory (the legacy files are not modified),
 then the new model in legacy mode, and compares all outputs. Legacy mode means:
 no coastal floods, flood types combined by the max of expected damages (legacy)
-instead of per return period, and the last iterate returned instead of the
-best one. The legacy code also gets config.TOTAL_FORMAL. With the default
+instead of per return period, the last iterate returned instead of the
+best one, and one sandbag level acting as a barrier (floods up to 15 cm do
+no damage, deeper ones full damage) instead of a raised floor. The legacy code also gets config.TOTAL_FORMAL. With the default
 fixes (see CLAUDE.md), both codes then agree exactly (to machine precision
 under RM). The legacy code runs with risk_avers = 0: risk aversion lives in
 ../flood_model_CRRA and has no legacy equivalent.
@@ -49,6 +50,17 @@ def legacy_combine(by_type, proba):
     return (floods.max_over_types(states)[0],
             floods.max_over_types(expected)[0],
             np.zeros(by_type[0].shape, dtype=np.int8))
+
+
+def legacy_event_damages(depth, prop, damage_function, safe_rps=(),
+                         floor_height=0):
+    """Legacy sandbag protection: a barrier, so that floods up to
+    floor_height do no damage and deeper floods do full damage."""
+    prop = np.where(np.isin(floods.RETURN_PERIODS, safe_rps)[:, None], 0,
+                    prop)
+    if floor_height:
+        prop = np.where(depth <= floor_height, 0, prop)
+    return prop * np.interp(depth, *damage_function)
 
 
 def patched(module, replacements):
@@ -200,13 +212,18 @@ def main():
     if len(args.config) != len(keys):
         sys.exit("CONFIG must have 4 digits (AF CC RM SP), e.g. 1001")
     options = {k: int(c) for k, c in zip(keys, args.config)}
+    if options["self_protec"] > 1:
+        sys.exit("The legacy code has one sandbag level at most (SP 0 or 1)")
 
     print(f"Legacy run with fixes {args.fixes}...")
     ref = run_legacy(options, set(args.fixes))
     print("New model run in legacy mode...")
     floods.combine_flood_types = legacy_combine
+    floods.event_damages = legacy_event_damages
     new, *_ = run.run_model({**options, "coastal": 0},
-                            {"return_best": False})
+                            {"return_best": False,
+                             "developer_loss_tax": False,
+                             "rdp_utility_floor": False})
     worst = compare(new, ref)
     print("IDENTICAL" if worst == 0 else f"Max relative difference {worst:.2e}")
 

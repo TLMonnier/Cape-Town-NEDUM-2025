@@ -24,14 +24,16 @@ Interactive use: `main.py` (`# %%` cells; from `python/` or
 returns `(outputs, converged, param, damages)`, as `flood_model`.
 
 Outputs: same files and names as `flood_model`
-(`simul_AF?_CC?_CO?_RM?_SP?` + tag), in `../../Output/flood_model_CRRA/`.
+(`simul_AF?_CC?_CO?_RM?_SP?_PS?` + tag), in `../../Output/flood_model_CRRA/`.
 The names do not encode the CRRA coefficient: use `tag` (e.g. `_CRRA2`).
 Runs take about 40-80 s (vs 2 s for `flood_model`).
 
 ## Layout
 
 - `crra.py`: `PARAM` (CRRA coefficient θ, default 0.2772), `OUTPUT`, CRRA utility helpers, and `CRRAMarkets(solver.Markets)`, which overrides `formal_price`, `backyard_rent`, `informal_rent` and `backyard_supply`.
-- `run_crra.py`: `run_model` and CLI (flood_model's parser plus `--CRRA`).
+- `run_crra.py`: `run_model` (calls `run.run_model` with `CRRAMarkets`, so insurance reference runs are risk averse too) and CLI (flood_model's parser plus `--CRRA`).
+- Insurance (SI1, redefined on 2026-10-08, see `../flood_model/CLAUDE.md`): insured groups' state damages are scaled by 1 - s (`Markets.perceived_factor`; the insurance pays a share s in every state), and the FP certainty-equivalent price is computed per group, c*_i = 1 / CE[1 / (1 + γ (1 - s_i) D̄_s)]. Damage accounting and ex-post utilities use certainty-equivalent consumption. SI1 at RM0: s = 0.8465 as in flood_model (2026-10-08).
+- RDP owners' utility floor (flood_model, 2026-10-08): not implemented under risk aversion. `crra.PARAM` sets `rdp_utility_floor` False, `CRRAMarkets` raises NotImplementedError if it is True, and `backyard_supply(R, transfer=0)` ignores the transfer. `solver.solve` still returns `landlord_revenue`, `surplus_damages` (zeros) and `rdp_transfer` (zeros). `check_degenerate.py` now builds its parameters from `config.PARAM` and `crra.PARAM` (OK on 2026-10-08, config 10103).
 - `main.py`: cell script for the Interactive Window. Its setup cell reloads the flood_model modules from `../flood_model` and `crra`, `run_crra` from here (in that order).
 - `tools/check_degenerate.py`: with every state damage set to the expected damage, compares `CRRAMarkets` to `solver.Markets` at fixed utilities and in equilibrium.
 
@@ -54,7 +56,9 @@ Runs take about 40-80 s (vs 2 s for `flood_model`).
 - **RDP owners with negative net income** (see `../flood_model/CLAUDE.md`): their composite good is negative for any backyard share. With CRRA >= 1, V = -inf for every share and the search returns 0; with CRRA < 1, the odd extension can return 1 even when renting out loses money (R < Z), because shrinking own housing makes the negative utility less negative. flood_model applies (10) instead. These cells currently have no backyard households in equilibrium.
 - Odd extension in general: utility for negative consumption has no economic meaning; it only keeps the objective defined.
 
-Effects on results (CRRA 0.2772 vs RN, AF1 CC0 CO1 RM0 SP1, sandbag 250, unless stated; computed before the split):
+- Sandbag levels (2026-10-01, SP 0-3 with raised floors, see `../flood_model/CLAUDE.md`): `check_degenerate.py 10103` passes at the market level, including the chosen levels.
+
+Effects on results (CRRA 0.2772 vs RN, AF1 CC0 CO1 RM0 SP1, sandbag 250, unless stated; computed before the split, with the former one-level barrier rule):
 - Allocation: settlements -3.4%, backyards +3.4%, mean settlement rent +2.5%, utilities within 0.1%.
 - Protection take-up is unchanged at every positive sandbag cost: 0 at 250, 2,467 settler households at 100, 3,498 at 50, 7,595 at 25 (same with CC1).
 - At zero cost, take-up is lower (79,453 vs 84,351), because there are fewer settlers.

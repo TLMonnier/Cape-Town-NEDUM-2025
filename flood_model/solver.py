@@ -46,15 +46,44 @@ Households are risk neutral: they value damages at their expected value, as
 if fully insured at an actuarially fair premium (see ../flood_model_CRRA for
 risk aversion).
 
-Self-protection (SP option, not in main.tex): informal settlers can pay
-sandbag_course_cost a year so that floods up to protec_depth do no damage.
-Each group protects in a cell if that raises its bid rent ψ_i^IS.
+Subsidised insurance (SI1, not in main.tex): households of the insured
+groups (config.INSURED_GROUPS, groups 1-2) are reimbursed a share s
+(p["insurance_share"], run.insurance_terms) of the damages to their own
+assets: contents in every housing type, settlers' shacks, RDP houses and
+RDP owners' backyard shacks. Formal developers' structures are not insured.
+Insured households only bear and perceive (1 - s) k x actual damages (moral
+hazard). Backyards, settlements and RDP housing only host insured groups,
+so their damages are scaled by 1 - s for everyone; in formal housing, the
+composite good price is 1 + γ (1 - s_i) ρ^content_FP per group i.
+
+Self-protection (SP option, not in main.tex): informal settlers choose a
+number of sandbag levels k = 0, ..., SP (at most 3). k levels cost
+k c_SP a year (c_SP = sandbag_course_cost) and raise the floor by
+k x sandbag_height, which lowers expected damages to ρ^k (floods.py). In
+each cell, each group picks the k that maximises its bid rent ψ_i^IS(k)
+(the lowest k if tied), i.e. the protection level that is best for it.
+
+RDP owners' utility floor (p["rdp_utility_floor"], not in main.tex): RDP
+owners (group 1) do not move, so their utility
+    U_FS(x) = z^α (q_FS - μ(x) Y - q0)^(1-α) A(x)
+is not equalised with u_1. Where their own expected flood damages
+D(x) = ρ^struct_FS(x) v_FS + γ ρ^content_FS(x) z (as perceived, net of
+insurance) would push U_FS(x) below u_1, the government pays them the
+smallest lump-sum transfer T(x) that lifts their utility to u_1, and at most
+their damages: T(x) <= D(x). Owners anticipate T(x): it adds to ỹ_1(x) in
+their budget (2) and in (10), but they still pay 1 + γ ρ^content_FS at the
+margin (Markets.rdp_transfer). T is financed by absentee landlords, so it
+does not feed back on the equilibrium; solve reports it with the landlords'
+revenues.
 
 Units: rents in rands per m2 per year; housing supply s_h in m2 of floor
 per km2 of *available* land; L_h(x) as a share of the cell area (0.25 km2).
 """
+import copy
+
 import numpy as np
 
+import accounting
 import config
 
 TYPES = ("formal", "backyard", "informal")      # h = FP, IB, IS
@@ -69,10 +98,27 @@ Q_GRID = np.concatenate((
     [250, 300, 500, 1000, 2000, 200000, 1000000, 10 ** 12]))
 
 
+# Damage series borne by formal developers (structures) or by FP households
+# of any income group (contents): not scaled by the insured share 1 - s in
+# Markets.dmg (FP contents insurance enters formal_price by group). All
+# other series are borne by insured groups only (backyards, settlements,
+# RDP owners).
+FORMAL_SERIES = ("structure_formal_1", "structure_formal_2", "contents_formal")
+
+
+def coverage(options, p):
+    """(4,) share s_i of their own damages reimbursed to households of group
+    i: p["insurance_share"] for config.INSURED_GROUPS under SI1, else 0."""
+    s = np.zeros(4)
+    if options["subsid_insur"]:
+        s[list(config.INSURED_GROUPS)] = p["insurance_share"]
+    return s
+
+
 def perception(options, p):
-    """Factor k such that perceived damages = k x actual damages: 0 if
-    agents do not anticipate floods (AF0), risk_internaliz under risk
-    misperception (RM1), 1 otherwise."""
+    """Factor k such that agents perceive k x actual damages: 0 if agents
+    do not anticipate floods (AF0), risk_internaliz under risk misperception
+    (RM1), 1 otherwise (before insurance, see Markets.factor)."""
     if not options["agents_anticipate_floods"]:
         return 0
     return p["risk_internaliz"] if options["risk_misperc"] else 1
@@ -89,25 +135,60 @@ class Markets:
 
     def __init__(self, p, inputs, damages, options):
         self.p, self.inputs, self.options = p, inputs, options
+        self.damages = damages                          # actual damages
         self.sel = sel = ((np.sum(inputs["coeff_land"], 0) > 0.01)
                           & (np.nanmax(inputs["net_income"], 0) > 0))
         self.y = inputs["net_income"][:, sel]           # ỹ_i(x)
+        self.y_pretax = self.y
+        self.tax = np.zeros(4)                          # lump sums T_i
+        # Developers: lump-sum tax t per m2 of land and agricultural rent
+        self.developer_tax, self.agricultural_rent = 0., p["agricultural_rent"]
         self.amenities = inputs["amenities"][sel]       # A(x)
         self.land = inputs["coeff_land"][:3, sel]       # L_h(x), h = FP, IB, IS
         self.housing_limit = inputs["housing_limit"][sel]
+        self.rdp_cells = inputs["households_RDP"][sel] > 0
         self.cells = np.arange(sel.sum())
         self.no_access = {k: np.array(v) == 0
                           for k, v in config.ACCESS.items()}
 
-        # Expected damages ρ as perceived by agents
-        k = perception(options, p)
-        self.dmg = {n: k * v[sel] for n, v in damages["expected"].items()}
-        self.dmg_protec = {n: k * v[sel]
-                           for n, v in damages["expected_protec"].items()}
+        # Price of a sandbag level for settlers: 0 when subsidised (PS)
+        if options["subsid_protec"] and not options["self_protec"]:
+            raise ValueError("subsid_protec requires self_protec >= 1")
+        self.sandbag_price = (0 if options["subsid_protec"]
+                              else p["sandbag_course_cost"])
 
-        # Price of the composite good for FP households, 1 + γ ρ^content_FP:
-        # contents worth γ z are destroyed at the expected rate ρ^content
+        # Insurance (SI1): share s_i of own damages reimbursed, (4,)
+        if options["subsid_insur"] and p["insurance_share"] is None:
+            raise ValueError("SI1 needs param['insurance_share'] "
+                             "(see run.insurance_terms)")
+        self.coverage = coverage(options, p)
+        if options["subsid_insur"] and not all(
+                self.coverage[i] == self.coverage[0]
+                for i in range(4) if config.ACCESS["backyard"][i]
+                or config.ACCESS["informal"][i]):
+            raise ValueError("config.INSURED_GROUPS must include group 1 "
+                             "and every group with access to backyards and "
+                             "settlements")
+
+        # Expected damages ρ as perceived by agents and borne net of
+        # insurance: k x actual damages for formal series, k (1 - s) x
+        # actual damages for the others (insured groups only)
+        k = perception(options, p)
+        s = self.coverage[0]
+        self.factor = {"formal": k, "own": k * (1 - s) if s else k}
+        self.dmg = {n: self.perceived_factor(n) * v[sel]
+                    for n, v in damages["expected"].items()}
+        # With `level` sandbag levels (dmg_protec[level], level >= 1)
+        self.dmg_protec = {level: {n: self.perceived_factor(n) * v[sel]
+                                   for n, v in d.items()}
+                           for level, d in damages["expected_protec"].items()}
+
+        # Price of the composite good for FP households of group i,
+        # 1 + γ (1 - s_i) ρ^content_FP, (groups, cells): contents worth γ z
+        # are destroyed at the expected rate ρ^content, a share s_i of which
+        # is reimbursed
         self.formal_price = 1 + (p["fraction_z_dwellings"]
+                                 * (1 - self.coverage)[:, None]
                                  * self.dmg["contents_formal"])
 
         # Table of f(Q) = (Q - q0) / (Q - α q0)^α, the left side of (5) up
@@ -120,6 +201,36 @@ class Markets:
         order = np.argsort(f[ok], kind="mergesort")
         self.f_grid, self.q_grid = f[ok][order], Q_GRID[ok][order]
 
+    def perceived_factor(self, name):
+        """Factor applied to the actual damage series `name` for the damages
+        agents perceive and bear: k for formal series (FORMAL_SERIES), and
+        k (1 - s) for series borne by insured groups only (SI1)."""
+        return self.factor["formal" if name in FORMAL_SERIES else "own"]
+
+    def set_tax(self, tax):
+        """Lump-sum taxes T_i (rands a year, (4,)), paid by every household
+        of group i wherever it lives: net income becomes ỹ_i(x) - T_i."""
+        self.tax = np.asarray(tax, dtype=float)
+        self.y = self.y_pretax - self.tax[:, None]
+
+    def set_developer_tax(self, t):
+        """Lump-sum tax t on developers (rands per m2 of developed land a
+        year), financing their unanticipated structure losses (see solve).
+        Capital choice (9) is unchanged, but zero profit (4) now requires
+        R s - (ρ + ρ^struct + δ) k - t >= δ P_A at the city edge, i.e.
+        R >= R_A(t) = (δ P_A + t)^a (ρ + δ)^(1-a) / (κ a^a (1-a)^(1-a))
+        (data.prepare_inputs gives R_A(0))."""
+        p = self.p
+        self.developer_tax = t
+        if not t:
+            self.agricultural_rent = p["agricultural_rent"]
+            return
+        a, b, r = p["coeff_a"], p["coeff_b"], p["interest_rate"]
+        self.agricultural_rent = (
+            (p["agricultural_price_baseline"] * r + t) ** a
+            * (p["depreciation_rate"] + r) ** b
+            / (p["coeff_A"] * b ** b * a ** a))
+
     # --- Bid rents ψ_i^h(x, u), (groups, cells) -----------------------------
 
     def formal_bids(self, u):
@@ -130,11 +241,12 @@ class Markets:
         demands R (q - q0) = (1 - α) (ỹ - R q0) and c z = α (ỹ - R q0), hence
         R = (1 - α) ỹ / (q - α q0), i.e. (6). Plugging both into (1) gives
         (5), which is solved for q given u: f(Q*) = u c^α / (A (α ỹ)^α).
+        The price c = formal_price varies by group under insurance (SI1).
         """
         p = self.p
         y = np.where(self.y > 0, self.y, np.nan)
         left_side = ((u[:, None] / self.amenities[None, :])
-                     * (self.formal_price[None, :] ** p["alpha"])
+                     * (self.formal_price ** p["alpha"])
                      / ((p["alpha"] * y) ** p["alpha"]))
         size = np.interp(left_side, self.f_grid, self.q_grid,
                          left=np.nan, right=np.nan)
@@ -172,30 +284,34 @@ class Markets:
     def informal_bids(self, u):
         """Bid rents ψ_i^IS (7), dwelling sizes (q_I) and self-protection.
 
-        Under SP, each group bids its highest bid with or without sandbags.
-        Returns the protection choice of the top bidder in each cell (NaN
-        without SP).
+        Under SP, each group bids max_k ψ_i^IS(k) over sandbag levels
+        k = 0, ..., SP (the lowest k if tied). Returns the level chosen by
+        the top bidder in each cell (0 where nobody bids; NaN without SP).
         """
         p = self.p
         z = self._composite_good(u, p["pocket_informal"])
-        R = self.informal_rent(z, protected=False)
+        R = self.informal_rent(z, level=0)
         size = np.full(R.shape, float(p["shack_size"]))
         if not self.options["self_protec"]:
             return R, size, np.full(len(self.cells), np.nan)
-        R_protec = self.informal_rent(z, protected=True)
-        protec = R_protec > R
-        R = np.where(protec, R_protec, R)
+        R_levels = np.array([R] + [self.informal_rent(z, level)
+                                   for level in self.dmg_protec])
+        level = R_levels.argmax(0)                  # (groups, cells)
+        R = R_levels.max(0)
         top = R.argmax(0)
-        mask = protec[top, self.cells] & (R[top, self.cells] > 0)
+        mask = np.where(R[top, self.cells] > 0, level[top, self.cells], 0)
         return R, size, mask
 
-    def informal_rent(self, z, protected):
-        """(7): settlers also pay for their shack, (ρ + δ) v_I for capital
-        costs and ρ^struct_IS v_I for expected flood damages, plus the
-        sandbag cost if protected (with damages net of protection)."""
+    def informal_rent(self, z, level):
+        """(7) with `level` sandbag levels: settlers also pay for their
+        shack, (ρ + δ) v_I for capital costs and ρ^struct_IS v_I for
+        expected flood damages, plus level x c_SP for sandbags (with damages
+        ρ^level net of protection; c_SP = 0 when subsidised):
+            ψ_i^IS(k) = [ỹ_i - k c_SP - (1 + γ ρ^content_IS,k) z_IS
+                         - (ρ + δ) v_I - ρ^struct_IS,k v_I] / q_I."""
         p = self.p
-        dmg = self.dmg_protec if protected else self.dmg
-        cost = p["sandbag_course_cost"] if protected else 0
+        dmg = self.dmg_protec[level] if level else self.dmg
+        cost = level * self.sandbag_price
         structure_cost = (p["informal_structure_value"]
                           * (p["interest_rate"] + p["depreciation_rate"]))
         R = (1 / p["shack_size"]) * (
@@ -227,33 +343,33 @@ class Markets:
                                       + p["depreciation_rate"] + destroyed))
                      ** (p["coeff_b"] / p["coeff_a"]))
                   * (R ** (p["coeff_b"] / p["coeff_a"])))
-        supply[R < p["agricultural_rent"]] = 0
+        supply[R < self.agricultural_rent] = 0
         return np.minimum(supply, self.housing_limit)
 
-    def backyard_supply(self, R):
+    def backyard_supply(self, R, transfer=0):
         """(10): share μ of their backyard Y that RDP owners (group 1) rent
         out, times 1e6 m2/km2 (shacks cover all the rented space).
 
         Owners maximise (1) with z (1 + γ ρ^content) = ỹ_1 - (ρ + ρ^struct_FS)
-        v_FS + μ Y (R - Z), where Z = (ρ + ρ^struct_IB + δ) v_I / q_I is the
-        cost of the shacks per m2, and q = q_FS - μ Y. The first-order
-        condition gives (10), which does not depend on ρ^content.
+        v_FS + T + μ Y (R - Z), where Z = (ρ + ρ^struct_IB + δ) v_I / q_I is
+        the cost of the shacks per m2, q = q_FS - μ Y, and T the lump-sum
+        transfer of the utility floor (rdp_transfer; 0 without it). The
+        first-order condition gives (10), with ỹ_1 + T in place of ỹ_1,
+        which does not depend on ρ^content.
 
         If R <= Z, renting out loses money: utility decreases with μ, so
         μ = 0 (the first-order condition then has no feasible solution; the
         legacy code still applied (10) and rented out everything). μ is
         bounded to [0, 1].
 
-        Not handled: where ỹ_1 - (ρ + ρ^struct_FS) v_FS <= 0 (heavily
-        flooded RDP cells), the owners' composite good is negative whatever
-        μ, so (10) is not defined; it is applied anyway (usually μ = 1).
+        Without the utility floor: where ỹ_1 - (ρ + ρ^struct_FS) v_FS <= 0
+        (heavily flooded RDP cells), the owners' composite good is negative
+        whatever μ, so (10) is not defined; it is applied anyway (usually
+        μ = 1). The floor's transfer makes their composite good positive.
         """
         p = self.p
         rdp_value = p["subsidized_structure_value"]
-        shack_cost = ((p["depreciation_rate"]
-                       + self.dmg["structure_backyards"]
-                       + p["interest_rate"])
-                      * (p["informal_structure_value"] / p["shack_size"]))
+        shack_cost = self.shack_cost()
         with np.errstate(divide="ignore", invalid="ignore"):
             share = ((p["alpha"]
                       * (p["RDP_size"] + p["backyard_size"] - p["q0"])
@@ -261,17 +377,116 @@ class Markets:
                      - (p["beta"]
                         * (self.y[0] - (self.dmg["structure_subsidized_1"]
                                         * rdp_value)
-                           - (p["depreciation_rate"] * rdp_value))
+                           - (p["depreciation_rate"] * rdp_value) + transfer)
                         / (p["backyard_size"] * (R - shack_cost))))
         share = np.where(R > shack_cost, share, 0)
         return 1000000 * np.maximum(np.minimum(share, 1), 0)
+
+    def shack_cost(self):
+        """Z = (ρ + ρ^struct_IB + δ) v_I / q_I: annual cost per m2 of the
+        shacks RDP owners build in their backyard."""
+        p = self.p
+        return ((p["depreciation_rate"] + self.dmg["structure_backyards"]
+                 + p["interest_rate"])
+                * (p["informal_structure_value"] / p["shack_size"]))
+
+    def rdp_consumption(self, share, R, transfer=0):
+        """Composite good z of RDP owners renting out a share μ of their
+        backyard at rent R, from their budget (2) with the floor's transfer T
+        (rdp_transfer; 0 without it):
+            (1 + γ ρ^content_FS) z = ỹ_1 - (ρ + ρ^struct_FS) v_FS + T
+                                     + μ Y (R - Z).
+        Damages are perceived and net of insurance (SI1)."""
+        p = self.p
+        V, B = p["subsidized_structure_value"], p["backyard_size"]
+        g = p["fraction_z_dwellings"] * self.dmg["contents_subsidized"]
+        house = self.dmg["structure_subsidized_1"] * V
+        income = (self.y[0] - p["depreciation_rate"] * V
+                  + share * B * (R - self.shack_cost()) + transfer)
+        return (income - house) / (1 + g)
+
+    # --- RDP owners' utility floor ------------------------------------------
+
+    def rdp_utility(self, R, transfer):
+        """Utility of RDP owners (1) at their optimal backyard share, for a
+        backyard rent R and a lump-sum transfer T:
+            U_FS = z^α (q_FS - μ Y - q0)^(1-α) A(x)   (NaN if z <= 0),
+        and their composite good z."""
+        p = self.p
+        share = self.backyard_supply(R, transfer) / 1000000
+        z = self.rdp_consumption(share, R, transfer)
+        with np.errstate(invalid="ignore"):
+            U = (np.where(z > 0, z, np.nan) ** p["alpha"]
+                 * (p["RDP_size"] + p["backyard_size"] * (1 - share)
+                    - p["q0"]) ** p["beta"] * self.amenities)
+        return U, z
+
+    def rdp_borne(self, z):
+        """Own expected flood damages borne by RDP owners (as perceived, net
+        of insurance), D = ρ^struct_FS v_FS + γ ρ^content_FS z. Backyard
+        shacks are a cost of renting out (Z), not counted."""
+        p = self.p
+        return (self.dmg["structure_subsidized_1"]
+                * p["subsidized_structure_value"]
+                + p["fraction_z_dwellings"] * self.dmg["contents_subsidized"]
+                * z)
+
+    def rdp_transfer(self, R, u_1):
+        """Lump-sum transfer T(x) of the utility floor (module docstring),
+        per RDP household, for backyard rent R and group 1's utility u_1.
+
+        T = 0 where U_FS(x, T = 0) >= u_1 (or without RDP households, or
+        p["rdp_utility_floor"] off). Elsewhere, T is the smallest transfer
+        such that U_FS(x, T) >= u_1, or T = D(T) if that comes first
+        (transfers never exceed the owners' damages). Both U_FS(T) and
+        T - D(T) increase with T (D rises by at most γ ρ / (1 + γ ρ) < 1 per
+        rand of T), so T is found by bisection on
+        [0, ρ^struct_FS v_FS + γ ρ^content_FS max(ỹ_1 - ρ v_FS + Y (R - Z)^+, 0) + 1],
+        whose upper end satisfies T > D(T). Owners re-choose μ for each T.
+        The bisection only runs on the cells below the floor, until T is
+        known within 1e-6 rands.
+        """
+        T = np.zeros(len(R))
+        if not self.p["rdp_utility_floor"]:
+            return T
+        U, _ = self.rdp_utility(R, T)
+        need = self.rdp_cells & ~(U >= u_1)          # incl. z <= 0 (NaN)
+        if not need.any():
+            return T
+        p, sub, R = self.p, self._subset(need), R[need]
+        V, B = p["subsidized_structure_value"], p["backyard_size"]
+        low = np.zeros(len(R))
+        high = (sub.dmg["structure_subsidized_1"] * V
+                + p["fraction_z_dwellings"] * sub.dmg["contents_subsidized"]
+                * np.maximum(sub.y[0] - p["depreciation_rate"] * V
+                             + B * np.maximum(R - sub.shack_cost(), 0), 0)
+                + 1)
+        while np.max(high - low) > 1e-6:
+            mid = (low + high) / 2
+            U, z = sub.rdp_utility(R, mid)
+            more = ~(U >= u_1) & (mid < sub.rdp_borne(z))
+            low, high = np.where(more, mid, low), np.where(more, high, mid)
+        T[need] = high
+        return T
+
+    def _subset(self, cells):
+        """Shallow copy of these markets restricted to `cells` (boolean over
+        the solver cells), for the RDP owners' methods."""
+        sub = copy.copy(self)
+        sub.y = self.y[:, cells]
+        sub.amenities = self.amenities[cells]
+        sub.dmg = {n: v[cells] for n, v in self.dmg.items()}
+        sub.rdp_cells = self.rdp_cells[cells]
+        sub.cells = np.arange(cells.sum())
+        return sub
 
     # --- Market clearing for given utilities --------------------------------
 
     def solve_market(self, kind, u):
         """Allocate each cell of market `kind` to the highest bidder, and
         return households (groups, cells), rent, supply and dwelling size of
-        the cell, the bid rent matrix, and the protection choice."""
+        the cell, the bid rent matrix, the protection choice, and the RDP
+        owners' floor transfer (rdp_transfer; zeros outside backyards)."""
         mask = np.full(len(self.cells), np.nan)
         if kind == "formal":
             R_mat, size = self.formal_bids(u)
@@ -284,10 +499,13 @@ class Markets:
         top = R_mat.argmax(0)
         R, size = R_mat[top, self.cells], size[top, self.cells]
 
+        transfer = np.zeros(len(R))
         if kind == "formal":
             supply = self.formal_supply(R, size)
         elif kind == "backyard":
-            supply = self.backyard_supply(R)
+            # RDP owners' utility floor at group 1's current utility u_1
+            transfer = self.rdp_transfer(R, u[0])
+            supply = self.backyard_supply(R, transfer)
         else:               # one m2 of floor per m2 of settlement land
             supply = 1000000 * np.ones(len(R))
         supply[R == 0] = 0                  # no positive bid
@@ -302,9 +520,10 @@ class Markets:
                       )[None, :] * winner
         if kind == "formal":
             # Reported rent: at least the agricultural rent
-            R = np.maximum(R, self.p["agricultural_rent"])
+            R = np.maximum(R, self.agricultural_rent)
         return {"households": households, "rent": R, "supply": supply,
-                "size": size, "rent_matrix": R_mat, "mask": mask}
+                "size": size, "rent_matrix": R_mat, "mask": mask,
+                "transfer": transfer}
 
 
 def _clean(R, no_access=None):
@@ -316,6 +535,143 @@ def _clean(R, no_access=None):
 
 
 def solve(mk, verbose=True):
+    """Solve the equilibrium (_solve_budgets), and add the RDP owners'
+    utility floor costs and the absentee landlords' revenues, which finance
+    them (no feedback on the equilibrium: landlords live outside the city).
+
+    Returns (outputs on the full grid, converged flag), with outputs from
+    _export and _solve_budgets, plus (rands a year):
+        rdp_transfer: (2, cells) floor transfers per RDP household: [0]
+            anticipated in equilibrium, with perceived damages
+            (Markets.rdp_transfer); [1] ex-post top-up, so that ex-post
+            utility with actual damages stays >= u_1 at the equilibrium
+            backyard share and spending (accounting.ex_post; 0 when damages
+            are perceived correctly)
+        surplus_damages: (2,) totals of both rows over RDP households
+        landlord_revenue: (2, cells) absentee landlords' revenues from
+            formal land and informal settlements
+            (accounting.landlord_revenue)
+    """
+    outputs, converged = _solve_budgets(mk, verbose)
+    sel = mk.sel
+    if mk.p["rdp_utility_floor"]:
+        outputs["rdp_transfer"][1, sel] = \
+            accounting.ex_post(mk, outputs)["rdp_topup"]
+    hh = outputs["households"][3, 0]
+    outputs["surplus_damages"] = np.sum(outputs["rdp_transfer"] * hh, 1)
+    revenue = np.zeros((2, len(sel)))
+    revenue[:, sel] = accounting.landlord_revenue(mk, outputs)
+    outputs["landlord_revenue"] = revenue
+    if verbose and mk.p["rdp_utility_floor"]:
+        floor = outputs["rdp_transfer"] > 0
+        total = outputs["surplus_damages"].sum()
+        print(f"RDP utility floor: {hh[floor[0]].sum():,.0f} households "
+              f"({floor[0].sum()} cells) get {outputs['surplus_damages'][0]:,.0f}"
+              f" rands/year in equilibrium, {hh[floor[1]].sum():,.0f} "
+              f"({floor[1].sum()} cells) {outputs['surplus_damages'][1]:,.0f} "
+              f"ex post; landlords' revenues {revenue.sum() / 1e6:,.1f} M "
+              f"rands/year (formal {revenue[0].sum() / 1e6:,.1f} M, "
+              f"settlements {revenue[1].sum() / 1e6:,.1f} M), i.e. a "
+              f"{100 * total / revenue.sum():.4f}% levy")
+    return outputs, converged
+
+
+def _solve_budgets(mk, verbose=True):
+    """Solve the equilibrium, balancing public schemes (PS, SI) and the
+    developers' loss tax when they apply.
+
+    Public schemes (not in main.tex), possibly combined:
+    - PS: sandbags are free for settlers, and the government pays
+      c_SP Σ_x N^IS(x) k(x), with k(x) the number of levels chosen by the
+      settlers of cell x;
+    - SI1: insurance of groups 1-2's own assets (share s) at no premium,
+      the government pays the reimbursements (accounting.insurance_payouts).
+    Their total cost C is financed by lump-sum taxes on the richest groups
+    i in config.TAXED_GROUPS (3 and 4 in main.tex, found in formal housing
+    only), proportional to their exogenous mean income ȳ_i:
+        T_i = τ ȳ_i,  with  Σ_i N_i T_i = C,  i.e.  τ = C / Σ_i N_i ȳ_i,
+    N_i the (closed-city) number of households of group i. Taxes lower
+    these groups' net income everywhere (Markets.set_tax).
+
+    Developers' loss tax (p["developer_loss_tax"], when damages are
+    misperceived: AF0 or RM1): developers bear actual structure damages but
+    build on perceived ones. Their unanticipated losses
+    L = Σ_x (ρ^struct_actual - ρ^struct_perceived)(x) K(x), with K(x) the
+    capital in cell x (developers are not insured), are financed by a
+    lump-sum tax t per m2 of developed land, t = L / developed land, which
+    developers anticipate (Markets.set_developer_tax), so that zero profit
+    holds ex post.
+
+    C and L depend on the equilibrium, which depends on T and t: they are
+    balanced by fixed point iteration (T = t = 0, equilibrium, C and L,
+    T(C) and t(L), equilibrium, ...) until C and L change by less than
+    p["budget_tol"] (relative) or after p["max_iter_budget"] rounds.
+
+    Returns (outputs on the full grid, converged flag). With a public
+    scheme, outputs also hold "tax" (T_i, (4,)) and "budget" (sandbag
+    subsidy, insurance payouts, tax revenue; rands a year), and under SI1
+    "insurance_share" (s, (1,)); with the developers' tax, "developer_tax" (t, losses L, tax revenue). converged
+    also requires balanced budgets.
+    """
+    p, inputs, opt = mk.p, mk.inputs, mk.options
+    public = bool(opt["subsid_protec"] or opt["subsid_insur"])
+    developers = bool(p["developer_loss_tax"] and (
+        not opt["agents_anticipate_floods"] or opt["risk_misperc"]))
+    if not (public or developers):
+        return _solve_utilities(mk, verbose)
+    taxed = np.isin(np.arange(4), config.TAXED_GROUPS)
+    base = np.sum((inputs["target"] * inputs["average_income"])[taxed])
+    tax, t = np.zeros(4), 0.
+    previous = None
+    for k in range(p["max_iter_budget"]):
+        mk.set_tax(tax)
+        mk.set_developer_tax(t)
+        outputs, converged = _solve_utilities(mk, verbose)
+        sandbags = 0.
+        if opt["subsid_protec"]:
+            settlers = np.nansum(outputs["households"][2], 0)
+            sandbags = p["sandbag_course_cost"] * np.sum(
+                settlers * np.nan_to_num(outputs["mask_self_protec"]))
+        payouts = (accounting.insurance_payouts(mk, outputs)
+                   if opt["subsid_insur"] else 0.)
+        cost, revenue = sandbags + payouts, np.sum(inputs["target"] * tax)
+        losses, land = (accounting.developer_losses(mk, outputs)
+                        if developers else (0., 0.))
+        dev_revenue = t * land
+        if verbose:
+            print(f"  budget round {k + 1}: public cost {cost:,.0f} "
+                  f"(sandbags {sandbags:,.0f}, insurance {payouts:,.0f}) vs "
+                  f"taxes {revenue:,.0f}; developers' losses {losses:,.0f} "
+                  f"vs tax {dev_revenue:,.0f} rands/year")
+        current = np.array([cost, losses])
+        done = (previous is not None and np.all(
+            np.abs(current - previous) <= p["budget_tol"] * current))
+        previous = current
+        if done or (cost == revenue == 0 and losses == dev_revenue == 0):
+            break
+        tax = np.where(taxed, cost / base * inputs["average_income"], 0)
+        t = losses / land if land else 0.
+    gaps = (abs(cost - revenue) / max(cost, 1),
+            abs(losses - dev_revenue) / max(losses, 1))
+    balanced = max(gaps) <= p["budget_tol"]
+    if verbose:
+        print(f"Budgets {'balanced' if balanced else 'NOT balanced'} "
+              f"(relative gaps {gaps[0]:.1e}, {gaps[1]:.1e}): taxes "
+              f"{np.round(mk.tax[taxed])} rands/year on groups "
+              f"{np.flatnonzero(taxed)}, developers' tax "
+              f"{mk.developer_tax:.3f} rands/m2/year")
+    if public:
+        outputs["tax"] = mk.tax.copy()
+        outputs["budget"] = np.array([sandbags, payouts, revenue])
+    if opt["subsid_insur"]:
+        outputs["insurance_share"] = np.array([p["insurance_share"]])
+    if developers:
+        outputs["developer_tax"] = np.array([mk.developer_tax, losses,
+                                             dev_revenue])
+    return outputs, converged and balanced
+
+
+def _solve_utilities(mk, verbose=True):
     """Iterate on utility levels until population targets are met.
 
     main.tex Section 4.6: starting from p["utility_init"], each iteration
@@ -400,8 +756,11 @@ def _export(mk, res, u, error, jobs):
         capital_land: (4, cells) capital per unit of land, k = (s / κ)^(1/(1-a))
         average_income: (4,) mean income per group
         limit_city: (1, 4, 4, cells) households > 1
-        mask_self_protec: (cells,) top bidder in informal settlements
-            protects (NaN without SP)
+        mask_self_protec: (cells,) number of sandbag levels chosen by the
+            top bidder in informal settlements (0: none; NaN without SP)
+        rdp_transfer: (2, cells) RDP owners' floor transfer per household,
+            rands/year: [0] in equilibrium (Markets.rdp_transfer), [1]
+            ex-post top-up (zeros here, filled by solve)
     """
     p, inputs, sel = mk.p, mk.inputs, mk.sel
     n = len(sel)
@@ -432,6 +791,8 @@ def _export(mk, res, u, error, jobs):
     rent_matrix[:, :, sel] = [r["rent_matrix"] for r in res]
     mask = np.zeros(n)
     mask[sel] = res[2]["mask"]
+    transfer = np.zeros((2, n))
+    transfer[0, sel] = res[1]["transfer"]
 
     return {
         "utility": u,
@@ -449,4 +810,5 @@ def _export(mk, res, u, error, jobs):
         "average_income": inputs["average_income"],
         "limit_city": np.array([households > 1]),
         "mask_self_protec": mask,
+        "rdp_transfer": transfer,
     }

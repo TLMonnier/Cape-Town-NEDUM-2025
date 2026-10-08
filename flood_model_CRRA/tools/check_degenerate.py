@@ -21,7 +21,8 @@ picks iterates with nearly equal errors (differences of order 1e-5).
 Usage (from any directory):
     conda run -n nedum-2025 python flood_model_CRRA/tools/check_degenerate.py
     ... check_degenerate.py 11011 --sandbag_course_cost 100 --CRRA 2
-CONFIG digits are the AF, CC, CO, RM, SP options (default 10101).
+CONFIG digits are the AF, CC, CO, RM, SP options (SP: 0-3 sandbag levels;
+default 10103).
 """
 import argparse
 import sys
@@ -39,11 +40,15 @@ import solver  # noqa: E402
 
 def degenerate(damages):
     """Damages with every state damage replaced by the expected damage."""
+    def flat(expected, states):
+        return {n: np.broadcast_to(expected[n], v.shape).copy()
+                for n, v in states.items()}
+
     out = dict(damages)
-    for level in ("states", "states_protec"):
-        expected = damages[level.replace("states", "expected")]
-        out[level] = {n: np.broadcast_to(expected[n], v.shape).copy()
-                      for n, v in damages[level].items()}
+    out["states"] = flat(damages["expected"], damages["states"])
+    out["states_protec"] = {
+        k: flat(damages["expected_protec"][k], s)
+        for k, s in damages["states_protec"].items()}
     return out
 
 
@@ -80,7 +85,7 @@ def compare_markets(ra, rn, u, defined):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("config", nargs="?", default="10101",
+    parser.add_argument("config", nargs="?", default="10103",
                         help="AF CC CO RM SP digits")
     parser.add_argument("--sandbag_course_cost", type=float, default=25)
     parser.add_argument("--CRRA", type=float, default=crra.PARAM["CRRA"])
@@ -88,11 +93,12 @@ def main():
     keys = ["agents_anticipate_floods", "climate_change", "coastal",
             "risk_misperc", "self_protec"]
     if len(args.config) != len(keys):
-        sys.exit("CONFIG must have 5 digits (AF CC CO RM SP), e.g. 10101")
-    options = {k: int(c) for k, c in zip(keys, args.config)}
+        sys.exit("CONFIG must have 5 digits (AF CC CO RM SP), e.g. 10103")
+    options = {**config.OPTIONS,
+               **{k: int(c) for k, c in zip(keys, args.config)}}
 
     p, inputs = data.prepare_inputs({
-        **config.PARAM, "CRRA": args.CRRA,
+        **config.PARAM, **crra.PARAM, "CRRA": args.CRRA,
         "sandbag_course_cost": args.sandbag_course_cost})
     damages = degenerate(floods.compute_damages(inputs, options, p))
     rn = solver.Markets(p, inputs, damages, options)

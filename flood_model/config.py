@@ -54,17 +54,59 @@ OPTIONS = {
     "coastal": 1,
     # RM: risk misperception. Agents perceive param["risk_internaliz"] x
     # actual damages (not in main.tex)
-    "risk_misperc": 0,
-    # SP: self-protection. Informal settlers may buy sandbags that stop
-    # floods up to param["protec_depth"] (not in main.tex)
-    "self_protec": 0,
+    "risk_misperc": 1,
+    # SP: self-protection (not in main.tex), as the number of sandbag levels
+    # informal settlers can build: 0 (none), 1, 2 or 3. Each household
+    # chooses k = 0, ..., SP levels; k levels raise its floor by
+    # k x param["sandbag_height"] and cost k x param["sandbag_course_cost"]
+    "self_protec": 3,
+    # PS: subsidised self-protection (not in main.tex, requires SP >= 1).
+    # Sandbags are free for settlers, and the scheme is financed by
+    # lump-sum taxes on TAXED_GROUPS, proportional to their mean income
+    # (budget balanced in equilibrium, see solver.solve)
+    "subsid_protec": 0,
+    # SI: subsidised insurance (not in main.tex), 0 or 1. Households of
+    # INSURED_GROUPS (groups 1-2) are reimbursed a share s of the damages
+    # to their own assets (contents, settlers' shacks, RDP houses and
+    # backyard shacks; not developers' structures) at no premium, financed
+    # like PS. s is the share of settlers' damages averted by sandbags
+    # bought at full cost, at their locations, in the same scenario without
+    # insurance (run.insurance_terms). Insured households only internalise
+    # uninsured damages; settlers may still buy sandbags at full cost (SP).
+    "subsid_insur": 0,
+    # PP: public protection (not in main.tex), 0 or 1. Every dwelling, in
+    # every housing type, is protected against every flood type up to
+    # H = param["public_protection_height"]: the water depth falls to
+    # max(d - H, 0), like a raised floor. Free (counterfactual, no cost);
+    # settlers' sandbags (SP) raise their floor further above H
+    "public_protec": 0,
 }
 
 PARAM = {
     # Flood-related parameters
     "risk_internaliz": 0.36,       # RM: share of flood risk perceived
-    "sandbag_course_cost": 250,    # SP: annual cost of protection (rands)
-    "protec_depth": 0.15,          # SP: flood depth (m) stopped by sandbags
+    "sandbag_course_cost": 25,    # SP: annual cost per level (rands)
+    "sandbag_height": 0.15,        # SP: floor elevation per level (m)
+    "public_protection_height": 0.45,   # PP: protection height H (m)
+    # AF0, RM1: developers' unanticipated structure losses are financed by a
+    # lump-sum tax on developers, anticipated ex ante (solver.solve; False
+    # in the legacy check)
+    "developer_loss_tax": True,
+    # RDP owners' utility floor: the government pays the part of their own
+    # expected flood damages that would push their utility below u_1, the
+    # equilibrium utility of group 1, financed by absentee landlords
+    # (solver.Markets.rdp_transfer, accounting.ex_post; False in the legacy
+    # check and in flood_model_CRRA)
+    "rdp_utility_floor": True,
+    # PS, SI, developers' tax: budget balance, relative tolerance and max
+    # fixed-point rounds
+    "budget_tol": 0.001,
+    "max_iter_budget": 10,
+    # SI: coverage share s; None: computed from the reference run without
+    # insurance (run.insurance_terms)
+    "insurance_share": None,
+    # SI: sandbag levels in the reference run if the scenario has SP0
+    "insurance_reference_levels": 3,
     "risk_increase": 2,            # CC: flood probability multiplier
     # Solver (main.tex Section 4.6, "Determination of the equilibrium")
     "max_iter": 200,
@@ -120,9 +162,18 @@ ACCESS = {
     "backyard": [1, 1, 0, 0],
     "informal": [1, 1, 0, 0],
 }
+# PS: income groups paying the lump-sum taxes that finance free sandbags
+# (the two richest, only found in formal housing)
+TAXED_GROUPS = (2, 3)
+# SI: income groups covered by the subsidised insurance (the two poorest;
+# must include every group with access to backyards and settlements)
+INSURED_GROUPS = (0, 1)
 
 
 def simulation_name(options, tag=""):
+    """Output name; "_PP1" is only appended under public protection, so
+    that names without it are unchanged."""
     return "simul_AF{agents_anticipate_floods}_CC{climate_change}" \
-           "_CO{coastal}_RM{risk_misperc}_SP{self_protec}".format(
-               **options) + tag
+           "_CO{coastal}_RM{risk_misperc}_SP{self_protec}" \
+           "_PS{subsid_protec}_SI{subsid_insur}".format(**options) \
+           + ("_PP1" if options.get("public_protec") else "") + tag

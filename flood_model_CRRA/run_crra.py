@@ -8,24 +8,17 @@ import time
 
 import crra                  # first: puts ../flood_model on sys.path
 import config                # flood_model modules from here on
-import data
-import floods
 import run
-import solver
 
 
 def run_model(options=None, param=None, refresh_cache=False, verbose=True):
     """Return (outputs dict, converged flag, full param dict, damages).
 
     options and param override config.OPTIONS and config.PARAM + crra.PARAM.
+    Insurance reference runs (SI1) are also risk averse.
     """
-    options = {**config.OPTIONS, **(options or {})}
-    p, inputs = data.prepare_inputs(
-        {**config.PARAM, **crra.PARAM, **(param or {})}, refresh_cache)
-    damages = floods.compute_damages(inputs, options, p)
-    markets = crra.CRRAMarkets(p, inputs, damages, options)
-    outputs, converged = solver.solve(markets, verbose)
-    return outputs, converged, p, damages
+    return run.run_model(options, {**crra.PARAM, **(param or {})},
+                         refresh_cache, verbose, crra.CRRAMarkets)
 
 
 def main():
