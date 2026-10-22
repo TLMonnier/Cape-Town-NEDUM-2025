@@ -7,7 +7,9 @@
 # %% Setup (re-run after editing the flood_model modules)
 
 import importlib
+import json
 import sys
+from itertools import combinations
 from pathlib import Path
 
 import numpy as np
@@ -78,7 +80,7 @@ options["subsid_protec"] = 0
 # NB: baseline should be defined for subsidized self-protection vs. basic self-protection
 # (not no self-protection)
 # NB: do loop for all coverages?
-options["subsid_insur"] = 1
+options["subsid_insur"] = 0
 # PP: free public protection of every dwelling up to
 # param["public_protection_height"] (45 cm): water depth max(d - 0.45, 0);
 # sandbags (SP) add on top
@@ -94,26 +96,87 @@ param["risk_increase"] = 2
 param["max_iter"] = 1000
 # Solver returns the iterate with the lowest error (False: last iterate)
 param["return_best"] = True
+# SI1: coverage share s of insured groups' own damages, fixed across
+# scenarios (None: computed from a reference run of each scenario without
+# insurance, run.insurance_terms; it is 0.789 in the benchmark, RM1 SP3)
+param["insurance_share"] = 0.79
 
 # Suffix for output file names, to keep parameter variants apart
 # (names only encode options), e.g. "_SB0" for a zero sandbag cost
 tag = ""
 
-name = config.simulation_name(options, tag)
-print(name)
+# %% Policy scenarios: the options above are the benchmark, and each
+# scenario changes only the listed options (output.py reads the results)
 
-# %% Inputs and flood damages (raw files are cached after the first run)
+SCENARIOS = {
+    "benchmark": {},
+    "no_misperception": {"risk_misperc": 0},
+    "subsid_protec": {"subsid_protec": 1},
+    "public_protec": {"public_protec": 1},
+    "subsid_insur": {"subsid_insur": 1},
+    "combined": {"risk_misperc": 0, "subsid_protec": 1, "public_protec": 1,
+                 "subsid_insur": 1},
+}
+# Full factorial of the four policy levers: also run the 10 combinations of
+# two or three levers (about 10 more minutes), for the pairwise interactions
+# in output.py. False: the six scenarios above only
+FACTORIAL = True
+LEVERS = {"RM0": {"risk_misperc": 0}, "PS1": {"subsid_protec": 1},
+          "PP1": {"public_protec": 1}, "SI1": {"subsid_insur": 1}}
+if FACTORIAL:
+    for k in (2, 3):
+        for subset in combinations(LEVERS, k):
+            SCENARIOS["+".join(subset)] = {
+                key: v for lever in subset for key, v in LEVERS[lever].items()}
+# Scenario outputs, with damages and ex-post welfare on the full grid
+# (accounting.grid_outputs), and the scenario list scenarios.json
+FOLDER = config.OUTPUT / "policy_scenarios" / "simulations"
+
+# %% Inputs (raw files are cached after the first run)
 
 p, inputs = data.prepare_inputs(param)
-# SI1: coverage share s from a reference run without insurance (sandbags at
-# full cost), unless set in param["insurance_share"]
-p = run.insurance_terms(p, inputs, options)
-damages = floods.compute_damages(inputs, options, p)
 
-# %% Equilibrium
+# %% Equilibrium for each scenario, saved to FOLDER
 
-markets = solver.Markets(p, inputs, damages, options)
-outputs, converged = solver.solve(markets)
+results, summary = {}, {}
+for label, change in SCENARIOS.items():
+    opts = {**options, **change}
+    name = config.simulation_name(opts, tag)
+    print(f"\n=== {label}: {name} ===")
+    # SI1: coverage share s from a reference run of the same scenario
+    # without insurance (sandbags at full cost), unless set in
+    # param["insurance_share"]
+    p_s = run.insurance_terms(p, inputs, opts)
+    dmg = floods.compute_damages(inputs, opts, p_s)
+    mk = solver.Markets(p_s, inputs, dmg, opts)
+    out, conv = solver.solve(mk)
+    out.update(accounting.grid_outputs(mk, out))
+    run.save(out, opts, tag, folder=FOLDER, damages=dmg)
+    results[label] = (mk, out, dmg, conv)
+    summary[label] = {
+        "name": name, "options": opts, "converged": bool(conv),
+        "error": out["error"].tolist(), "utility": out["utility"].tolist(),
+        "insurance_share": p_s["insurance_share"]
+        if opts["subsid_insur"] else None,
+        "budget": out["budget"].tolist() if "budget" in out else None,
+        "tax": out["tax"].tolist() if "tax" in out else None,
+        "developer_tax": out["developer_tax"].tolist()
+        if "developer_tax" in out else None}
+(FOLDER / "scenarios.json").write_text(json.dumps(
+    {"param": {k: param[k] for k in ("risk_internaliz", "sandbag_course_cost",
+                                     "risk_increase", "max_iter")},
+     "tag": tag, "scenarios": summary}, indent=2))
+print("\nSaved", len(results), "scenarios to", FOLDER)
+for label, s in summary.items():
+    print(f"  {label:>16s}: {s['name']}  converged {s['converged']}, max "
+          f"abs error {100 * max(map(abs, s['error'])):.2f}%")
+
+# %% Scenario for the quick-look cells below
+
+scenario = "benchmark"
+markets, outputs, damages, converged = results[scenario]
+options = markets.options
+name = config.simulation_name(options, tag)
 
 # %% Quick look
 
@@ -203,6 +266,7 @@ if options["self_protec"]:
 # How are RDP owners dealt with? No moves for group 4 (or counted from 0)?
 # Check computation of ex-post utilities
 
+p = markets.p
 base_options = run.baseline_options(options)
 base_damages = floods.compute_damages(inputs, base_options, p)
 base_markets = solver.Markets(p, inputs, base_damages, base_options)
@@ -214,7 +278,8 @@ scenarios.damage_table(accounting.household_damages(base_markets, base_outputs),
 scenarios.welfare_table(base_markets, base_outputs, markets, outputs)
 scenarios.relocation_table(base_outputs, outputs)
 
-# %% Save outputs and flood type masks (to Output/flood_model)
+# %% Save outputs and flood type masks of the selected scenario (to
+# Output/flood_model; the loop above already saved all scenarios to FOLDER)
 
 run.save(outputs, options, tag, damages=damages)
 print("Saved", name, "to", config.OUTPUT)

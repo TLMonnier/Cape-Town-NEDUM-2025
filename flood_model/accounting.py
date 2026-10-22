@@ -245,6 +245,59 @@ def ex_post(mk, outputs):
             "u_post": u_post, "price": price, "rdp_topup": topup}
 
 
+def grid_outputs(mk, outputs):
+    """Damages and ex-post welfare on the full grid, for output scripts
+    (main.py adds them to the outputs saved by run.save).
+
+    Returns a dict of arrays over all grid cells (zeros outside the solver
+    cells):
+        damages_contents, damages_structure, damages_reimbursed: (4 housing
+            types, 4 groups, cells) actual expected damages and insurance
+            payouts, rands a year (household_damages)
+        damages_informal_levels: (4, cells) settlers' total actual damages
+            with k = 0, ..., 3 sandbag levels, at their equilibrium
+            locations and consumption (NaN for k above SP)
+        ex_post_z, ex_post_z_post, ex_post_u, ex_post_u_post, ex_post_price:
+            (4, 4, cells) from ex_post
+        net_income: (4, cells) ỹ_i(x) net of lump-sum taxes
+        solver_cells: (cells,) 1 on the solver cells
+    """
+    p, sel = mk.p, mk.sel
+    n = len(sel)
+
+    def full(values):
+        values = np.asarray(values, dtype=float)
+        out = np.zeros(values.shape[:-1] + (n,))
+        out[..., sel] = values
+        return out
+
+    acc = household_damages(mk, outputs)
+    post = ex_post(mk, outputs)
+    grid = {"damages_" + key: full(acc[key])
+            for key in ("contents", "structure", "reimbursed")}
+    for key in ("z", "z_post", "u", "u_post", "price"):
+        grid["ex_post_" + key] = full(post[key])
+
+    # Settlers' damages by number of sandbag levels, same households and z
+    gamma, v_I = p["fraction_z_dwellings"], p["informal_structure_value"]
+    hh = outputs["households"][2][:, sel]
+    z = mk._composite_good(outputs["utility"], p["pocket_informal"])
+    rates = {0: {n_: mk.damages["expected"][n_][sel]
+                 for n_ in ("contents_informal",
+                            "structure_informal_settlements")}}
+    rates.update({k: {n_: v[sel] for n_, v in d.items()}
+                  for k, d in mk.damages["expected_protec"].items()})
+    levels = np.full((4, n), np.nan)
+    for k, d in rates.items():
+        levels[k, sel] = np.nansum(
+            hh * (gamma * d["contents_informal"] * z
+                  + d["structure_informal_settlements"] * v_I), 0)
+    grid["damages_informal_levels"] = levels
+    grid["net_income"] = full(mk.y)
+    grid["solver_cells"] = sel.astype(float)
+    return grid
+
+
 def landlord_revenue(mk, outputs):
     """Revenues of absentee landlords per solver cell (rands a year), (2,
     cells):
