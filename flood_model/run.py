@@ -17,7 +17,8 @@ import solver
 
 FLAGS = {"af": "agents_anticipate_floods", "cc": "climate_change",
          "co": "coastal", "rm": "risk_misperc", "sp": "self_protec",
-         "ps": "subsid_protec", "si": "subsid_insur", "pp": "public_protec"}
+         "ps": "subsid_protec", "si": "subsid_insur", "pp": "public_protec",
+         "rc": "rdp_choice"}
 CHOICES = {"sp": (0, 1, 2, 3)}
 
 
@@ -120,6 +121,8 @@ def main():
     args = vars(build_parser().parse_args())
     options = {k: args.pop(k) for k in config.OPTIONS}
     refresh = args.pop("refresh_cache")
+    if options["rdp_choice"]:         # RC1 requires the RDP utility floor off
+        args["rdp_utility_floor"] = False
     start = time.time()
     outputs, converged, _, damages = run_model(options, args, refresh)
     name = save(outputs, options, damages=damages)

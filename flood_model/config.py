@@ -80,6 +80,13 @@ OPTIONS = {
     # max(d - H, 0), like a raised floor. Free (counterfactual, no cost);
     # settlers' sandbags (SP) raise their floor further above H
     "public_protec": 0,
+    # RC: RDP choice (not in main.tex), 0 or 1. Group 1 households offered
+    # an RDP unit decline it if their utility there, without renting out
+    # their backyard, is below u_1, the utility of the rest of the group:
+    # they compete on the market, and the unit and its backyard stay
+    # vacant (solver.Markets.set_rdp_occupancy). Requires
+    # param["rdp_utility_floor"] False
+    "rdp_choice": 0,
 }
 
 PARAM = {
@@ -96,7 +103,7 @@ PARAM = {
     # expected flood damages that would push their utility below u_1, the
     # equilibrium utility of group 1, financed by absentee landlords
     # (solver.Markets.rdp_transfer, accounting.ex_post; False in the legacy
-    # check and in flood_model_CRRA)
+    # check, in flood_model_CRRA and under RDP choice, RC1)
     "rdp_utility_floor": True,
     # PS, SI, developers' tax: budget balance, relative tolerance and max
     # fixed-point rounds
@@ -171,9 +178,10 @@ INSURED_GROUPS = (0, 1)
 
 
 def simulation_name(options, tag=""):
-    """Output name; "_PP1" is only appended under public protection, so
-    that names without it are unchanged."""
+    """Output name; "_PP1" and "_RC1" are only appended under public
+    protection and RDP choice, so that names without them are unchanged."""
     return "simul_AF{agents_anticipate_floods}_CC{climate_change}" \
            "_CO{coastal}_RM{risk_misperc}_SP{self_protec}" \
            "_PS{subsid_protec}_SI{subsid_insur}".format(**options) \
-           + ("_PP1" if options.get("public_protec") else "") + tag
+           + ("_PP1" if options.get("public_protec") else "") \
+           + ("_RC1" if options.get("rdp_choice") else "") + tag

@@ -79,7 +79,10 @@ def household_damages(mk, outputs):
     # FS: RDP owners (group 1), renting out a share μ of their backyard
     mu = outputs["housing_supply"][1][sel] / 1000000
     R = np.nan_to_num(outputs["rent"][1][sel])
-    z = mk.rdp_consumption(mu, R, outputs["rdp_transfer"][0][sel])
+    # Consumption floor at zero (negative without the utility floor where
+    # their net income is negative)
+    z = np.maximum(mk.rdp_consumption(mu, R, outputs["rdp_transfer"][0][sel]),
+                   0)
     contents[3, 0] = hh[3, 0] * gamma * d["contents_subsidized"] * z
     structure[3, 0] = (hh[3, 0] * d["structure_subsidized_1"]
                        * p["subsidized_structure_value"])
@@ -128,7 +131,10 @@ def ex_post(mk, outputs):
     bear
     contents damages: developers' unanticipated losses are financed by the
     developers' tax (solver.solve). Utility scales with z^α at fixed
-    dwelling size: u_post = u (z_post / z)^α.
+    dwelling size: u_post = u (z_post / z)^α. Consumption is floored at
+    zero (z_post = max(z_post, 0), so u_post >= 0): where the damages
+    borne exceed the planned budget S, the household consumes nothing and
+    the unpaid damages are not accounted for.
 
     RDP owners' utility floor (p["rdp_utility_floor"], solver docstring):
     their planned budget includes the equilibrium transfer T. If ex post
@@ -203,7 +209,8 @@ def ex_post(mk, outputs):
         for h in range(3):
             rp, ra, Dp, Da = specs[h]
             S = z_types[h] + borne(rp, Dp, z_types[h])
-            z[h], z_post[h] = z_types[h], solve_z(S, ra, Da)
+            # Consumption floor at zero (then utility is zero too)
+            z[h], z_post[h] = z_types[h], np.maximum(solve_z(S, ra, Da), 0)
             u[h] = np.broadcast_to(u_eq[:, None], shape[1:])
             u_post[h] = u[h] * (z_post[h] / z[h]) ** alpha
             price[h] = 1 + gamma * ra
@@ -236,10 +243,15 @@ def ex_post(mk, outputs):
             z_post_rdp = np.where(low, target, z_post_rdp)
             topup = np.where(low, z_post_rdp + borne(rho_c, D, z_post_rdp)
                              - (A + T), 0)
-        u_rdp = (np.where(z_rdp > 0, z_rdp, np.nan) ** alpha
-                 * (H - mu * B) ** beta)
+        # Consumption floor at zero, in equilibrium (without the utility
+        # floor, z_rdp < 0 where net income is negative) and ex post
+        z_rdp, z_post_rdp = np.maximum(z_rdp, 0), np.maximum(z_post_rdp, 0)
+        housing = (H - mu * B) ** beta
+        u_rdp = z_rdp ** alpha * housing
         z[3, 0], z_post[3, 0], u[3, 0] = z_rdp, z_post_rdp, u_rdp
-        u_post[3, 0] = u_rdp * (z_post_rdp / z_rdp) ** alpha
+        u_post[3, 0] = np.where(z_rdp > 0,
+                                u_rdp * (z_post_rdp / z_rdp) ** alpha,
+                                z_post_rdp ** alpha * housing)
         price[3, 0] = 1 + gamma * rho_c
     return {"households": hh, "z": z, "z_post": z_post, "u": u,
             "u_post": u_post, "price": price, "rdp_topup": topup}

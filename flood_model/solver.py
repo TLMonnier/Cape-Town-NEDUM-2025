@@ -76,6 +76,17 @@ margin (Markets.rdp_transfer). T is financed by absentee landlords, so it
 does not feed back on the equilibrium; solve reports it with the landlords'
 revenues.
 
+RDP choice (option RC, not in main.tex; requires the utility floor off):
+group 1 households offered an RDP unit in cell x may decline it. At the
+start of each iteration on utilities, they compare their ex-ante utility in
+the unit, without renting out their backyard (μ = 0, perceived damages net
+of insurance), with u_1, the current utility level of the rest of group 1.
+Where U_FS(x, μ = 0) < u_1, they compete on the market (FP, IB, IS) with
+the rest of the group, whose target N_1 grows accordingly, and the unit
+stays vacant, with its backyard (Markets.set_rdp_occupancy). At the end,
+only the cells with U_FS(x, μ = 0) >= u_1 host RDP owners, whose utility
+at their optimal backyard share is then at least u_1.
+
 Units: rents in rands per m2 per year; housing supply s_h in m2 of floor
 per km2 of *available* land; L_h(x) as a share of the cell area (0.25 km2).
 """
@@ -146,7 +157,14 @@ class Markets:
         self.amenities = inputs["amenities"][sel]       # A(x)
         self.land = inputs["coeff_land"][:3, sel]       # L_h(x), h = FP, IB, IS
         self.housing_limit = inputs["housing_limit"][sel]
-        self.rdp_cells = inputs["households_RDP"][sel] > 0
+        # RDP units offered N_1^FS(x); occupied cells and units declined
+        # under RDP choice (RC1, set_rdp_occupancy)
+        self.rdp_offered = inputs["households_RDP"][sel]
+        self.rdp_cells = self.rdp_offered > 0
+        self.rdp_vacant = np.zeros(len(self.rdp_offered))
+        if options.get("rdp_choice") and p["rdp_utility_floor"]:
+            raise ValueError("rdp_choice requires param['rdp_utility_floor']"
+                             " False")
         self.cells = np.arange(sel.sum())
         self.no_access = {k: np.array(v) == 0
                           for k, v in config.ACCESS.items()}
@@ -410,13 +428,14 @@ class Markets:
     def rdp_utility(self, R, transfer):
         """Utility of RDP owners (1) at their optimal backyard share, for a
         backyard rent R and a lump-sum transfer T:
-            U_FS = z^α (q_FS - μ Y - q0)^(1-α) A(x)   (NaN if z <= 0),
-        and their composite good z."""
+            U_FS = max(z, 0)^α (q_FS - μ Y - q0)^(1-α) A(x)
+        (consumption floor at zero), and their composite good z (from the
+        budget, possibly negative)."""
         p = self.p
         share = self.backyard_supply(R, transfer) / 1000000
         z = self.rdp_consumption(share, R, transfer)
         with np.errstate(invalid="ignore"):
-            U = (np.where(z > 0, z, np.nan) ** p["alpha"]
+            U = (np.maximum(z, 0) ** p["alpha"]
                  * (p["RDP_size"] + p["backyard_size"] * (1 - share)
                     - p["q0"]) ** p["beta"] * self.amenities)
         return U, z
@@ -450,7 +469,7 @@ class Markets:
         if not self.p["rdp_utility_floor"]:
             return T
         U, _ = self.rdp_utility(R, T)
-        need = self.rdp_cells & ~(U >= u_1)          # incl. z <= 0 (NaN)
+        need = self.rdp_cells & ~(U >= u_1)          # incl. z <= 0 (U = 0)
         if not need.any():
             return T
         p, sub, R = self.p, self._subset(need), R[need]
@@ -480,6 +499,29 @@ class Markets:
         sub.cells = np.arange(cells.sum())
         return sub
 
+    # --- RDP choice (RC1) ---------------------------------------------------
+
+    def set_rdp_occupancy(self, u_1):
+        """Occupied RDP cells for group 1's utility u_1 (module docstring).
+
+        Under RDP choice (RC1), households offered an RDP unit in cell x
+        accept it iff their utility there without renting out their
+        backyard and without transfer is at least u_1:
+            U_FS(x, μ = 0) = z^α (q_FS - q0)^(1-α) A(x) >= u_1,
+            (1 + γ ρ^content_FS) z = ỹ_1 - (ρ + ρ^struct_FS) v_FS,
+        with perceived damages, net of insurance (rdp_utility at R = 0,
+        where μ = 0). They decline where z <= 0 (U = 0). U_FS(x, μ = 0) does not
+        depend on u, so the decision is a threshold on u_1. Without RC,
+        every offer is accepted.
+
+        Sets rdp_cells (occupied cells) and rdp_vacant (units declined per
+        cell, whose households compete on the market)."""
+        self.rdp_cells = self.rdp_offered > 0
+        if self.options.get("rdp_choice"):
+            U, _ = self.rdp_utility(np.zeros(len(self.cells)), 0)
+            self.rdp_cells = self.rdp_cells & (U >= u_1)
+        self.rdp_vacant = np.where(self.rdp_cells, 0, self.rdp_offered)
+
     # --- Market clearing for given utilities --------------------------------
 
     def solve_market(self, kind, u):
@@ -506,6 +548,8 @@ class Markets:
             # RDP owners' utility floor at group 1's current utility u_1
             transfer = self.rdp_transfer(R, u[0])
             supply = self.backyard_supply(R, transfer)
+            # RC1: nobody rents out the backyards of vacant RDP units
+            supply[self.rdp_vacant > 0] = 0
         else:               # one m2 of floor per m2 of settlement land
             supply = 1000000 * np.ones(len(R))
         supply[R == 0] = 0                  # no positive bid
@@ -573,6 +617,13 @@ def solve(mk, verbose=True):
               f"rands/year (formal {revenue[0].sum() / 1e6:,.1f} M, "
               f"settlements {revenue[1].sum() / 1e6:,.1f} M), i.e. a "
               f"{100 * total / revenue.sum():.4f}% levy")
+    if verbose and mk.options.get("rdp_choice"):
+        vacant = outputs["rdp_vacant"]
+        print(f"RDP choice: {vacant.sum():,.0f} households "
+              f"({np.sum(vacant > 0)} cells, "
+              f"{100 * vacant.sum() / mk.rdp_offered.sum():.2f}% of RDP "
+              f"units) decline their RDP offer at u_1 = "
+              f"{outputs['utility'][0]:,.1f}")
     return outputs, converged
 
 
@@ -677,7 +728,9 @@ def _solve_utilities(mk, verbose=True):
     main.tex Section 4.6: starting from p["utility_init"], each iteration
     solves the 3 markets for the current u (conditions (i)-(ii)), compares
     the simulated households of each group, N_i^sim = Σ_h Σ_x N_i^h(x), to
-    the target N_i (condition (iii)), and updates
+    the target N_i (condition (iii); under RDP choice, RC1, N_1 plus the
+    RDP units declined at the current u_1, Markets.set_rdp_occupancy, which
+    each iteration starts with), and updates
         log u_i <- log u_i + λ_k log((N_i^sim + 10) / (N_i + 10)),
     with 10% larger steps upwards. Too many households of group i means that
     its utility is too low: raising u_i lowers its bids and raises formal
@@ -695,20 +748,24 @@ def _solve_utilities(mk, verbose=True):
     max_iter = p["max_iter"]
 
     def evaluate(u):
+        # RC1: households declining their RDP offer at u_1 join the market
+        mk.set_rdp_occupancy(u[0])
+        goal = target.copy()
+        goal[0] += mk.rdp_vacant.sum()
         res = [mk.solve_market(kind, u) for kind in TYPES]
         # Households by (housing type FP/IB/IS, income group)
         jobs = np.array([np.sum(r["households"], 1) for r in res])
         total = np.sum(jobs, 0)
-        return res, jobs, total, total / target - 1
+        return res, jobs, total, goal, total / goal - 1
 
-    def step(total, factor):
-        diff = np.log((total + 10) / (target + 10)) * factor
+    def step(total, goal, factor):
+        diff = np.log((total + 10) / (goal + 10)) * factor
         diff[diff > 0] = diff[diff > 0] * 1.1
         return diff
 
     u = np.array(p["utility_init"], dtype=float)
-    res, jobs, total, error = evaluate(u)
-    diff = step(total, p["convergence_factor"])
+    res, jobs, total, goal, error = evaluate(u)
+    diff = step(total, goal, p["convergence_factor"])
     best = (np.max(np.abs(error)), 0, res, jobs, u, error)
     it = 0
     while it < max_iter - 1 and np.max(np.abs(error)) > p["precision"]:
@@ -722,13 +779,15 @@ def _solve_utilities(mk, verbose=True):
         factor = (p["convergence_factor"]
                   / (1 + 0.5 * np.abs(100 / (target + 100) - 1))
                   * (1 - 0.6 * it / max_iter))
-        res, jobs, total, error = evaluate(u)
-        diff = step(total, factor)
+        res, jobs, total, goal, error = evaluate(u)
+        diff = step(total, goal, factor)
         if np.max(np.abs(error)) < best[0]:
             best = (np.max(np.abs(error)), it, res, jobs, u, error)
     n_iter = it + 1
     if p["return_best"]:
         _, it, res, jobs, u, error = best
+    # RDP occupancy of the returned iterate (for _export and accounting)
+    mk.set_rdp_occupancy(u[0])
     converged = np.max(np.abs(error)) <= p["precision"]
     if verbose:
         print(f"{'Converged' if converged else 'NOT converged'}: iterate "
@@ -744,7 +803,8 @@ def _export(mk, res, u, error, jobs):
     RDP) and income groups poorest to richest. Outputs (cells: the 24,014
     grid cells):
         utility: (4,) u_i
-        error: (4,) N_i^sim / N_i - 1
+        error: (4,) N_i^sim / N_i - 1 (RC1: N_1 includes the households
+            who declined their RDP offer)
         simulated_jobs: (3, 4) households by endogenous housing type, group
         households: (4, 4, cells) N_i^h(x), by housing type and group
         households_housing_types, household_centers: (4, cells) sums of
@@ -761,11 +821,15 @@ def _export(mk, res, u, error, jobs):
         rdp_transfer: (2, cells) RDP owners' floor transfer per household,
             rands/year: [0] in equilibrium (Markets.rdp_transfer), [1]
             ex-post top-up (zeros here, filled by solve)
+        rdp_vacant: (cells,) RDP units declined under RDP choice (RC1;
+            zeros otherwise), whose households live on the market
     """
     p, inputs, sel = mk.p, mk.inputs, mk.sel
     n = len(sel)
     land_rdp = inputs["coeff_land"][3]
-    hh_rdp = inputs["households_RDP"]
+    vacant = np.zeros(n)
+    vacant[sel] = mk.rdp_vacant
+    hh_rdp = np.where(vacant > 0, 0, inputs["households_RDP"])
 
     households = np.zeros((4, 4, n))
     for t, r in enumerate(res):
@@ -779,7 +843,7 @@ def _export(mk, res, u, error, jobs):
 
     size = grid("size", 0)
     size[size <= 0] = np.nan
-    size_rdp = p["RDP_size"] * (land_rdp > 0)
+    size_rdp = p["RDP_size"] * ((land_rdp > 0) & (vacant == 0))
     with np.errstate(divide="ignore", invalid="ignore"):
         # RDP floor space per unit of available land (legacy formula)
         supply_rdp = (p["RDP_size"] / (p["RDP_size"] + p["backyard_size"])
@@ -811,4 +875,5 @@ def _export(mk, res, u, error, jobs):
         "limit_city": np.array([households > 1]),
         "mask_self_protec": mask,
         "rdp_transfer": transfer,
+        "rdp_vacant": vacant,
     }

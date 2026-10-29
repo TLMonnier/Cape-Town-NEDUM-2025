@@ -73,7 +73,14 @@ def welfare_table(mk_base, out_base, mk_scen, out_scen):
       EV = c z_post (r_i^(1/α) - 1);
     - RDP owners (utility not equalised across cells): as IB, IS with
       their own ex-post utility ratio in each cell, at their baseline
-      backyard share.
+      backyard share; at zero baseline consumption (floor), EV = c z with
+      z the composite good that gives them the scenario's utility.
+    Under RDP choice (RC1), group 1 households move between RDP units and
+    the market when a unit is vacant in one run only. Baseline market
+    households and baseline owners whose unit is vacant in the scenario end
+    up in the scenario's market or in the units vacant in the baseline
+    only: both get the mean ex-post utility of these scenario households
+    (group 1's ex-post mean below).
     Means are per baseline household, in rands a year and as a % of the
     group's mean income ȳ_i. Taxes (PS, SI) are included through utility.
     """
@@ -82,12 +89,23 @@ def welfare_table(mk_base, out_base, mk_scen, out_scen):
     eb, es = accounting.ex_post(mk_base, out_base), \
         accounting.ex_post(mk_scen, out_scen)
 
-    def group_mean(e, key):          # non-RDP households
+    def group_mean(e, key, rdp=None):
+        """Non-RDP households, plus group 1's RDP owners in cells rdp, with
+        their utility times A(x) (accounting.ex_post leaves it out)."""
         w = e["households"][:3]
-        return (w * e[key][:3]).sum((0, 2)) / w.sum((0, 2))
+        total, n = (w * e[key][:3]).sum((0, 2)), w.sum((0, 2))
+        if rdp is not None:
+            u_rdp = e[key][3, 0] * mk_base.amenities
+            ok = rdp & np.isfinite(u_rdp)
+            total[0] += np.sum(e["households"][3, 0][ok] * u_rdp[ok])
+            n[0] += e["households"][3, 0][ok].sum()
+        return total / n
 
+    vacant_b = out_base["rdp_vacant"][sel] > 0
+    vacant_s = out_scen["rdp_vacant"][sel] > 0
     u_b, u_s = out_base["utility"], out_scen["utility"]
-    post_b, post_s = group_mean(eb, "u_post"), group_mean(es, "u_post")
+    post_b = group_mean(eb, "u_post")
+    post_s = group_mean(es, "u_post", vacant_b & ~vacant_s)
     ratio = (post_s / post_b)[:, None]
     hh = eb["households"]
     ev = np.zeros_like(hh)
@@ -96,9 +114,19 @@ def welfare_table(mk_base, out_base, mk_scen, out_scen):
     for h in (1, 2):
         ev[h] = eb["price"][h] * eb["z_post"][h] * (ratio ** (1 / alpha) - 1)
     with np.errstate(invalid="ignore", divide="ignore"):
-        rdp_ratio = es["u_post"][3, 0] / eb["u_post"][3, 0]
-        ev[3, 0] = np.nan_to_num(eb["price"][3, 0] * eb["z_post"][3, 0]
-                                 * (rdp_ratio ** (1 / alpha) - 1))
+        # (RDP owners' ex-post utilities are up to A(x))
+        u_target = np.where(vacant_s, post_s[0] / mk_base.amenities,
+                            es["u_post"][3, 0])
+        rdp_ratio = u_target / eb["u_post"][3, 0]
+        # Owners at zero consumption (floor): EV = c z, with z the
+        # composite good giving u_target at their baseline backyard share
+        z_b, c_b = eb["z_post"][3, 0], eb["price"][3, 0]
+        mu_b = out_base["housing_supply"][1][sel] / 1000000
+        housing = (p["RDP_size"] + p["backyard_size"] * (1 - mu_b)
+                   - p["q0"]) ** p["beta"]
+        ev[3, 0] = np.nan_to_num(np.where(
+            z_b > 0, c_b * z_b * (rdp_ratio ** (1 / alpha) - 1),
+            c_b * (u_target / housing) ** (1 / alpha)))
     total = (hh * ev).sum((0, 2))
     n = hh.sum((0, 2))
     y_bar = mk_base.inputs["average_income"]
@@ -111,11 +139,13 @@ def welfare_table(mk_base, out_base, mk_scen, out_scen):
               f"({100 * (post_s[i] / post_b[i] - 1):+.3f}%); mean EV "
               f"{total[i] / n[i]:+,.1f} rands/year "
               f"({100 * total[i] / n[i] / y_bar[i]:+.3f}% of mean income)")
-    w = np.where(np.isfinite(rdp_ratio), hh[3, 0], 0)
+    # Mean utility ratio over owners with a finite one (not from zero)
+    finite = np.isfinite(rdp_ratio)
+    w = np.where(finite, hh[3, 0], 0)
     print(f"  of which RDP owners: mean EV "
           f"{(hh[3, 0] * ev[3, 0]).sum() / hh[3, 0].sum():+,.1f} rands/year,"
           f" mean ex-post utility change "
-          f"{100 * (np.nansum(w * rdp_ratio) / w.sum() - 1):+.3f}%")
+          f"{100 * (np.nansum(w * np.where(finite, rdp_ratio, 0)) / w.sum() - 1):+.3f}%")
     print(f"  total EV: {total.sum() / 1e6:+,.2f} M rands/year")
 
 

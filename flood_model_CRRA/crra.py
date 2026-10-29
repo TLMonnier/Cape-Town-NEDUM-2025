@@ -104,6 +104,9 @@ class CRRAMarkets(solver.Markets):
             raise NotImplementedError("the RDP owners' utility floor is "
                                       "only implemented for risk-neutral "
                                       "agents (set rdp_utility_floor False)")
+        if options.get("rdp_choice"):
+            raise NotImplementedError("RDP choice (rdp_choice) is only "
+                                      "implemented for risk-neutral agents")
         # State damages D̄_s as perceived by agents and borne net of
         # insurance (SI1 reimburses a share s in every state), (11, cells):
         # factors k or k (1 - s) as in solver.Markets.dmg

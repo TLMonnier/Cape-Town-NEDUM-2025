@@ -85,13 +85,17 @@ options["subsid_insur"] = 0
 # param["public_protection_height"] (45 cm): water depth max(d - 0.45, 0);
 # sandbags (SP) add on top
 options["public_protec"] = 0
+# RC: group 1 households decline their RDP offer if their utility there,
+# without renting out their backyard, is below u_1 (they join the market,
+# and the unit stays vacant); requires the RDP utility floor off (below)
+options["rdp_choice"] = 1
 
 # Land value capture vs mandatory insurance when introducing public protection?
 
 # Parameters (any entry of config.PARAM can be overridden here)
 param = dict(config.PARAM)
 param["risk_internaliz"] = 0.36
-param["sandbag_course_cost"] = 25      # config default: 250
+param["sandbag_course_cost"] = 50      # config default: 250
 param["risk_increase"] = 2
 param["max_iter"] = 1000
 # Solver returns the iterate with the lowest error (False: last iterate)
@@ -100,6 +104,8 @@ param["return_best"] = True
 # scenarios (None: computed from a reference run of each scenario without
 # insurance, run.insurance_terms; it is 0.789 in the benchmark, RM1 SP3)
 param["insurance_share"] = 0.79
+# RDP owners' utility floor (transfers lifting them to u_1), off under RC1
+param["rdp_utility_floor"] = not options["rdp_choice"]
 
 # Suffix for output file names, to keep parameter variants apart
 # (names only encode options), e.g. "_SB0" for a zero sandbag cost
@@ -161,7 +167,8 @@ for label, change in SCENARIOS.items():
         "budget": out["budget"].tolist() if "budget" in out else None,
         "tax": out["tax"].tolist() if "tax" in out else None,
         "developer_tax": out["developer_tax"].tolist()
-        if "developer_tax" in out else None}
+        if "developer_tax" in out else None,
+        "rdp_vacant": float(out["rdp_vacant"].sum())}
 (FOLDER / "scenarios.json").write_text(json.dumps(
     {"param": {k: param[k] for k in ("risk_internaliz", "sandbag_course_cost",
                                      "risk_increase", "max_iter")},
@@ -189,6 +196,10 @@ print("Error by income group (%):", np.round(100 * outputs["error"], 2))
 for t, label in enumerate(["formal", "backyard", "informal", "RDP"]):
     print(f"{label:>9s} households: {np.nansum(hh[t]):>10,.0f}  by group",
           np.round(np.nansum(hh[t], 1)).astype(int))
+if options["rdp_choice"]:
+    vacant = outputs["rdp_vacant"]
+    print(f"Vacant RDP units (offer declined): {vacant.sum():,.0f} in "
+          f"{np.sum(vacant > 0)} cells")
 print(f"Protected settler households: {np.nansum(hh[2][:, protected]):,.0f}"
       f" ({protected.sum()} protected cells)")
 if "budget" in outputs:              # PS or SI
