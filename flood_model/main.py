@@ -134,9 +134,13 @@ if FACTORIAL:
         for subset in combinations(LEVERS, k):
             SCENARIOS["+".join(subset)] = {
                 key: v for lever in subset for key, v in LEVERS[lever].items()}
+# Check run without any self-protection (benchmark with SP0; output.py
+# leaves it out of the scenario comparisons and the factorial)
+SCENARIOS["no_self_protec"] = {"self_protec": 0}
 # Scenario outputs, with damages and ex-post welfare on the full grid
-# (accounting.grid_outputs), and the scenario list scenarios.json
-FOLDER = config.OUTPUT / "policy_scenarios" / "simulations"
+# (accounting.grid_outputs), and the scenario list scenarios.json; next to
+# the tables, figures and PDF built by output.py (user, 2026-11-19)
+FOLDER = config.ROOT / "Output" / "policy_scenarios" / "simulations"
 
 # %% Inputs (raw files are cached after the first run)
 
