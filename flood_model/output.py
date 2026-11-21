@@ -336,9 +336,10 @@ VIEW_NOTE = {
     "ante": (" Ex-ante version: damages agents anticipate in equilibrium "
              "(36\\% of actual damages under risk misperception, all of them "
              "without; insured households anticipate the uninsured share), "
-             "without developers' unanticipated losses, and equilibrium "
-             "utilities instead of utilities after the actual damages are "
-             "realised.")}
+             "without developers' unanticipated losses (welfare tables "
+             "deduct the developers' tax they anticipate instead), and "
+             "equilibrium utilities instead of utilities after the actual "
+             "damages are realised.")}
 sim = SIM["post"]
 B = sim["benchmark"]
 N_TOTAL = B["hh"].sum()
@@ -734,11 +735,166 @@ def legend_above(fig, handles, title, ncol=None):
                fontsize=8, bbox_to_anchor=(0.005, 1.0), alignment="left")
 
 ## SAVING AND THE PDF REGISTRY
-## Each output of the PDF is registered with its section, subsection,
-## position (the PDF follows the user's order of 2026-11-19 within each
-## section, whatever the order of the code), caption and note.
+## Each output of the PDF is registered with its caption and note; its
+## section, subsection and position come from LAYOUT (user, 2026-11-20),
+## whatever the order of the code. Ex-ante figures go to the last
+## subsection of the online appendix, in the order of their ex-post
+## versions; ex-ante tables stay next to their ex-post versions.
 
 REGISTRY = []
+EXANTE_SUB = "Ex-ante tables and figures"
+SUB_INTRO = {EXANTE_SUB: None}               # set once VIEW_NOTE exists
+# Outputs switched off ("commented out", user, 2026-11-21): neither
+# rendered nor registered, and their files are cleaned up; remove a stem
+# from this set (and add it to LAYOUT) to bring it back
+DROPPED = {
+    "map_damages_paid_by_housing_type",
+    "map_damages_paid_by_housing_type_exante",
+    "table_damages_exposure_benchmark_above_5cm_exante",
+    "table_scenario_summary_above_5cm",
+    "table_scenario_summary_above_5cm_exante",
+    "table_damages_exposure_scenarios_above_5cm",
+    "table_damages_exposure_scenarios_above_5cm_exante",
+    "scenarios_dist_damages_over_depth",
+    "scenarios_dist_damages_over_depth_exante",
+    "scenarios_dist_damages_over_depth_low_income",
+    "scenarios_dist_damages_over_depth_low_income_exante",
+    "scenarios_dist_households_over_rent",
+    "scenarios_dist_households_over_rent_low_income",
+    "dist_damages_over_depth", "dist_damages_over_depth_exante",
+    "dist_damages_paid_over_depth_no_self_protection",
+    "dist_damages_paid_over_depth_no_self_protection_exante",
+    "dist_households_over_rent",
+    "scenarios_map_rents_formal_private",
+    "scenarios_map_rents_informal_backyards",
+    "scenarios_map_rents_informal_settlements",
+    "scenarios_bars_households_by_housing_type",
+    "table_pairwise_interactions", "table_pairwise_interactions_exante",
+}
+# (section, subsection, sub-subsection, ordered stems); ex-ante outputs are
+# placed automatically (placement)
+LAYOUT = [
+    ("main", "City structure and flood risks", None,
+     ["map_households", "map_damages_by_housing_type",
+      "map_damages_and_damages_paid_by_housing_type"]),
+    ("main", "Exposure and damages across flood depth", None,
+     ["dist_households_over_depth", "dist_damages_paid_over_depth",
+      "table_damages_exposure_benchmark"]),
+    ("main", "Policy scenarios: damages, exposure and welfare", None,
+     ["table_scenario_summary", "table_welfare_exposed"]),
+    ("appendix", "Data and model", "Income groups and housing types",
+     ["table_income_groups", "table_model_assumptions"]),
+    ("appendix", "Data and model", "Spatial inputs",
+     ["map_jobs_by_income_group_over_households",
+      "map_land_availability_by_housing_type", "map_amenity_index",
+      "map_income_net_of_commuting_by_income_group"]),
+    ("appendix", "Data and model", "Housing prices and flood risks in the data",
+     ["table_price_regression_formal_private_data"]),
+    ("appendix", "Benchmark equilibrium", "Rents and flood risks",
+     ["map_rents_by_housing_type", "table_rent_regressions_by_housing_type"]),
+    ("appendix", "Benchmark equilibrium", "Self-protection of informal "
+                                          "settlers",
+     ["map_self_protection", "dist_self_protection_over_depth"]),
+    ("appendix", "Benchmark equilibrium", "Most exposed households",
+     ["table_damages_exposure_benchmark_above_5cm"]),
+    ("appendix", "Policy scenarios", "Damages and exposure by income group "
+                                     "and housing type",
+     ["table_damages_exposure_scenarios",
+      "scenarios_bars_damages_by_housing_type",
+      "scenarios_bars_damages_paid_by_housing_type"]),
+    ("appendix", "Policy scenarios", "Distributions across flood depth",
+     ["scenarios_dist_households_over_depth",
+      "scenarios_dist_households_over_depth_low_income",
+      "scenarios_dist_damages_paid_over_depth",
+      "scenarios_dist_damages_paid_over_depth_low_income",
+      "scenarios_dist_self_protection_over_depth"]),
+    ("appendix", "Policy scenarios", "Welfare of all and most exposed "
+                                     "households",
+     ["table_welfare", "table_welfare_most_exposed"]),
+    ("appendix", "Policy scenarios", "Policy interactions: Shapley "
+                                     "decompositions",
+     ["table_shapley_utility", "table_shapley_ev"]),
+    ("online", "Policy scenarios: maps", "Damages",
+     ["scenarios_map_damages_by_housing_type"]
+     + [f"scenarios_map_damages_{t}" for t in
+        ("formal_private", "informal_backyards", "informal_settlements",
+         "formal_subsidised")]),
+    ("online", "Policy scenarios: maps", "Self-protection",
+     ["scenarios_map_self_protection"]),
+    ("online", "Policy scenarios: rent regressions and policy interactions",
+     "Rent regressions", ["table_rent_regressions_scenarios"]),
+    ("online", "Policy scenarios: rent regressions and policy interactions",
+     "Pairwise policy interactions", ["interaction_matrices"]),
+]
+POSITION = {stem: (sec, sub, subsub, 1000 * k + j)
+            for k, (sec, sub, subsub, stems) in enumerate(LAYOUT)
+            for j, stem in enumerate(stems)}
+
+
+def exante_group(sub, subsub):
+    """Sub-subsection of the ex-ante subsection for an ex-post output."""
+    text = f"{sub} {subsub or ''}".lower()
+    if "interaction" in text:
+        return "Policy interactions"
+    if "scenario" in text:
+        return "Policy scenarios"
+    return "Benchmark equilibrium"
+
+
+def placement(stem, kind="figure"):
+    """(section, subsection, sub-subsection, order) of an output in the
+    PDF, or None. Ex-ante outputs (figures and tables) go to the last
+    subsection of the online appendix, grouped like their ex-post
+    versions and in their order."""
+    if stem in POSITION:
+        return POSITION[stem]
+    if stem.endswith("_exante") and stem[:-7] in POSITION:
+        sec, sub, subsub, order = POSITION[stem[:-7]]
+        group = exante_group(sub, subsub)
+        rank = ["Benchmark equilibrium", "Policy scenarios",
+                "Policy interactions"].index(group)
+        return ("online", EXANTE_SUB, group, 10 ** 6 + 10 ** 5 * rank + order)
+    return None
+
+
+def section_of(stem, section, kind="figure"):
+    where = placement(stem, kind)
+    return where[0] if where else section
+
+
+# Files written (or kept) in this run, by folder: everything else in the
+# section folders is stale and removed at the end (moved or dropped)
+PRODUCED = set()
+
+
+def relocate(stem, section):
+    """Move an existing figure (and its panels and builds) rendered in
+    another section folder to this section (OUTPUT_ONLY runs)."""
+    for kind in ("figures", "panels", "builds"):
+        target = folder(section, kind)
+        for other in SECTIONS:
+            if other == section:
+                continue
+            src = folder(other, kind)
+            for f in list(src.glob(f"{stem}.png")) \
+                    + list(src.glob(f"{stem}__*.png")):
+                f.replace(target / f.name)
+        for f in list(target.glob(f"{stem}.png")) \
+                + list(target.glob(f"{stem}__*.png")):
+            PRODUCED.add(f.resolve())
+
+
+def cleanup():
+    """Remove files of the section folders not produced in this run."""
+    removed = []
+    for sec in SECTIONS:
+        for kind in KINDS:
+            for f in folder(sec, kind).iterdir():
+                if f.is_file() and f.resolve() not in PRODUCED:
+                    f.unlink()
+                    removed.append(f"{SECTIONS[sec]}/{kind}/{f.name}")
+    print(f"  removed {len(removed)} stale files:",
+          sorted({r.split('__')[0] for r in removed}))
 
 
 def slug(text):
@@ -761,11 +917,25 @@ def save_fig(fig, path):
                 raise
             time.sleep(3)
     plt.close(fig)
+    PRODUCED.add(Path(path).resolve())
 
 
-def register(section, kind, stem, order, sub, caption, note, width=None):
+def register(section, kind, stem, order, sub, caption, note, width=None,
+             label=None):
+    """Register an output for the PDF; LAYOUT sets its section, subsection
+    and order (outputs missing from it keep the given ones); DROPPED
+    outputs are not registered."""
+    if (label or stem) in DROPPED:
+        return
+    where = placement(label or stem, kind)
+    subsub = None
+    if where:
+        section, sub, subsub, order = where
+    else:
+        print(f"  WARNING: {label or stem} is not in LAYOUT")
     REGISTRY.append(dict(section=section, kind=kind, stem=stem, order=order,
-                         sub=sub, caption=caption, note=note, width=width))
+                         sub=sub, subsub=subsub, caption=caption, note=note,
+                         width=width, label=label))
 
 
 def figure_set(stem, section, n, make, draw, finish=None, names=None,
@@ -789,7 +959,11 @@ def figure_set(stem, section, n, make, draw, finish=None, names=None,
             finish(fig, axes, panels, vis)
         save_fig(fig, path)
 
+    if stem in DROPPED:
+        return
+    section = section_of(stem, section)
     if ONLY and not re.search(ONLY, stem):
+        relocate(stem, section)
         if doc:
             register(section, "figure", stem, *doc)
         return
@@ -799,6 +973,7 @@ def figure_set(stem, section, n, make, draw, finish=None, names=None,
     if doc:
         register(section, "figure", stem, *doc)
     if not VARIANTS:
+        relocate(stem, section)                 # keep existing variants
         return
     if n > 1:
         for k in range(n):
@@ -820,9 +995,14 @@ print("TABLES 1-2: DATA")
 def write_table(df, section, stem, fmt, doc=None, resize=True):
     """Booktabs table (.tex) and Excel copy in <section>/tables; doc =
     (order, subsection, caption, note) registers it for the PDF."""
+    if stem in DROPPED:
+        return
+    section = section_of(stem, section, "table")
     path = folder(section, "tables")
     df.to_excel(path / f"{stem}.xlsx", float_format="%.4f")
     latex_table(df, path / f"{stem}.tex", fmt)
+    PRODUCED.update({(path / f"{stem}.xlsx").resolve(),
+                     (path / f"{stem}.tex").resolve()})
     if doc:
         register(section, "table", stem, *doc[:4],
                  width=doc[4] if len(doc) > 4 else resize)
@@ -849,20 +1029,28 @@ def latex_table(df, path, fmt):
                          rf"{{\textit{{{esc(block)}}}}} \\")
         for row, values in df.loc[block].iterrows():
             cells = [esc(fmt(block, row, c, v)) for c, v in zip(cols, values)]
-            lines.append((r"\quad " if block else "") + esc(row) + " & "
+            # Row labels with "\n" break over two lines
+            label = (r"\makecell[l]{" + r"\\".join(
+                esc(part) for part in row.split("\n")) + "}"
+                     if "\n" in row else esc(row))
+            lines.append((r"\quad " if block else "") + label + " & "
                          + " & ".join(cells) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     Path(path).write_text("\n".join(lines), encoding="utf-8")
 
 
-def _num(v, digits=1, sign=False, dash_zero=False):
+def _num(v, digits=1, sign=False, dash_zero=False, fixed=False):
     """Number with `digits` decimals; values that would round to zero keep
     two significant digits (so that small positive damages do not show as
-    0.0); exact zeros as dashes if dash_zero; NaN as dashes."""
+    0.0), unless fixed (always `digits` decimals, zeros included); exact
+    zeros as dashes if dash_zero; NaN as dashes."""
     if v is None or isinstance(v, str):
         return v or "--"
     if not np.isfinite(v) or (dash_zero and v == 0):
         return "--"
+    if fixed:
+        v = 0. if round(v, digits) == 0 else v
+        return f"{v:+,.{digits}f}" if sign else f"{v:,.{digits}f}"
     if round(v, digits) == 0 and v > 0 and not sign:
         return f"<{10.0 ** -digits:.{digits}f}"
     if round(v, digits) == 0 and v != 0:
@@ -1209,21 +1397,49 @@ for view in VIEWS:
                                                else "neither")
 
 
-def level_map_set(stem, section, kind, panels, view="post", doc=None):
+def own_scales(S, kind, panels):
+    """Scales (z limits, color norm, extend) fitted to the panels' own data
+    (benchmark figures: the z axes stop at the highest bar, user,
+    2026-11-20), keyed by housing type."""
+    zlim, norm, extend = {}, {}, {}
+    for s, t in panels:
+        heights, heat = level_values(S[s], kind)
+        w = S[s]["hh_type"][t]
+        h = heights[t]
+        top = (wquantile(h, w * (h > 0), 0.995) if kind == "burden"
+               else h.max())
+        zlim[t] = (0, max(top, 1e-9))
+        if heat is not None and (heat[t] > 0).any():
+            c = heat[t]
+            vmax = wquantile(c, w * (c > 0), 0.99)
+            norm[t] = Normalize(0, vmax)
+            extend[t] = "max" if c.max() > vmax else "neither"
+    return zlim, norm, extend
+
+
+def level_map_set(stem, section, kind, panels, view="post", doc=None,
+                  own=False):
     """3D level maps for panels = [(scenario, housing type)]; one colorbar
-    below each panel if their scales differ, else one below all."""
+    below each panel if their scales differ, else one below all. Scales:
+    by housing type, common to all scenarios, or fitted to the panels'
+    own data (own)."""
     S = SIM[view]
     zlabel, clabel = LEVEL_LABEL[kind]
     vals = {s: level_values(S[s], kind) for s in {s for s, t in panels}}
     by_type = len({t for s, t in panels}) > 1
+    if own:
+        ZL, NM, EX = own_scales(S, kind, panels)
+    else:
+        ZL = {t: LEVEL_ZLIM[view, kind, t] for s, t in panels}
+        NM = {t: LEVEL_NORM.get((view, kind, t)) for s, t in panels}
+        EX = {t: LEVEL_EXTEND.get((view, kind, t)) for s, t in panels}
 
     def draw(ax, k, vis):
         s, t = panels[k]
         heights, heat = vals[s]
-        map3d(ax, heights[t], [HTYPE_COLORS[t]], zlabel,
-              zlim=LEVEL_ZLIM[view, kind, t], legend=False, level=True,
-              heat=None if heat is None else heat[t],
-              norm=LEVEL_NORM.get((view, kind, t)))
+        map3d(ax, heights[t], [HTYPE_COLORS[t]], zlabel, zlim=ZL[t],
+              legend=False, level=True,
+              heat=None if heat is None else heat[t], norm=NM.get(t))
         ax.set_title(HTYPES[t] if by_type else SCEN_LABELS[s], pad=-4)
 
     def finish(fig, axes, idx, vis):
@@ -1231,15 +1447,15 @@ def level_map_set(stem, section, kind, panels, view="post", doc=None):
             fig.subplots_adjust(bottom=0.1)
         if kind == "burden":
             return
-        keys = [(view, kind, panels[k][1]) for k in idx]
-        if len(set(keys)) == 1:
-            colorbar_below(fig, axes, LEVEL_NORM[keys[0]], clabel,
-                           extend=LEVEL_EXTEND[keys[0]],
+        types = [panels[k][1] for k in idx]
+        if len(set(types)) == 1:
+            colorbar_below(fig, axes, NM[types[0]], clabel,
+                           extend=EX[types[0]],
                            gap=0.02 if len(axes) == 1 else 0.035)
         else:
-            for ax, key in zip(axes, keys):
-                colorbar_below(fig, ax, LEVEL_NORM[key], clabel, width=0.7,
-                               extend=LEVEL_EXTEND[key], gap=0.015)
+            for ax, t in zip(axes, types):
+                colorbar_below(fig, ax, NM[t], clabel, width=0.7,
+                               extend=EX[t], gap=0.015)
 
     def make(n):
         fig, axes = grid3d(n)
@@ -1300,8 +1516,8 @@ for kind, stem in (("households_type", "map_households_by_housing_type"),
 register("main", "figure", None, 10, "Benchmark equilibrium",
          "Households in the benchmark",
          "Number of households per 500\\,m grid cell, stacked by housing "
-         "type (a) or income group (b). " + BENCH_NOTE + BASEMAP_NOTE)
-REGISTRY[-1]["label"] = "map_households"
+         "type (a) or income group (b). " + BENCH_NOTE + BASEMAP_NOTE,
+         label="map_households")
 REGISTRY[-1]["parts"] = [("map_households_by_housing_type",
                           "By housing type"),
                          ("map_households_by_income_group",
@@ -1322,8 +1538,8 @@ register("main", "figure", None, 20, "Benchmark equilibrium",
          "of the cell; solver cells. (b) Actual expected damages to "
          "structures and contents (M ZAR/year), stacked by housing type; "
          "formal structures are attributed to their occupants."
-         + BASEMAP_NOTE)
-REGISTRY[-1]["label"] = "map_damages_by_housing_type"
+         + BASEMAP_NOTE,
+         label="map_damages_by_housing_type")
 REGISTRY[-1]["parts"] = [("map_expected_flood_depth_by_flood_type",
                           "Expected flood depth"),
                          ("map_damages_by_housing_type",
@@ -1337,6 +1553,7 @@ register("main", "figure", "map_damages_by_housing_type_exante", 21,
 for view, order in zip(VIEWS, (30, 31)):
     level_map_set("map_damages_and_damages_paid_by_housing_type", "main",
                   "damages", [("benchmark", t) for t in range(4)], view,
+                  own=True,
                   doc=(order, "Benchmark equilibrium",
                        "Expected damages and damages paid per household in "
                        "the benchmark" + VIEW_CAPTION[view],
@@ -1344,19 +1561,19 @@ for view, order in zip(VIEWS, (30, 31)):
                        "expected damages to structures and contents in the "
                        "cell (thousand ZAR/year). Color: damages paid per "
                        "household. " + DAMAGE_PAID_NOTE + " Linear scales "
-                       "specific to each panel, the same in all scenarios "
-                       "(colors stop at the 99th percentile of households, "
-                       "over all scenarios)." + VIEW_NOTE[view], 0.92))
+                       "specific to each panel; z axes up to the highest "
+                       "bar, colors up to the 99th percentile of "
+                       "households." + VIEW_NOTE[view], 0.92))
     level_map_set("map_damages_paid_by_housing_type", "appendix", "burden",
-                  [("benchmark", t) for t in range(4)], view,
+                  [("benchmark", t) for t in range(4)], view, own=True,
                   doc=(55 + (view == "ante"), "Benchmark equilibrium",
                        "Damages paid per household in the benchmark"
                        + VIEW_CAPTION[view],
                        "One panel per housing type. Bar height: damages "
                        "paid per household. " + DAMAGE_PAID_NOTE
                        + " Linear scales specific to each panel; bars are "
-                       "cut at the 99.5th percentile of households (over "
-                       "all scenarios)." + VIEW_NOTE[view], 0.92))
+                       "cut at the 99.5th percentile of households."
+                       + VIEW_NOTE[view], 0.92))
 
 rent_map_set("map_rents_by_housing_type", "appendix",
              [("benchmark", t) for t in range(3)],
@@ -1421,7 +1638,9 @@ for t in range(4):
                            f"As the {HTYPES[t].lower()} panel of Figure~"
                            "\\ref{fig:map_damages_and_damages_paid_by_"
                            f"housing_type{VIEW_SUFFIX[view]}}} in each "
-                           "scenario, with the same scales."
+                           "scenario. Linear scales common to all scenarios "
+                           "(colors stop at the 99th percentile of "
+                           "households over all scenarios)."
                            + (" Backyard shacks are paid by the RDP owners "
                               "of the cell." if t == 1 else "")
                            + VIEW_NOTE[view], 1.0))
@@ -1493,8 +1712,8 @@ DISTS = {
     "protection": ([0], LEVEL_COLORS, LEVEL_LABELS, "Sandbag levels",
                    "stacked", "Exposed settlement households"),
 }
-# Panels with a log y axis (user, 2026-11-19: low-income damages paid)
-LOG_PANELS = {"damages_relative": {0}}
+# Panels with a log y axis (user, 2026-11-21: every panel of damages paid)
+LOG_PANELS = {"damages_relative": {0, 1, 2, 3}}
 
 
 def log_label(label):
@@ -1513,6 +1732,10 @@ def set_ylim(ax, values, log=False, shared_top=None):
         v = v[v > 0]
         if len(v):
             ax.set_ylim(v.min() / 1.6, v.max() * 1.6)
+            # 1-2-5 ticks when the axis spans less than about two decades
+            if v.max() / v.min() < 100:
+                ax.yaxis.set_major_locator(
+                    ticker.LogLocator(base=10, subs=(1, 2, 5)))
         return
     top = shared_top if shared_top is not None else (v.max() if len(v)
                                                      else 1)
@@ -1635,8 +1858,8 @@ for view in VIEWS:
                             "income, by income group and housing type: "
                             "connected diamonds at the centre of each depth "
                             "bin with households of the housing type. "
-                            + DEPTH_NOTE + " Linear y axes specific to each "
-                            "panel, log scale for low-income households."
+                            + DEPTH_NOTE + " Log y axes specific to each "
+                            "panel."
                             + VIEW_NOTE[view], 0.9))
 bench_dist_set("dist_self_protection_over_depth", "appendix", "protection", B,
                doc=(70, "Benchmark equilibrium",
@@ -1716,7 +1939,7 @@ DIST_SPECS = {
                    "of exposed households in each scenario. Depth is "
                    "measured before any protection investment, so the "
                    "distributions only move with relocation.",
-                   "Households (thousands)", 90, True, True),
+                   "Households (thousands)", 90, True, False),
     "damages": ("dist_damages_over_depth",
                 "Expected damages across expected flood depth",
                 "As Figure~\\ref{fig:dist_damages_over_depth}, over all "
@@ -1726,9 +1949,8 @@ DIST_SPECS = {
                          "Damages paid per household across expected flood "
                          "depth",
                          "As Figure~\\ref{fig:dist_damages_paid_over_depth},"
-                         " over all housing types. Linear y axes specific "
-                         "to each panel, log scale for low-income "
-                         "households.",
+                         " over all housing types. Log y axes specific to "
+                         "each panel.",
                          "Damages paid per household\n(% of mean income)",
                          110, False, False),
 }
@@ -1745,7 +1967,7 @@ for kind, (stem, caption, note, ylabel, order, with_mean,
             ylabel, view, sharey=sharey,
             mean=(lambda d, i: mean_depth(d, groups=[i])) if with_mean
             else None,
-            log_panels={0} if kind == "damages_relative" else (),
+            log_panels=set(range(4)) if kind == "damages_relative" else (),
             doc=(order + off, "Policy scenarios",
                  caption + ", by scenario" + VIEW_CAPTION[view],
                  note + SCEN_DIST_NOTE + dv, 0.9))
@@ -1976,16 +2198,18 @@ def welfare(d, base, mask=None):
 
 def landlords(d):
     """Yearly revenues (rands) of absentee landlords: legitimate (formal
-    land; ex post: gross of developers' losses, the land rents developers
-    would pay before compensating them, i.e. δ P + t per m2 of developed
-    land; ex ante: the equilibrium land rents, after the developers' tax
-    they anticipate), illegitimate (slumlords' rents from informal
-    settlements), and developers' losses (ex post: the expected
-    compensation of their unanticipated losses, plus the RDP floor's
-    uncovered damages; ex ante: none, they are not anticipated)."""
+    land rents without the developers' tax, i.e. δ P + t per m2 of
+    developed land, the rents developers would pay before compensating
+    their losses, user, 2026-11-20), illegitimate (slumlords' rents from
+    informal settlements), and developers' losses, deducted separately (ex
+    post: the expected compensation of their unanticipated losses, plus
+    the RDP floor's uncovered damages; ex ante: the developers' tax they
+    anticipate, which finances that compensation; the budget balances, so
+    the two differ by less than 0.1%)."""
     t, losses, revenue = d["developer_tax"]
     if d["view"] == "ante":
-        return d["landlord_revenue"][0].sum(), d["landlord_revenue"][1].sum(), 0.
+        return (d["landlord_revenue"][0].sum() + revenue,
+                d["landlord_revenue"][1].sum(), revenue)
     return (d["landlord_revenue"][0].sum() + revenue,
             d["landlord_revenue"][1].sum(),
             losses + d["surplus_damages"].sum())
@@ -2070,19 +2294,19 @@ assert np.isclose(public_cost(sim["subsid_protec"],
 def targeted_share(d, label, sub):
     """% of all households targeted by the policy of scenario label, within
     the subsample (exposed: all households; most: most exposed): exposed
-    households (No RM, Public P.), exposed settlers (Subs. SP), low and
-    mid-low income households (Subs. ins.), and their union (Combined)."""
+    households (No RM, Public P.), exposed settlers (Subs. SP), exposed low
+    and mid-low income households (Subs. ins.; user, 2026-11-20), and their
+    union (Combined: all exposed households)."""
     if label == "benchmark":
         return np.nan
     mask = SUBSAMPLES[sub]
-    within = np.ones((4, N_CELLS), bool) if sub == "exposed" else mask
     target = np.zeros((4, 4, N_CELLS), bool)
     if label in ("no_misperception", "public_protec", "combined"):
-        target |= (mask & within)[:, None, :]
+        target |= mask[:, None, :]
     if label in ("subsid_protec",):
-        target[2] |= (mask[2] & within[2])[None, :]
-    if label in ("subsid_insur", "combined"):
-        target[:, :2] |= within[:, None, :]
+        target[2] |= mask[2][None, :]
+    if label in ("subsid_insur",):
+        target[:, :2] |= mask[:, None, :]
     return 100 * (d["hh"] * target).sum() / d["hh"].sum()
 
 
@@ -2156,8 +2380,8 @@ DAMAGE_TABLE_NOTE = (
     "Household damages: actual expected annual damages to the contents of "
     "all dwellings and to the structures households own (shacks, RDP "
     "houses), M ZAR/year; structure damages, formal private: damages to "
-    "developers' structures (attributed to their occupants' income group). "
-    "Damages paid: damages households pay for (net of insurance payouts; "
+    "developers' structures (attributed to their occupants' income group)."
+    "{coverage} Damages paid: damages households pay for (net of insurance payouts; "
     "no formal private structures; backyard shacks paid by the RDP owners "
     "of the cell) as a \\% of the mean income of the {word} households "
     "(mean) or per household as a \\% of its group's mean income (9th "
@@ -2170,7 +2394,12 @@ DEFINE = {"exposed": f"expected depth above {EXPOSURE_THRESHOLD:g}\\,cm/year",
 
 def damage_note(sub):
     word = "exposed" if sub == "exposed" else "most exposed"
-    return DAMAGE_TABLE_NOTE.format(word=word, define=DEFINE[sub])
+    coverage = "" if sub != "exposed" else (
+        " Damage rows cover all households of each category, the other "
+        "rows only the exposed ones; damages are not shown for categories "
+        "without exposed households.")
+    return DAMAGE_TABLE_NOTE.format(word=word, define=DEFINE[sub],
+                                    coverage=coverage)
 
 
 ## BENCHMARK DAMAGES AND EXPOSURE BY HOUSING TYPE AND INCOME GROUP
@@ -2188,6 +2417,10 @@ def damage_table(S, sub):
         for j, col in enumerate(COLS_GROUPS):
             groups = [j] if j < 4 else [0, 1, 2, 3]
             st = exposure_stats(S["benchmark"], types, groups, sub)
+            if st["share"] == 0:
+                # No household of the category above the threshold: no
+                # damages shown (user, 2026-11-21)
+                st = {**st, "hh_dmg": np.nan, "struct": np.nan}
             for label, key, _ in stat_rows(sub, types):
                 rows.setdefault((block, label), {})[col] = st[key]
     return pd.DataFrame(rows).T[COLS_GROUPS]
@@ -2252,11 +2485,16 @@ for sub, section, order in (("exposed", "main", 70), ("most", "appendix", 77)):
                  "the benchmark per ZAR of public cost (dashes: no public "
                  "cost; combined: also includes the free levers). Targeted "
                  "population: exposed households (Public P., No RM), "
-                 "exposed informal settlement households (Subs.\\ SP), low "
-                 "and mid-low income households (Subs.\\ ins.), their union "
-                 "(Combined)" + ("" if sub == "exposed" else ", within the "
-                                 "subsample") + ", as a \\% of all "
-                 "households of the scenario." + VIEW_NOTE[view],
+                 "exposed informal settlement households (Subs.\\ SP), "
+                 "exposed low and mid-low income households (Subs.\\ ins.), "
+                 "their union (Combined: all exposed households)"
+                 + ("" if sub == "exposed" else
+                    "; exposed: most exposed") + ", as a \\% of all "
+                 "households of the scenario. No settler uses sandbags "
+                 "under public protection (the 45\\,cm floor leaves too "
+                 "little damage for 50 ZAR per level) or subsidised "
+                 "insurance (insured settlers bear 21\\% of the damages "
+                 "they perceive)." + VIEW_NOTE[view],
                  0.9 if sub == "exposed" else True))
 
 ## CHANGES ACROSS SCENARIOS BY INCOME GROUP (user, 2026-11-19: changes in
@@ -2283,7 +2521,7 @@ for sub, order in (("exposed", 80), ("most", 82)):
             table, "appendix", "table_damages_exposure_scenarios"
             + ("_above_5cm" if sub == "most" else "") + VIEW_SUFFIX[view],
             lambda block, row, c, v, dg=digits: _num(
-                v, dg[block], sign=c != "Bench.", dash_zero=True),
+                v, 3, sign=c != "Bench.", fixed=True),
             doc=(order + (view == "ante"), "Policy scenarios",
                  "Damages and exposure across scenarios, by income group"
                  + ("" if sub == "exposed" else
@@ -2314,22 +2552,19 @@ WELFARE_NOTE = (
 LANDLORD_NOTE = (
     " Landlords, in ZAR/year per household of the city (benchmark: levels; "
     "scenarios: changes): legitimate revenues, the formal land rents "
-    "developers would pay before compensating their unanticipated losses; "
-    "illegitimate revenues, rents of informal settlements; developers' "
-    "losses, the expected compensation of their unanticipated losses. "
-    "Aggregate monetary gain: EVs weighted by the number of households of "
-    "each row, plus the change in landlords' legitimate revenues net of "
-    "developers' losses (illegitimate revenues excluded), M ZAR/year. "
-    "Public protection is free in the model: its aggregate gain is the "
-    "largest annual cost at which it breaks even.")
-LANDLORD_NOTE_ANTE = (
-    " Landlords, in ZAR/year per household of the city (benchmark: levels; "
-    "scenarios: changes): legitimate revenues, the equilibrium formal land "
-    "rents (after the developers' tax, which developers anticipate); "
-    "illegitimate revenues, rents of informal settlements; developers' "
-    "losses are not anticipated. Aggregate monetary gain: EVs weighted by "
-    "the number of households of each row, plus the change in legitimate "
-    "revenues, M ZAR/year.")
+    "without the developers' tax, i.e.\\ those developers would pay before "
+    "compensating their unanticipated losses; illegitimate revenues, rents "
+    "of informal settlements; developers' losses (negative: deducted), the "
+    "expected compensation of their unanticipated losses. Aggregate "
+    "monetary gain: EVs weighted by the number of households of each row, "
+    "plus the change in landlords' legitimate revenues and developers' "
+    "losses (illegitimate revenues excluded), M ZAR/year. Public "
+    "protection is free in the model: its aggregate gain is the largest "
+    "annual cost at which it breaks even.")
+LANDLORD_NOTE_ANTE = LANDLORD_NOTE.replace(
+    "the expected compensation of their unanticipated losses",
+    "ex ante, the developers' tax they anticipate, which finances the "
+    "compensation of their losses")
 
 
 def welfare_table(S, sub):
@@ -2356,7 +2591,9 @@ def welfare_table(S, sub):
             "benchmark": np.sum(n_b * ROW_INCOME) / n_b.sum(),
             **{s: np.sum(res[s]["n"] * res[s]["ev"]) / res[s]["n"].sum()
                for s in SCENARIOS[1:]}}
-        acc = {s: np.array(landlords(S[s])) / N_TOTAL for s in SCENARIOS}
+        # Developers' losses with a negative sign (deducted)
+        acc = {s: np.array(landlords(S[s])) * [1, 1, -1] / N_TOTAL
+               for s in SCENARIOS}
         names = ["Legitimate revenues (ZAR/household/year)",
                  "Illegitimate revenues (ZAR/household/year)",
                  "Developers' losses (ZAR/household/year)"]
@@ -2371,8 +2608,8 @@ def welfare_table(S, sub):
                    + (landlords_net(S[s]) - landlords_net(base))) / 1e6
                for s in SCENARIOS[1:]}}
     else:
-        rows[("Total", "Sum of EVs, weighted by subsample shares "
-                       "(ZAR/household/year)")] = {
+        rows[("Total", "Sum of EVs, weighted by subsample\n"
+                       "shares (ZAR/household/year)")] = {
             "benchmark": np.nan,
             **{s: np.sum(res[s]["n"] * res[s]["ev"]) / res[s]["n"].sum()
                for s in SCENARIOS[1:]}}
@@ -2481,6 +2718,9 @@ def reg_table(columns, order_vars):
 def reg_latex(df, section, stem, extra=()):
     """Regression tables: coefficient rows, then standard error rows;
     extra: (label, values) rows after R2."""
+    section = section_of(stem, section, "table")
+    PRODUCED.update({(folder(section, "tables") / f"{stem}.{ext}").resolve()
+                     for ext in ("tex", "xlsx")})
     df.to_excel(folder(section, "tables") / f"{stem}.xlsx")
     cols = list(df.columns)
     lines = [r"\begin{tabular}{l" + "c" * len(cols) + "}", r"\toprule",
@@ -2508,12 +2748,15 @@ REG_NOTE = ("OLS regressions of the log of the annual model rent per "
             "before any protection investment, at the housing type's "
             "drainage level. Equilibrium relations, not causal effects.")
 
-## FORMAL PRIVATE RENTS ON DATA AND ESTIMATION COVARIATES (main body;
-## user, 2026-11-19): data dwelling size (2011 sub-place average of formal
-## dwellings, from the nearest sub-place centroid), log income net of
-## commuting costs (transport model, averaged with the 2011 income
-## distribution of the sub-place) and log calibrated amenity index;
-## weighted by the number of formal private households in column 3
+## FORMAL PRIVATE PRICES ON DATA (appendix; user, 2026-11-20): across the
+## 2011 sub-places (SP) of Cape Town with transaction data, log of the 2011
+## mean transaction price per m2 of formal dwellings (data, not model
+## rents) on SP averages of grid-cell covariates (each 500 m cell belongs
+## to the SP with the nearest centroid, weighted by its 2011 number of
+## formal dwellings, data): expected flood depth, log data dwelling size,
+## log income net of commuting costs (transport model, with the SP's 2011
+## income distribution), log calibrated amenity index; column 3 weighted by
+## the SP's number of formal dwellings (data, not model households)
 
 _mat = __import__("scipy.io", fromlist=["io"]).loadmat(
     config.DATA / "precalculated_inputs" / "data.mat")["data"]
@@ -2521,115 +2764,186 @@ SP_XY = 1000 * np.column_stack([_mat["spX"][0, 0].ravel(),
                                 _mat["spY"][0, 0].ravel()])
 SP_SIZE = _mat["spDwellingSize"][0, 0].ravel()
 SP_INCOME = _mat["sp2011IncomeDistributionNClass"][0, 0].astype(float)
-SP_DIST, SP_NEAREST = cKDTree(SP_XY).query(
-    np.column_stack([grid_csv["X"], grid_csv["Y"]]))
+SP_PRICE = _mat["spPrice"][0, 0][
+    list(_mat["yearPrice"][0, 0].ravel()).index(2011)]
+SP_FORMAL = (_mat["spTotalDwellings"][0, 0].astype(float)
+             - _mat["spInformalBackyard"][0, 0]
+             - _mat["spInformalSettlement"][0, 0]).ravel()
+SP_CT = _mat["SP_is_CT"][0, 0].ravel() > 0
+GRID_FORMAL = np.nan_to_num(_mat["gridFormal"][0, 0].ravel())
+N_SP = len(SP_SIZE)
+CELL_XY = np.column_stack([grid_csv["X"], grid_csv["Y"]])
+SP_DIST, SP_NEAREST = cKDTree(SP_XY).query(CELL_XY)
+SP_CELL = cKDTree(CELL_XY).query(SP_XY)[1]        # nearest cell to each SP
 with np.errstate(invalid="ignore", divide="ignore"):
     SP_SHARES = SP_INCOME / SP_INCOME.sum(1, keepdims=True)
-DATA_SIZE = SP_SIZE[SP_NEAREST]
-DATA_NET_INCOME = (SP_SHARES[SP_NEAREST].T * NET_INCOME).sum(0)
-FP_VARS = ["Expected flood depth (cm/year)", "Log dwelling size (data)",
-           "Log net income", "Log amenity index"]
-hh_fp = B["hh_type"][0]
+
+
+def sp_mean(v):
+    """Mean of cell values v over the cells of each SP (within 5 km of its
+    centroid), weighted by their formal dwellings (data); the value of the
+    nearest cell if the SP has none."""
+    v = np.asarray(v, dtype=float)
+    w = GRID_FORMAL * (SP_DIST < 5000) * np.isfinite(v)
+    v0 = np.nan_to_num(v)
+    num = np.bincount(SP_NEAREST, w * v0, N_SP)
+    den = np.bincount(SP_NEAREST, w, N_SP)
+    return np.where(den > 0, num / np.where(den > 0, den, 1), v[SP_CELL])
+
+
+# Data income (2011 mean household income of the SP) and the exogenous
+# amenity covariates of the amenity calibration (SP_amenities.csv and RDP
+# proximity, as dummies like calibration.sub.import_amenities); user,
+# 2026-11-21: instead of estimated net incomes and amenity index
+SP_CODE = _mat["spCode"][0, 0].ravel()
+SP_DATA_INCOME = _mat["sp2011AverageIncome"][0, 0].ravel()
+_amen = pd.read_csv(config.DATA / "data_Cape_Town" / "SP_amenities.csv") \
+    .set_index("SP_CODE").reindex(SP_CODE)
+_rdp = __import__("scipy.io", fromlist=["io"]).loadmat(
+    config.DATA / "precalculated_inputs" / "SPDistanceRDP.mat")
+_rdp = np.asarray(_rdp[[k for k in _rdp if not k.startswith("__")][-1]],
+                  dtype=float).ravel()
+_cone = _amen.airport_cone.isin([55, 60, 65, 70, 75])
+AMENITY_COVARIATES = np.column_stack([
+    _amen.distance_distr_parks < 2, _amen.distance_ocean < 2,
+    (_amen.distance_ocean > 2) & (_amen.distance_ocean < 4),
+    _amen.distance_world_herit < 2,
+    (_amen.distance_world_herit > 2) & (_amen.distance_world_herit < 4),
+    _amen.distance_urban_herit < 2, _amen.distance_UCT < 2, _cone,
+    (_amen.slope > 1) & (_amen.slope < 5), _amen.slope > 5,
+    _amen.distance_train < 2, _amen.distance_protected_envir < 2,
+    (_amen.distance_protected_envir > 2)
+    & (_amen.distance_protected_envir < 4),
+    _rdp, _amen.distance_power_station < 2,
+    _amen.distance_biosphere_reserve < 2]).astype(float)
+AMENITY_NAMES = [f"Amenity covariate {k + 1}"
+                 for k in range(AMENITY_COVARIATES.shape[1])]
+FP_VARS = ["Expected flood depth (cm/year)", "Log dwelling size",
+           "Log income (data)"]
 with np.errstate(divide="ignore", invalid="ignore"):
-    X_fp = np.column_stack([DEPTH[0], np.log(DATA_SIZE),
-                            np.log(DATA_NET_INCOME), np.log(amen)])
-    y_fp = np.log(B["rent_clean"][0])
-ok_fp = (hh_fp > 0) & (B["rent_clean"][0] > 0) & np.isfinite(X_fp).all(1) \
-    & (SP_DIST < 5000)
+    X_fp = np.column_stack([sp_mean(DEPTH[0]), np.log(SP_SIZE),
+                            np.log(SP_DATA_INCOME), AMENITY_COVARIATES])
+    y_fp = np.log(SP_PRICE)
+ok_fp = SP_CT & (SP_FORMAL > 0) & np.isfinite(X_fp).all(1) \
+    & np.isfinite(y_fp)
+# Amenity dummies that vary in the sample (others are dropped)
+_vary = X_fp[ok_fp].std(0) > 0
+_vary[:3] = True
+X_fp = X_fp[:, _vary]
+_names = (FP_VARS + AMENITY_NAMES)
+_names = [n for n, v in zip(_names, _vary) if v]
 cols_fp = {
-    "(1)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp][:, :2], FP_VARS[:2])),
-    "(2)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp], FP_VARS)),
-    "(3)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp], FP_VARS,
-                          w=hh_fp[ok_fp]))}
-reg_latex(reg_table(cols_fp, FP_VARS), "main",
-          "table_rent_regression_formal_private_data_covariates",
-          extra=[("Weights", ["--", "--", "Households"])])
-register("main", "table",
-         "table_rent_regression_formal_private_data_covariates", 65,
-         "Benchmark equilibrium",
-         "Formal private rents, flood risks and data covariates",
-         REG_NOTE.replace("with households of the housing type",
-                          "with formal private households in the "
-                          "benchmark") +
-         " Covariates from data and estimation rather than the model: "
-         "dwelling size, 2011 mean size of formal dwellings in the nearest "
-         "sub-place (centroid within 5\\,km; log); net income, income net "
-         "of commuting costs of each income group from the transport "
-         "model, averaged with the 2011 income distribution of the "
-         "sub-place (log); calibrated amenity index (log). Column 3 weighs "
-         "cells by their number of formal private households.", 0.7)
+    "(1)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp][:, :1], _names[:1])),
+    "(2)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp], _names)),
+    "(3)": reg_column(ols(y_fp[ok_fp], X_fp[ok_fp], _names,
+                          w=SP_FORMAL[ok_fp]))}
+reg_latex(reg_table(cols_fp, FP_VARS), "appendix",
+          "table_price_regression_formal_private_data",
+          extra=[("Amenity covariates", ["--", "Yes", "Yes"]),
+                 ("Weights", ["--", "--", "Formal dwellings"])])
+register("appendix", "table", "table_price_regression_formal_private_data",
+         0, "", "Formal private prices, flood risks and data covariates",
+         "OLS regressions of the log of the 2011 mean transaction price per "
+         "m\\textsuperscript{2} of formal dwellings across the 2011 "
+         "sub-places of Cape Town with transaction data (data, not model "
+         "rents); heteroskedasticity-robust (HC1) standard errors in "
+         "parentheses; $^{*}$ $p<0.1$, $^{**}$ $p<0.05$, $^{***}$ $p<0.01$. "
+         "Expected flood depth: cm/year, before any protection investment, "
+         "formal drainage, sub-place mean over the 500\\,m grid cells "
+         "closest to its centroid (within 5\\,km), weighted by their 2011 "
+         "number of formal dwellings. Controls (columns 2--3), all from "
+         "the data: log 2011 mean size of formal dwellings and log 2011 "
+         "mean household income of the sub-place; the "
+         f"{int(_vary[3:].sum())} exogenous amenity covariates of the "
+         "amenity calibration (dummies for proximity to district parks, the "
+         "ocean, world and urban heritage sites, the University of Cape "
+         "Town, train stations, protected environments, power stations, "
+         "biosphere reserves and RDP housing; airport noise cone; slope "
+         "bands), coefficients not shown. Column 3 weighs sub-places by "
+         "their 2011 number of formal dwellings (data). Equilibrium "
+         "relations, not causal effects.", 0.6)
 
-## MODEL COVARIATES, BY HOUSING TYPE AND POOLED BY SCENARIO (online
-## appendix)
+## MODEL COVARIATES, BY HOUSING TYPE (appendix) AND POOLED BY SCENARIO
+## (online appendix); user, 2026-11-21: no depth squared, log households or
+## land share; log dwelling size right after depth; weighted by the number
+## of households of the housing type in the cell; pooled regressions with
+## interactions of depth and the housing type
 
-REG_VARS = ["Expected flood depth (cm/year)", "Expected flood depth squared",
-            "Log net income", "Log amenity index", "Log dwelling size",
-            "Log households", "Available land share"]
+REG_VARS = ["Expected flood depth (cm/year)", "Log dwelling size",
+            "Log net income", "Log amenity index"]
 
 
 def reg_data(d, t):
-    """(log rent, regressors (cells, REG_VARS)) for housing type t."""
+    """(log rent, regressors (cells, REG_VARS), households) for housing
+    type t."""
     hh, R = d["hh_type"][t], d["rent_clean"][t]
     with np.errstate(divide="ignore", invalid="ignore"):
         income = (d["hh"][t] * d["net_income"]).sum(0) / hh
-        X = np.column_stack([DEPTH[t], DEPTH[t] ** 2, np.log(income),
-                             np.log(inputs["amenities"]),
+        X = np.column_stack([DEPTH[t],
                              np.log(np.maximum(d["consumption"][t], 1e-9)),
-                             np.log(hh), inputs["coeff_land"][t]])
+                             np.log(income), np.log(inputs["amenities"])])
     ok = (hh > 0) & (R > 0) & np.isfinite(X).all(1)
-    return np.log(R[ok]), X[ok]
+    return np.log(R[ok]), X[ok], hh[ok]
 
 
 cols = {}
 for t in (0, 1, 2):
-    y, X = reg_data(B, t)
+    y, X, w = reg_data(B, t)
     keep = [k for k in range(len(REG_VARS))
             if not (t > 0 and REG_VARS[k] == "Log dwelling size")]
     cols[HTYPES[t]] = reg_column(ols(y, X[:, keep],
-                                     [REG_VARS[k] for k in keep]))
-reg_latex(reg_table(cols, REG_VARS), "online",
+                                     [REG_VARS[k] for k in keep], w=w))
+reg_latex(reg_table(cols, REG_VARS), "appendix",
           "table_rent_regressions_by_housing_type")
 MODEL_REG_NOTE = (
-    " Regressors from the model: expected flood depth and its square; log "
-    "mean income net of commuting costs of the occupants (household-"
-    "weighted, net of lump-sum taxes; backyard revenues accrue to RDP "
-    "owners, who pay no rent, so they enter no rent regression); log "
-    "amenity index; log formal dwelling size; log number of households of "
-    "the housing type in the cell; share of the cell available to the "
-    "housing type. Informal disamenity indices are constants, absorbed by "
-    "the constant (or the housing type dummies). Formal rents are bid "
-    "rents that depend on income and dwelling size in closed form, hence "
-    "the near-perfect fit.")
-register("online", "table", "table_rent_regressions_by_housing_type", 40,
-         "Benchmark equilibrium",
-         "Rent regressions in the benchmark, by housing type",
-         REG_NOTE + MODEL_REG_NOTE, 0.85)
+    " Regressors from the model: expected flood depth; log dwelling size "
+    "(formal private; shacks have a fixed size); log mean income net of "
+    "commuting costs of the occupants (household-weighted, net of "
+    "lump-sum taxes; backyard revenues accrue to RDP owners, who pay no "
+    "rent, so they enter no rent regression); log amenity index. Weighted "
+    "by the number of households of the housing type in the cell. "
+    "Informal disamenity indices are constants, absorbed by the constant "
+    "(or the housing type dummies). Formal rents are bid rents that depend "
+    "on income and dwelling size in closed form, hence the near-perfect "
+    "fit.")
+register("appendix", "table", "table_rent_regressions_by_housing_type", 0,
+         "", "Rent regressions in the benchmark, by housing type",
+         REG_NOTE + MODEL_REG_NOTE, 0.75)
+
+INTERACTIONS = ["Informal backyards", "Informal settlements",
+                "Depth x informal backyards", "Depth x informal settlements"]
 
 
 def pooled(d):
-    ys, Xs = [], []
+    """FP, IB and IS cells pooled, with housing type dummies and their
+    interactions with expected flood depth (FP: reference)."""
+    ys, Xs, ws = [], [], []
     for t in (0, 1, 2):
-        y, X = reg_data(d, t)
-        dummies = np.zeros((len(y), 2))
+        y, X, w = reg_data(d, t)
+        extra = np.zeros((len(y), 4))
         if t:
-            dummies[:, t - 1] = 1
+            extra[:, t - 1] = 1
+            extra[:, t + 1] = X[:, 0]
         ys.append(y)
-        Xs.append(np.column_stack([X, dummies]))
-    return np.concatenate(ys), np.vstack(Xs)
+        Xs.append(np.column_stack([X, extra]))
+        ws.append(w)
+    return np.concatenate(ys), np.vstack(Xs), np.concatenate(ws)
 
 
-POOLED_VARS = REG_VARS + ["Informal backyards", "Informal settlements"]
-reg_latex(reg_table({SCEN_SHORT[s]: reg_column(ols(*pooled(sim[s]),
-                                                   POOLED_VARS))
-                     for s in SCENARIOS}, POOLED_VARS), "online",
-          "table_rent_regressions_scenarios")
-register("online", "table", "table_rent_regressions_scenarios", 100,
-         "Policy scenarios",
+POOLED_VARS = REG_VARS + INTERACTIONS
+_pooled = {s: pooled(sim[s]) for s in SCENARIOS}
+reg_latex(reg_table({SCEN_SHORT[s]: reg_column(ols(
+    _pooled[s][0], _pooled[s][1], POOLED_VARS, w=_pooled[s][2]))
+    for s in SCENARIOS}, POOLED_VARS), "online",
+    "table_rent_regressions_scenarios")
+register("online", "table", "table_rent_regressions_scenarios", 0, "",
          "Rent regressions, all rented housing types, by scenario",
          "As Table~\\ref{tab:table_rent_regressions_by_housing_type}, with "
          "formal private, informal backyard and informal settlement cells "
-         "pooled and housing type dummies (formal private: reference), in "
-         "each scenario.", True)
+         "pooled, housing type dummies and their interactions with expected "
+         "flood depth (formal private: reference; the depth coefficient is "
+         "that of formal private rents), weighted by the number of "
+         "households, in each scenario.", True)
 
 ###############################################################################
 
@@ -2655,11 +2969,14 @@ def bar_values(S, kind, groups, sub="exposed"):
             inside = mask[:, None, :] if sub == "most" else 1
             out[:, k] = (d["dmg"][:, groups] * inside).sum((1, 2)) / 1e6
         else:
+            # Each housing type's own ratio: its damages paid over its
+            # households' income (user, 2026-11-21: diamonds per category)
             m = mask[:, None, :]
             num = (d["dmg_borne"][:, groups] * m).sum((1, 2))
             den = (d["hh"][:, groups] * m
-                   * y_bar[groups][None, :, None]).sum()
-            out[:, k] = 100 * num / den if den > 0 else 0
+                   * y_bar[groups][None, :, None]).sum((1, 2))
+            with np.errstate(invalid="ignore", divide="ignore"):
+                out[:, k] = np.where(den > 0, 100 * num / den, np.nan)
     return out
 
 
@@ -2689,11 +3006,20 @@ def scen_bars_set(stem, section, kind, ylabel, view="post", sub="exposed",
 
     def draw(ax, k, vis):
         nt, ns = vis.get("types", 4), vis.get("scenarios", len(SCENARIOS))
-        v = values[k][:, :ns].copy()
-        v[nt:] = 0
-        bars2d(ax, x[:ns], np.full(ns, 0.62), v, HTYPE_COLORS)
-        top = values[k].sum(0).max()
-        ax.set_ylim(0, 1.08 * top if top > 0 else 1)
+        if pies:
+            # Unconnected diamonds, one per housing type, each its own
+            # ratio, on a log y axis (user, 2026-11-21); zeros not shown
+            for t in range(nt):
+                ax.plot(x[:ns], positive(values[k][t, :ns]), marker="D",
+                        markersize=5, linestyle="none",
+                        color=HTYPE_COLORS[t])
+            set_ylim(ax, [positive(values[k])], log=True)
+        else:
+            v = values[k][:, :ns].copy()
+            v[nt:] = 0
+            bars2d(ax, x[:ns], np.full(ns, 0.62), v, HTYPE_COLORS)
+            top = values[k].sum(0).max()
+            ax.set_ylim(0, 1.08 * top if top > 0 else 1)
         if pies:
             band = blended_transform_factory(ax.transData, ax.transAxes)
             for j, s in enumerate(SCENARIOS[:ns]):
@@ -2714,7 +3040,10 @@ def scen_bars_set(stem, section, kind, ylabel, view="post", sub="exposed",
         style_axes(ax)
 
     def finish(fig, axes, panels, vis):
-        handles = legend_handles(HTYPE_COLORS, HTYPES)
+        handles = ([Line2D([], [], marker="D", markersize=5,
+                           linestyle="none", color=c, label=l)
+                    for c, l in zip(HTYPE_COLORS, HTYPES)] if pies
+                   else legend_handles(HTYPE_COLORS, HTYPES))
         if pies:
             handles.append(Patch(facecolor=INK2, label=(
                 "Pies: share of the group's households "
@@ -2746,7 +3075,8 @@ scen_bars_set("scenarios_bars_households_by_housing_type", "online",
               doc=(90, "Policy scenarios",
                    "Households by housing type across scenarios",
                    "Number of households (thousands)." + BARS_NOTE, 0.85))
-for sub in ("exposed", "most"):
+# Most exposed (above 5 cm) versions dropped (user, 2026-11-20)
+for sub in ("exposed",):
     off = 0 if sub == "exposed" else 2
     for view in VIEWS:
         o = off + (view == "ante")
@@ -2764,7 +3094,8 @@ for sub in ("exposed", "most"):
                  0.85))
         scen_bars_set(
             "scenarios_bars_damages_paid_by_housing_type", "main",
-            "damages_relative", "Damages paid\n(% of income)", view, sub,
+            "damages_relative", "Damages paid\n(% of income, log scale)",
+            view, sub,
             doc=(120 + o, "Policy scenarios",
                  "Damages paid by "
                  + ("exposed" if sub == "exposed" else "most exposed")
@@ -2773,12 +3104,15 @@ for sub in ("exposed", "most"):
                  + ("exposed" if sub == "exposed" else "most exposed")
                  + " households pay for (net of insurance payouts; no "
                  "formal private structures; backyard shacks paid by RDP "
-                 "owners) as a \\% of their mean income; each housing "
-                 "type's segment is its damages paid over the income of "
-                 "all these households of the group, so that the stack is "
-                 "the group's total. Pies: share of the group's households "
+                 "owners) as a \\% of their mean income, by income group "
+                 "and for the whole city: diamonds across scenarios, one "
+                 "per housing type, each the damages paid by the exposed "
+                 "households of that type over their own income; log y "
+                 "axes specific to each panel (zeros, e.g.\\ settlers "
+                 "protected by free sandbags, not shown). Pies: "
+                 "share of the group's households "
                  + ("exposed" if sub == "exposed" else
-                    f"above {MOST_TXT}") + "." + BARS_NOTE + VIEW_NOTE[view],
+                    f"above {MOST_TXT}") + "." + VIEW_NOTE[view],
                  0.85))
 
 ###############################################################################
@@ -3070,11 +3404,13 @@ TEX_HEAD = r"""\documentclass[11pt]{article}
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage[section]{placeins}
+\usepackage{makecell}
 \usepackage[hidelinks]{hyperref}
 \captionsetup{font=small,labelfont=bf,skip=4pt}
 \captionsetup[sub]{font=footnotesize,skip=2pt}
 \graphicspath{{../}}
 \setlength{\parindent}{0pt}
+\setcounter{tocdepth}{3}
 \newcommand{\note}[1]{\par\vspace{3pt}\begin{minipage}{\linewidth}\footnotesize\textit{Notes:} #1\end{minipage}}
 
 \title{Flood risks and policy scenarios in Cape Town:\\ tables and figures}
@@ -3084,12 +3420,95 @@ TEX_HEAD = r"""\documentclass[11pt]{article}
 \maketitle
 \tableofcontents
 \clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
 """
+
+
+# Cross-references from the main body to complementary appendix and
+# online appendix outputs (user, 2026-11-20): main-body label -> [(label,
+# description)]; main-body figures also point to their ex-ante versions
+SEE_ALSO = {
+    "map_households": [
+        ("map_jobs_by_income_group_over_households", "jobs by income group"),
+        ("map_land_availability_by_housing_type", "land available by "
+         "housing type"),
+        ("table_model_assumptions", "model assumptions by housing type")],
+    "map_damages_by_housing_type": [
+        ("scenarios_map_damages_by_housing_type", "by scenario")],
+    "map_damages_and_damages_paid_by_housing_type": [
+        ("map_damages_paid_by_housing_type", "damages paid as bar heights"),
+        ("map_rents_by_housing_type", "rents"),
+        ("scenarios_map_damages_formal_private", "by scenario, one figure "
+         "per housing type; also Figures~\\ref{fig:scenarios_map_damages_"
+         "informal_backyards}--\\ref{fig:scenarios_map_damages_formal_"
+         "subsidised}")],
+    "dist_households_over_depth": [
+        ("dist_self_protection_over_depth", "self-protection of exposed "
+         "settlers"),
+        ("dist_damages_over_depth", "damages across depth"),
+        ("scenarios_dist_households_over_depth", "by scenario"),
+        ("scenarios_dist_households_over_depth_low_income", "low-income "
+         "households by housing type, by scenario")],
+    "dist_damages_paid_over_depth": [
+        ("dist_damages_paid_over_depth_no_self_protection", "without "
+         "self-protection"),
+        ("scenarios_dist_damages_paid_over_depth", "by scenario"),
+        ("scenarios_dist_damages_paid_over_depth_low_income", "low-income "
+         "households by housing type, by scenario")],
+    "table_damages_exposure_benchmark": [
+        ("table_damages_exposure_benchmark_above_5cm", "most exposed "
+         "households"),
+        ("map_damages_and_damages_paid_by_housing_type", "maps")],
+    "table_scenario_summary": [
+        ("table_scenario_summary_above_5cm", "most exposed households"),
+        ("table_damages_exposure_scenarios", "by income group"),
+        ("scenarios_bars_damages_by_housing_type", "damages by housing "
+         "type"),
+        ("scenarios_bars_damages_paid_by_housing_type", "damages paid by "
+         "housing type"),
+        ("table_pairwise_interactions", "pairwise interactions of the "
+         "policy levers")],
+    "table_welfare_exposed": [
+        ("table_welfare", "all households, with landlords and the "
+         "aggregate monetary gain"),
+        ("table_welfare_most_exposed", "most exposed households"),
+        ("table_shapley_utility", "Shapley decomposition of utility "
+         "changes"),
+        ("table_shapley_ev", "Shapley decomposition of equivalent "
+         "variations"),
+        ("interaction_matrices", "pairwise interactions")],
+}
+
+
+def tex_ref(label):
+    """'Figure~\\ref{fig:x}' or 'Table~\\ref{tab:x}' for a registered
+    output (None if it is not in the PDF)."""
+    for e in REGISTRY:
+        if (e.get("label") or e["stem"]) == label:
+            return (f"Figure~\\ref{{fig:{label}}}" if e["kind"] == "figure"
+                    else f"Table~\\ref{{tab:{label}}}")
+    return None
+
+
+def see_also(e):
+    """'See also ...' sentence for a main-body output."""
+    if e["section"] != "main":
+        return ""
+    label = e.get("label") or e["stem"]
+    items = [f"{tex_ref(l)} ({desc})" for l, desc in SEE_ALSO.get(label, [])
+             if tex_ref(l)]
+    if tex_ref(label + "_exante"):
+        items.append(f"{tex_ref(label + '_exante')} (ex ante)")
+    return " See also " + "; ".join(items) + "." if items else ""
 
 
 def tex_entry(e):
     sec = SECTIONS[e["section"]]
     label = e.get("label") or e["stem"]
+    e = {**e, "note": e["note"] + see_also(e)}
     if e["kind"] == "table":
         width = e["width"]
         size = (r"\textwidth" if width is True or width is None
@@ -3122,15 +3541,31 @@ def write_tex():
     for section in SECTIONS:
         entries = sorted([e for e in REGISTRY if e["section"] == section],
                          key=lambda e: e["order"])
-        lines += ["% " + "=" * 69,
-                  rf"\section{{{SECTION_TITLES[section]}}}", ""]
+        lines.append("% " + "=" * 69)
+        if section == "appendix":
+            # Appendix A and online appendix B, with figures and tables
+            # numbered A.1, A.2, ... and B.1, B.2, ... (user, 2026-11-21)
+            lines += [r"\appendix",
+                      r"\counterwithin*{figure}{section}",
+                      r"\counterwithin*{table}{section}",
+                      r"\renewcommand{\thefigure}{\thesection.\arabic{figure}}",
+                      r"\renewcommand{\thetable}{\thesection.\arabic{table}}",
+                      r"\renewcommand{\theHfigure}{\thesection.\arabic{figure}}",
+                      r"\renewcommand{\theHtable}{\thesection.\arabic{table}}"]
+        lines += [rf"\section{{{SECTION_TITLES[section]}}}", ""]
         if INTRO[section]:
             lines += [INTRO[section], ""]
-        sub = None
+        sub = subsub = None
         for e in entries:
             if e["sub"] != sub:
-                sub = e["sub"]
+                sub, subsub = e["sub"], None
                 lines += [r"\FloatBarrier", rf"\subsection{{{sub}}}", ""]
+                if SUB_INTRO.get(sub):
+                    lines += [SUB_INTRO[sub], ""]
+            if e.get("subsub") and e["subsub"] != subsub:
+                subsub = e["subsub"]
+                lines += [r"\FloatBarrier", rf"\subsubsection{{{subsub}}}",
+                          ""]
             lines.append(tex_entry(e))
         lines.append(r"\clearpage")
     lines.append(r"\end{document}")
@@ -3139,9 +3574,17 @@ def write_tex():
     print(f"  pdf/figures_tables.tex: {len(REGISTRY)} entries")
 
 
+SUB_INTRO[EXANTE_SUB] = (
+    "Ex-ante versions of the tables and figures of the main body and the "
+    "appendices, grouped and ordered like them, with the damages agents "
+    "anticipate in equilibrium (36\\% of actual damages under risk "
+    "misperception, all of them without; insured households anticipate "
+    "the uninsured share) instead of the actual damages realised ex post, "
+    "and equilibrium utilities.")
 orders = [(e["section"], e["order"]) for e in REGISTRY]
 assert len(orders) == len(set(orders)), "duplicate PDF positions"
 write_tex()
+cleanup()
 print(f"Done in {time.time() - T0:.0f} s")
 
 # %%
